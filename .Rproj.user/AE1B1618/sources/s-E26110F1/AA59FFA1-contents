@@ -1,0 +1,47 @@
+Package: climodr
+Type: Package
+Title: Climate modeling with pointdata from climate stations
+Version: 0.1.0
+Author: 
+    Luise Wraase
+    Seda Bekar
+    Alexander Klug
+Maintainer: umweltinformatik@geo.uni-marburg.de
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    caret,
+    CAST,
+    corrplot,
+    cowplot,
+    doParallel,
+    dplyr,
+    geodata,
+    ggnewscale,
+    ggplot2,
+    ggpubr,
+    ggspatial,
+    ggthemes,
+    grid,
+    gridExtra,
+    horizon,
+    lattice,
+    lubridate,
+    mapview,
+    plotly,
+    randomForest,
+    raster,
+    rasterVis,
+    readr,
+    reshape2,
+    rgdal,
+    sf,
+    sp,
+    stars,
+    terra,
+    viridis
+Depends: 
+    tidyverse
