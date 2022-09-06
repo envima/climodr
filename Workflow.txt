@@ -4,5 +4,6 @@ Pre-Processing.R:
 	crop.all -> Zu croppender Extent immer auf kleinsten Extent croppen? Auf mittleren? Auf festgelegten? Mehrere Methoden? 
 	Default: ?
 	Gedanken: Kleinster Extent sinnvoll, da bei Modellierung die gesamte Karte die gleichen Grundlagen haben sollte. Ansonsten fehlen einige Prediktoren in gewissen
+		  Bereichen innerhalb des Extents.
 		-> Aber: Punktdaten, welche ggf. auf Gebiet skaliert werden, könnten den Extent unnötig klein schneiden und häufig Randpunkte definieren, obwohl am Ende
 			 auch Daten für alle Layer über den Extent hinaus vorhanden sein könnten. 
