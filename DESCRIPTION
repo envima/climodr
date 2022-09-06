@@ -37,7 +37,6 @@ Imports:
     ggthemes,
     grid,
     gridExtra,
-    horizon,
     lattice,
     lubridate,
     mapview,
@@ -55,5 +54,10 @@ Imports:
     viridis
 Depends: 
     tidyverse
-Remotes:  
+Remotes: 
     github::envima/envimaR@HEAD
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+RoxygenNote: 7.2.1

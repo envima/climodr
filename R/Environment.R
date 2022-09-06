@@ -1,29 +1,48 @@
-#' Link Folders for Package
+#' Link input and output folders for climodr
 #'
-#' For easier and automatet use, this function links either the folder where all
-#' necessary Input Data is stored and also the folder, where all relevant
-#' output is saved.
-#' @param input_directory_path
-#' @param output_directory_path
+#' For easier and automated use of climodr. This function links either the
+#' folder where all necessary input data is stored and also the folder,
+#' where all relevant output data will be saved.
+#'
+#' @param in_dir character. Path to input folder. All necessary and relevant data should be stored here.
+#' @param out_dir character. Path to output folder. Save all products in this destination.
+#'
+#' @return NULL
+#' @seealso envi.create
+#'
+#' @name hubs
+#' @export hubs
+#'
 #' @examples
+#' \dontrun{
 #' hubs("C:/Users/R_User/cool_proj/data/Input",
 #'      "C:/Users/R_user/cool_proj/data/Output")
-#' @export
-
-hubs <- function(input_directory_path, output_directory_path) {
-  Input <- input_directory_path;
-  Output <- output_directory_path
+#' }
+#'
+hubs <- function(in_dir,out_dir) {
+    Input <- in_dir;
+    Output <- out_dir
 }
 
-#' Create temporary Environment
-#'
-#' Creates an environment the package will use to store necessary, temporary
-#' data
-#' @param proj_path path for temporary environment
-#' @examples
-#' envi.create("C:/Useres/R_User/cool_proj")
-#' @export
 
+#' Create temporary environment
+#'
+#' Creates an environment climodr will use to store necessary, temporary data, which will be deleted after not being used anymore.
+#'
+#' @param proj_path character. Path for working directory.
+#'
+#' @return NULL
+#' @seealso [climodr::hubs] which climodr requires to be set up completely
+#' @seealso [envimaR::alternativeEnvi], [envimaR::createEnvi] which this function wraps.
+#'
+#' @name envi.create
+#' @export envi.create
+#'
+#' @examples
+#' \dontrun{
+#' envi.create("C:/USERS/R_User/cool_proj")
+#' }
+#'
 envi.create <- function(proj_path) {
   if (!exists("rootDIR")) {
     cat("variable rootDIR is NOT defined\n A temporary directory is set by default", "!\n")
@@ -77,5 +96,4 @@ envi.create <- function(proj_path) {
 
   raster::rasterOptions(tmpdir = envrmt$path_tmp);
   rgdal::set_thin_PROJ6_warnings(TRUE);
-  print("done")
 }

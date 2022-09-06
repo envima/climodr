@@ -1,0 +1,80 @@
+---
+title: "climodr"
+output: 
+  rmarkdown::html_vignette:
+    toc: TRUE
+    toc_depth: 3
+    number_sections: TRUE
+    highlight: tango
+vignette: >
+  %\VignetteIndexEntry{climodr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Welcome to climatemodeller in R, short climodr. 
+This packages uses stational climate data and xy to automaticly create ready-to-use climate maps and statistics. This Vignette should guide you through the package, explain its functions and give you an idea of how to use climodr.
+
+# Getting Started with climodr
+
+The Idea of climodr is, to speed up climate modelling processes and make them easier to use. The package foresees that one needs to store relevant input data into one foulder and the package does the rest. However its also possible to split up and do the automated steps manually to adjust settings or to get into detail in certain steps. 
+
+*more cool stuff to follow*
+
+## Downloading climodr
+
+To start with climodr, you first need to download and install the package from the Environmental Informatics Lab (envima) @ Marburg University from Github. To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html) installed to your R. Once devtools is installed, you can simply add climodr by following commands.   
+  
+Note: It may asks you to install all packages climodr needs to execute all its functions. Please install all of those.  
+
+```{r, eval = FALSE}
+#install climodr
+devtools::install_github("envima/climodr")
+
+library(climodr)
+```
+
+## How to setup climodr
+
+Setting up climodr just requires to steps, before you can get started.  
+First it requieres you to name an input- and output directory path. Use *hubs()* to create these links.  
+The Output-Directory will be used to safe all final products in, like maps, statistics, etc., which should be publication-ready, if executed correctly.  
+The Input-Directory is the place, where all data, which shall be used for modelling, should be saved beforehand. See [list of possible inputs](link) for further details, what kind of input-data can be used.  
+Second it requieres you to give it a path for a working directory. Therefore use the *envi.create()* function. This function links in the working environment for additional data worth looking into, but also creates a temporary directory, where workflow data is stored and also deleted after not being necessary anymore. To find the temporary data, type *tempdir()* into your console to see where this data is stored. 
+
+```{r, eval = FALSE}
+#setting up the environment for climodr
+hubs("C:/USER/cool_proj/input_directory",
+     "C:/USER/cool_proj/output_directory")
+envi.create("C:/USER/cool_proj")
+
+#tempdir()
+```
+
+# Pre-Processing
+
+## Cropping
+
+To guarantee a fast working package, its key to keep the data as small as possible. One way to reach this goal is to crop all data to the smallest extent possible _(?)_. 
+```{r, eval = FALSE}
+
+```
+
+# Processing
+
+## Modelling
+
+## Validation
+
+# Plotting
+
+## Maps
+
+## Statistics
