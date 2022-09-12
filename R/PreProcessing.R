@@ -11,7 +11,7 @@
 #' @param safe_output logical. If cropped data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
-#' @return SpatRasters
+#' @return SpatRaster-Stack, CSV-List
 #' @seealso
 #'
 #' @name crop.all
@@ -19,11 +19,42 @@
 #'
 #' @examples
 #'
-crop.all <- function(folder_path = Input,
+crop.all <- function(method = "Input",
                      crs = NULL,
                      ext = NULL,
-                     method = "smallest",
                      safe_output = FALSE,
                      ...) {
+  tiff_list <- list();
+  csv_list <- list();
 
+  if (!is.null(crs)){
+    for (i in 1:number_of_tiffs){
+      tiff_list[[i]] <- terra::rast(tiff_paths[[i]])
+      if (is.null(crs(tiff_list[[i]]))){
+        crs(tiff_list[[i]] <- crs)
+      }
+      else {
+        if (!crs(tiff_list[[i]]) == crs){
+          tiff_list[[i]] <- terra::project(tiff_list[[i]], crs)
+        }
+      }
+      tiff_stack <- stack(tiff_stack, tiff_list[[i]])
+    }
+  };
+
+  if (is.null(ext)){
+    for (i in 1:number_of_tiffs){
+      x <- crop(tiff_stack[[i]], paste0(Input, "res_area.tif"))
+      tiff_stack[[i]] <- x
+    }
+  };
+
+  for (i in 1:number_of_csvs){
+    csv_list[[i]] <- read.csv(csv_paths[[i]])
+  };
+
+  if (safe_output = TRUE){
+    terra::writeRaster(tiff_stack, paste0(alt_env_root_folder, "/tiff_stack.tif"), overwrite = TRUE)
+    write.csv(csv_list, paste0(alt_env_root_folder, "/csv_list"), overwrite = TRUE)
+  }
 }

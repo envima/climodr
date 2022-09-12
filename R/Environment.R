@@ -2,7 +2,8 @@
 #'
 #' For easier and automated use of climodr. This function links either the
 #' folder where all necessary input data is stored and also the folder,
-#' where all relevant output data will be saved.
+#' where all relevant output data will be saved. Also generates information,
+#' what data is stored in Input.
 #'
 #' @param in_dir character. Path to input folder. All necessary and relevant data should be stored here.
 #' @param out_dir character. Path to output folder. Save all products in this destination.
@@ -21,7 +22,12 @@
 #'
 hubs <- function(in_dir,out_dir) {
     Input <- in_dir;
-    Output <- out_dir
+    Output <- out_dir;
+    all_files_in_distribution <- list.files(path = in_dir, recursive = T); #reads all data in Input-Folder
+    tiff_paths <- grep(".tif$", all_files_in_distribution, value=TRUE); # Select tiff-files
+    number_of_tiffs <- length(tiff_paths);
+    csv_paths <- grep(".tif$", all_files_in_distribution, value=TRUE);
+    number_of_csvs <- length(csv_paths)
 }
 
 
