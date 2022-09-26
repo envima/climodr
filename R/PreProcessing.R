@@ -27,20 +27,36 @@ crop.all <- function(method = "Input",
   tiff_list <- list();
   csv_list <- list();
 
-  if (!is.null(crs)){
-    for (i in 1:number_of_tiffs){
-      tiff_list[[i]] <- terra::rast(tiff_paths[[i]])
-      if (is.null(crs(tiff_list[[i]]))){
-        crs(tiff_list[[i]] <- crs)
-      }
-      else {
-        if (!crs(tiff_list[[i]]) == crs){
-          tiff_list[[i]] <- terra::project(tiff_list[[i]], crs)
-        }
-      }
+  all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Input-Folder
+  print(all_files_in_distribution);
+
+  tiff_paths <- grep(".tif$", all_files_in_distribution, value=TRUE); # Select tiff-files
+  number_of_tiffs <- length(tiff_paths);
+
+  csv_paths <- grep(".tif$", all_files_in_distribution, value=TRUE);
+  number_of_csvs <- length(csv_paths);
+
+  for (i in 1:number_of_tiffs){
+    tiff_list[[i]] <- terra::rast(paste0(Input, tiff_paths[[i]]))
+    if (i == 1){
+      tiff_stack <- tiff_list[[i]]
+    }
+    else {
       tiff_stack <- stack(tiff_stack, tiff_list[[i]])
     }
   };
+
+  if (!is.null(crs)){
+    if (is.null(crs(tiff_stack[[i]]))){
+      crs(tiff_list[[i]] <- crs)
+    }
+    else {
+      if (!crs(tiff_stack[[i]]) == crs){
+        tiff_stack[[i]] <- terra::project(tiff_stack[[i]], crs)
+      }
+    }
+  }
+
 
   if (is.null(ext)){
     for (i in 1:number_of_tiffs){
@@ -53,7 +69,7 @@ crop.all <- function(method = "Input",
     csv_list[[i]] <- read.csv(csv_paths[[i]])
   };
 
-  if (safe_output = TRUE){
+  if (safe_output == TRUE){
     terra::writeRaster(tiff_stack, paste0(alt_env_root_folder, "/tiff_stack.tif"), overwrite = TRUE)
     write.csv(csv_list, paste0(alt_env_root_folder, "/csv_list"), overwrite = TRUE)
   }
