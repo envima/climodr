@@ -4,7 +4,7 @@ devtools::load_all()
 hubs("C:/Users/Alexander/Documents/Universität/HiWi/Test/data/Input/",
      "C:/Users/Alexander/Documents/Universität/HiWi/Test/data/Output/")
 
-envi.create("C:/Users/Alexander/Documents/Universität/HiWi/Test/data")
+envi.create("C:/Users/Alexander/Documents/Universität/HiWi/Test/data/")
 
 ### Pre-Processing ###
 
@@ -12,3 +12,6 @@ envi.create("C:/Users/Alexander/Documents/Universität/HiWi/Test/data")
 
 crop.all(method = "Input", safe_output = TRUE)
 
+x <- terra::rast(paste0(Output, "tiff_stack.tif"))
+x
+plot(x)
