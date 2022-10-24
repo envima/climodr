@@ -1,3 +1,7 @@
+C:/Users/Alexander/Documents/GitHub/ClimateModellingWF/workflow_hainich/00_preamble.R="6B2B1EE4"
+C:/Users/Alexander/Documents/GitHub/ClimateModellingWF/workflow_hainich/01_acquire_day_climate_data.R="1054E194"
+C:/Users/Alexander/Documents/GitHub/ClimateModellingWF/workflow_hainich/02_acquire_dates.R="3056C3E4"
+C:/Users/Alexander/Documents/GitHub/ClimateModellingWF/workflow_hainich/03_aggegate_climate_data_to_dates.R="6639FF74"
 C:/Users/Alexander/Documents/GitHub/bale_aws/bekar/02-tubeDB/tubeDB.R="D05E6011"
 C:/Users/Alexander/Documents/GitHub/bale_aws/bekar/03-scripts/01_tubeDB_aggregate_nas_and_monthly_mean_BALE01_BALE010.R="8855FA53"
 C:/Users/Alexander/Documents/GitHub/bale_aws/bekar/03-scripts/05_predictor_table_for_modelling.R="1D332295"
