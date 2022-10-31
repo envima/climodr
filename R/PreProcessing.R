@@ -93,13 +93,34 @@ check.csv <- function(method = "proc",
   number_of_csvs <- length(csv_paths);
 
   for (i in 1:number_of_csvs){
-    data <- read.csv(paste0(Input, csv_paths[[i]]))
-    cn_data <- colnames(data)
+    csv_data <- read.csv(paste0(Input, csv_paths[[i]]))
+    cn_data <- colnames(csv_data)
     number_of_cn <- length(cn_data)
 
-    for (j in 1:number_of_cn){
-      sum(is.na(data$cn_data[j]))
+    csv_data$daymonth <- strftime(csv_data[,2], format = "%m-%d")
+    csv_data$year<- strftime(csv_data[,2], format = "%y")
+    csv_data$month <- strftime(csv_data[,2], format = "%m")
+    csv_data$day <- strftime(csv_data[,2], format = "%d")
 
+    csv_data <- csv_data[, c(cn_data[1:2], "daymonth", "year", "month", "day", cn_data[3:number_of_cn])]
+
+    cn_data <- colnames(csv_data)
+    number_of_cn <- length(cn_data)
+
+    for (j in 7:number_of_cn){
+      csv_data <- transform(csv_data, temp_col = ave(csv_data[,j], daymonth, FUN = function(x) mean(x, na.rm = TRUE)))
+      csv_data[,j] <- ifelse(is.na(csv_data[,j]), csv_data$temp_col, csv_data[,j])
+      csv_data$temp_col <- NULL
+    }
+
+    csv_data$daymonth <- NULL
+
+    if (safe_output == TRUE){
+      write_csv(csv_data, file.path(Output, csv_paths[[i]], "_no_NAs.csv"))
+    }
+    else {
+      write_csv(csv_data, file.path(envrmt$path_data, paste0("csv_", i, "_no_NAs.csv")))
     }
   };
 }
+

@@ -73,6 +73,13 @@ terra::plot(x[[1:4]])
 
 ```
 
+
+```{r check csv}
+climodr::check.csv(method = "proc", safe_output = TRUE)
+
+
+```
+
 # Processing
 
 ## Modelling
