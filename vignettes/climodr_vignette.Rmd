@@ -34,10 +34,10 @@ To start with climodr, you first need to download and install the package from t
   
 Note: It may asks you to install all packages climodr needs to execute all its functions. Please install all of those.  
 
-```{r, eval = FALSE}
+```{r install}
 #install climodr
-devtools::install_github("envima/climodr")
-
+#devtools::install_github("envima/climodr")
+devtools::load_all()
 library(climodr)
 ```
 
@@ -49,21 +49,27 @@ The Output-Directory will be used to safe all final products in, like maps, stat
 The Input-Directory is the place, where all data, which shall be used for modelling, should be saved beforehand. See [list of possible inputs](link) for further details, what kind of input-data can be used.  
 Second it requieres you to give it a path for a working directory. Therefore use the *envi.create()* function. This function links in the working environment for additional data worth looking into, but also creates a temporary directory, where workflow data is stored and also deleted after not being necessary anymore. To find the temporary data, type *tempdir()* into your console to see where this data is stored. 
 
-```{r, eval = FALSE}
+```{r setup env}
 #setting up the environment for climodr
-hubs("C:/USER/cool_proj/input_directory",
-     "C:/USER/cool_proj/output_directory")
-envi.create("C:/USER/cool_proj")
+climodr::hubs("C:/Users/Alexander/Documents/Uni/HiWi/Test/data/Input/",
+     "C:/Users/Alexander/Documents/Uni/HiWi/Test/data/Output/")
 
-#tempdir()
+climodr::envi.create("C:/Users/Alexander/Documents/Uni/HiWi/Test/data/")
+
+tempdir()
 ```
 
 # Pre-Processing
 
-## Cropping
+## Aggregate Raster-Data
 
 To guarantee a fast working package, its key to keep the data as small as possible. One way to reach this goal is to crop all data to the smallest extent possible _(?)_. 
-```{r, eval = FALSE}
+```{r crop data}
+climodr::crop.all(method = "Input", safe_output = TRUE)
+
+x <- terra::rast(paste0(Output, "tiff_stack.tif"))
+x
+terra::plot(x[[1:4]])
 
 ```
 
