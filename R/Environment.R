@@ -88,7 +88,7 @@ envi.create <- function(proj_path) {
     packagesToLoad = append(packagesToLoad,appendpackagesToLoad)
   };
 
-  envrmt = envimaR::createEnvi(root_folder = rootDir,
+  envrmt <<- envimaR::createEnvi(root_folder = rootDir,
                                folders = projectDirList,
                                path_prefix = "path_",
                                alt_env_id = "COMPUTERNAME",

@@ -66,7 +66,7 @@ crop.all <- function(method = "Input",
   }
 }
 
-#' Cleaning CSV-Data
+#' Preparing CSV-Data
 #'
 #' Crops input data to the extent size
 #'
@@ -77,12 +77,12 @@ crop.all <- function(method = "Input",
 #' @return List
 #' @seealso
 #'
-#' @name check.csv
-#' @export check.csv
+#' @name prep.csv
+#' @export prep.csv
 #'
 #' @examples
 #'
-check.csv <- function(method = "proc",
+prep.csv <- function(method = "proc",
                       safe_output = FALSE,
                       ...){
   csv_list <- list();
@@ -93,7 +93,7 @@ check.csv <- function(method = "proc",
   number_of_csvs <- length(csv_paths);
 
   for (i in 1:number_of_csvs){
-    csv_data <- read.csv(paste0(Input, csv_paths[[i]]))
+    csv_data <- read.csv(paste0(Input, csv_paths[[i]]), sep = ",")
     cn_data <- colnames(csv_data)
     number_of_cn <- length(cn_data)
 
@@ -116,11 +116,58 @@ check.csv <- function(method = "proc",
     csv_data$daymonth <- NULL
 
     if (safe_output == TRUE){
-      write_csv(csv_data, file.path(Output, csv_paths[[i]], "_no_NAs.csv"))
+      write.csv(csv_data, paste0(Output, csv_data[[1,1]], "_no_NAs.csv"), row.names = FALSE)
+      write.csv(csv_data, file.path(envrmt$path_tmp, paste0("csv_", i, "_no_NAs.csv")), row.names = FALSE)
     }
     else {
-      write_csv(csv_data, file.path(envrmt$path_data, paste0("csv_", i, "_no_NAs.csv")))
+      write.csv(csv_data, file.path(envrmt$path_tmp, paste0("csv_", i, "_no_NAs.csv")), row.names = FALSE)
     }
   };
 }
+
+#' Processing CSV-Data
+#'
+#' Calculate necessary Data from Stationary Data
+#'
+#' @param
+#' @param safe_output logical. If data should be safed permanently in the Environment put safe_output = TRUE.
+#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#'
+#' @return List
+#' @seealso
+#'
+#' @name proc.csv
+#' @export proc.csv
+#'
+#' @examples
+#'
+proc.csv <- function(method = "all",
+                     safe_output = FALSE,
+                     ...){
+  csv_list <- list();
+
+  all_files_in_distribution <- list.files(path = envrmt$path_tmp, recursive = T); #reads all data in Input-Folder
+
+  csv_paths <- grep(".csv$", all_files_in_distribution, value=TRUE);
+  number_of_csvs <- length(csv_paths);
+
+  for (i in number_of_csvs){
+
+   x <- read.csv(file.path(envrmt$path_tmp, csv_paths[i]))
+
+   cn_x <- colnames(x)
+   number_of_cn <- length(cn_x)
+
+   for (j in number_of_cn){
+     paste0("mm_", cn_x[j]) <- aggregate(cn_x[j] ~ month + year, x, mean)
+     colnames(paste0("mm_", cn_x[j])) <- c("month","year",paste0("monthly_mean_", cn_x[j]))
+
+     paste0("mm_", cn_x[j])$plot <- x[[1,1]]
+
+     paste0("mm_", cn_x[j]) <- monthly_mean_Ta_200_BALE001_tubeDB[,c("plot","year","month","monthly_mean_Ta_200")]
+   }
+  }
+#### Data-Frame kreieren
+}
+
 

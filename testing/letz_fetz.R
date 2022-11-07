@@ -1,20 +1,38 @@
-library(terra)
+#clean environment
+rm(list=ls())
+#session restart
+.rs.restartR()
+#remove plots_tubeDB
+dev.off()
 
-x <- terra::rast("C:/Users/Alexander/Documents/Universität/HiWi/Daten/dem_idx.grd")
-x
+# 0 - specific setup
+#-----------------------------
+require(envimaR)
 
-for (i in 1:8){
-  terra::writeRaster(x[[i]], paste0("C:/Users/Alexander/Documents/Universität/HiWi/Test/data/Input/dem_idx_", i, ".tif"), overwrite = TRUE)
+# MANDANTORY: defining the root folder, DO NOT change this line:
+rootDIR = "C:/Users/Alexander/Documents/Uni/HiWi/Test/data/"
+
+#-- Further customization of the setup by the user this section
+#-- can be freely customized only the definition of additional packages
+#-- and directory paths MUST be done using the two variables
+#-- appendpackagesToLoad and appendProjectDirList
+#-- feel free to remove this lines if you do not need them
+# define  additional packages uncomment if necessary
+# appendpackagesToLoad = c("dummy-package")
+# define additional subfolders uncomment if necessary
+# appendProjectDirList =  c("data/dymmy-folder/")
+
+devtools::load_all()
+
+climodr::hubs(paste0(rootDIR, "Input/"),
+              paste0(rootDIR, "Output/")
+)
+
+Bale_tubeDB <- read.csv(paste0(Input, "plots_tubeDB.csv"))
+
+v <- c("001", "002", "003", "004", "005", "006", "007", "008", "009", "010")
+for (i in v){
+  x <- data.frame(Bale_tubeDB[c(which(Bale_tubeDB$plot == paste0("BALE", i))[[1]]:tail(which(Bale_tubeDB$plot == paste0("BALE", i)), n = 1)), ])
+  write.csv(x, paste0(Output, "BALE", i, ".csv"), row.names = FALSE)
 }
 
-y <- terra::rast("C:/Users/Alexander/Documents/Universität/HiWi/Daten/spec_dec17.grd")
-y
-
-for (i in 1:22){
-  terra::writeRaster(y[[i]], paste0("C:/Users/Alexander/Documents/Universität/HiWi/Test/data/Input/spec_dec17_", i, ".tif"), overwrite = TRUE)
-}
-
-z <- y[[1]]
-z <- crop(z, c(550000, 560000, 700000, 710000))
-plot(z)
-terra::writeRaster(z, "C:/Users/Alexander/Documents/Universität/HiWi/Test/data/Input/res_area.tif", overwrite = TRUE)
