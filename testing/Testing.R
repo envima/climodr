@@ -18,6 +18,12 @@ terra::plot(x[[1:4]])
 
 # Aggregate CSVs
 
-climodr::prep.csv(method = "all", safe_output = TRUE)
-climodr::proc.csv
+climodr::prep.csv(method = "proc",
+                  safe_output = TRUE
+                  )
+
+climodr::proc.csv(method = "all",
+                  rbind = TRUE,
+                  safe_output = TRUE
+                  )
 

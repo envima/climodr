@@ -129,7 +129,8 @@ prep.csv <- function(method = "proc",
 #'
 #' Calculate necessary Data from Stationary Data
 #'
-#' @param
+#' @param method character.
+#' @param rbind logical.
 #' @param safe_output logical. If data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
@@ -142,32 +143,96 @@ prep.csv <- function(method = "proc",
 #' @examples
 #'
 proc.csv <- function(method = "all",
+                     rbind = TRUE,
                      safe_output = FALSE,
                      ...){
   csv_list <- list();
 
   all_files_in_distribution <- list.files(path = envrmt$path_tmp, recursive = T); #reads all data in Input-Folder
 
-  csv_paths <- grep(".csv$", all_files_in_distribution, value=TRUE);
+  csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE);
   number_of_csvs <- length(csv_paths);
 
-  for (i in number_of_csvs){
+  for (i in 1:number_of_csvs){
 
    x <- read.csv(file.path(envrmt$path_tmp, csv_paths[i]))
 
    cn_x <- colnames(x)
    number_of_cn <- length(cn_x)
 
-   for (j in number_of_cn){
-     paste0("mm_", cn_x[j]) <- aggregate(cn_x[j] ~ month + year, x, mean)
-     colnames(paste0("mm_", cn_x[j])) <- c("month","year",paste0("monthly_mean_", cn_x[j]))
+   for (j in 6:number_of_cn){
+     fo <- as.formula(paste(cn_x[j], " ~ month + year"))
+     y <- aggregate(fo, x, mean)
+     colnames(y) <- c("month","year",paste0("monthly_mean_", cn_x[j]))
 
-     paste0("mm_", cn_x[j])$plot <- x[[1,1]]
+     y$plot <- x[[1,1]]
 
-     paste0("mm_", cn_x[j]) <- monthly_mean_Ta_200_BALE001_tubeDB[,c("plot","year","month","monthly_mean_Ta_200")]
+     y <- y[,c("plot","year","month",paste0("monthly_mean_", cn_x[j]))]
+
+     if (j == 6){
+       mm <- y
+     } else {
+       mm <- cbind(mm, y[4])
+     }
+   }
+   if (rbind == FALSE){
+    if (safe_output == TRUE){
+      write.csv(mm, paste0(Output, mm[[1,1]], "_monthly_means.csv"), row.names = FALSE)
+      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_", i, "_mm.csv")), row.names = FALSE)
+    }
+    else {
+      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_", i, "_mm.csv")), row.names = FALSE)
+    }
+   } else {
+     if (i == 1) {
+       mm_t <- mm
+     } else {
+       mm_t <- rbind(mm_t, mm)
+     }
    }
   }
-#### Data-Frame kreieren
+  if (rbind == TRUE){
+    if (safe_output == TRUE){
+      write.csv(mm_t, paste0(Output, "all_monthly_means.csv"), row.names = FALSE)
+      write.csv(mm_t, file.path(envrmt$path_tmp, paste0("csv_mm.csv")), row.names = FALSE)
+    }
+    else {
+      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_mm.csv")), row.names = FALSE)
+    }
+  }
 }
 
+#' Spatial agregation for CSV-Data
+#'
+#' blabla
+#'
+#' @param
+#' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
+#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#'
+#' @return List
+#' @seealso
+#'
+#' @name spat.csv
+#' @export spat.csv
+#'
+#' @examples
+#'
+spat.csv <- fuction(safe_output = TRUE,
+                    ...){
+  data <- read.csv(file.path(envrmt$path_tmp, paste0("csv_mm.csv")));
+  names_of_stations <- as.vector(unlist(unique(data[1])))
+  number_of_stations <- length(names_of_stations);
 
+  des <- read.csv(paste0(Input, "plot_description.csv"));
+
+  data$lat <- "";
+  data$lon <- "";
+  data$elevation <- "";
+
+  for (i in 1:number_of_stations){
+    data$lat[which(data$plot == names_of_stations[i])] <- des$lat[which(grepl(names_of_stations[i], des$plot))]
+    data$lon[which(data$plot == names_of_stations[i])] <- des$lon[which(grepl(names_of_stations[i], des$plot))]
+    data$elevation[which(data$plot == names_of_stations[i])] <- des$elevation[which(grepl(names_of_stations[i], des$plot))]
+  }
+}
