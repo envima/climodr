@@ -27,3 +27,10 @@ climodr::proc.csv(method = "all",
                   safe_output = TRUE
                   )
 
+climodr::spat.csv(method = "monthly",
+                  safe_output = TRUE
+                  )
+
+climodr::spat.csv(method = "daily",
+                  safe_output = TRUE
+                  )

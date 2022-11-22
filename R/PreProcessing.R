@@ -83,8 +83,8 @@ crop.all <- function(method = "Input",
 #' @examples
 #'
 prep.csv <- function(method = "proc",
-                      safe_output = FALSE,
-                      ...){
+                     safe_output = FALSE,
+                     ...){
   csv_list <- list();
 
   all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Input-Folder
@@ -218,11 +218,36 @@ proc.csv <- function(method = "all",
 #'
 #' @examples
 #'
-spat.csv <- fuction(safe_output = TRUE,
-                    ...){
-  data <- read.csv(file.path(envrmt$path_tmp, paste0("csv_mm.csv")));
-  names_of_stations <- as.vector(unlist(unique(data[1])))
-  number_of_stations <- length(names_of_stations);
+spat.csv <- function(safe_output = FALSE,
+                     method = "monthly",
+                     ...){
+  if (method == "monthly"){
+    data <- read.csv(file.path(envrmt$path_tmp, paste0("csv_mm.csv")));
+    cn_data <- colnames(data)
+    names_of_stations <- as.vector(unlist(unique(data[1])))
+    number_of_stations <- length(names_of_stations)
+  }
+  if (method == "daily"){
+    csv_list <- list()
+    all_files_in_distribution <- list.files(path = envrmt$path_tmp, recursive = T)
+    csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE)
+    number_of_csvs <- length(csv_paths)
+
+    for (i in 1:number_of_csvs){
+
+      x <- read.csv(file.path(envrmt$path_tmp, csv_paths[i]))
+      x <- data.frame(x)
+
+      if (i == 1) {
+        data <- x
+      } else {
+        data <- rbind(data, x)
+      }
+    }
+    cn_data <- colnames(data)
+    names_of_stations <- as.vector(unlist(unique(data[1])))
+    number_of_stations <- length(names_of_stations)
+  };
 
   des <- read.csv(paste0(Input, "plot_description.csv"));
 
@@ -234,5 +259,52 @@ spat.csv <- fuction(safe_output = TRUE,
     data$lat[which(data$plot == names_of_stations[i])] <- des$lat[which(grepl(names_of_stations[i], des$plot))]
     data$lon[which(data$plot == names_of_stations[i])] <- des$lon[which(grepl(names_of_stations[i], des$plot))]
     data$elevation[which(data$plot == names_of_stations[i])] <- des$elevation[which(grepl(names_of_stations[i], des$plot))]
+  };
+
+  if (method == "monthly"){
+    data$day <- 1
+    data$datetime <-as.Date(with(data,paste(year,month,day,sep="-")),"%y-%m-%d");
+    data <- data[,c(cn_data[1],
+                    "datetime",
+                    cn_data[2:3],
+                    "day",
+                    cn_data[4:length(cn_data)],
+                    "lat",
+                    "lon",
+                    "elevation"
+    )];
+
+    mms <- 6:(2 + length(cn_data));
+
+    for (i in mms){
+      data[i] <- round(data[i], digits = 3)
+    };
+
+    names(data)  <- c(names(data[1:5]),
+                      gsub("monthly_mean_", "", names(data[mms])),
+                      names(data[(3 + length(cn_data)):length(names(data))])
+    );
+
+    if (safe_output == TRUE){
+      write.csv(data, paste0(Output, "spat_monthly_means.csv"), row.names = FALSE)
+      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_mm.csv")), row.names = FALSE)
+    }
+    else {
+      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_mm.csv")), row.names = FALSE)
+    }
+  };
+
+  if (method == "daily") {
+    for (i in 6:length(cn_data)){
+      data[i] <- round(data[i], digits = 3)
+    };
+
+    if (safe_output == TRUE){
+      write.csv(data, paste0(Output, "spat_daily.csv"), row.names = FALSE)
+      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_daily.csv")), row.names = FALSE)
+    }
+    else {
+      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_daily.csv")), row.names = FALSE)
+    }
   }
 }
