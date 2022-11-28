@@ -28,9 +28,22 @@ climodr::proc.csv(method = "all",
                   )
 
 climodr::spat.csv(method = "monthly",
-                  safe_output = TRUE
-                  )
+                          safe_output = TRUE
+                          )
 
 climodr::spat.csv(method = "daily",
                   safe_output = TRUE
                   )
+
+#Processing
+
+calc.model(timespan = c(17:21),
+           response = c(6,9,12,13),
+           classifier = c("rf", "pls","nnet" ,"lm"),
+           seed = 707,
+           times = 1,
+           p = 0.8,
+           fold = "LLO",
+           predrows = c(24:57),
+
+           )

@@ -56,13 +56,8 @@ crop.all <- function(method = "Input",
     }
   };
 
-  #for (i in 1:number_of_csvs){
-  #  csv_list[[i]] <- read.csv(csv_paths[[i]])
-  #};
-
   if (safe_output == TRUE){
     terra::writeRaster(tiff_stack, paste0(Output, "tiff_stack.tif"), overwrite = TRUE)
-  #  write.csv(csv_list, paste0(alt_env_root_folder, "csv_list"), overwrite = TRUE)
   }
 }
 

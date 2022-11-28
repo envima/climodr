@@ -67,17 +67,17 @@ envi.create <- function(proj_path) {
                                      alt_env_value = alt_env_value,
                                      alt_env_root_folder = alt_env_root_folder);
 
-  projectDirList = c("preds/",                # folder for the predictor variables
-                     "raster/",               # folder for raster data
-                     "raster/mean_specdec17idx/",  # sub folder for the meaned bale_dec_17 spectral idx
-                     "raster/dec17/",     # sub folder for the bale_raster data
+  projectDirList = c("preds/",                       # folder for the predictor variables
+                     "raster/",                      # folder for raster data
+                     "raster/mean_specdec17idx/",    # sub folder for the meaned bale_dec_17 spectral idx
+                     "raster/dec17/",                # sub folder for the bale_raster data
                      "raster/geodata/soil/bedrock/", # sub folder for geodata - bedrock layer
                      "raster/geodata/soil/texture/", # sub folder for geodata - texture layer
-                     "vector/",               # folder for vector data
-                     "tmp/",                  # folder for temporary stuff
-                     "ffsmodels/",            # folder for the ffsmodels
-                     "ffspredictions/",       # folder for the ffspredictions
-                     "varImp_model/"          # folder for the varImp_models
+                     "vector/",                      # folder for vector data
+                     "tmp/",                         # folder for temporary stuff
+                     "ffsmodels/",                   # folder for the ffsmodels
+                     "ffspredictions/",              # folder for the ffspredictions
+                     "varImp_model/"                 # folder for the varImp_models
                      );
 
   if (exists("appendProjectDirList") && appendProjectDirList[[1]] != "") {
