@@ -2,14 +2,10 @@
 #'
 #' Crops input data to the extent size
 #'
-#' @param folder_path charackter. Path to input folder. All necessary and relevant data should
-#' be stored here. Default: Input created by [climodr::hubs].
+#' @param method charackter.
 #' @param crs Coordinate reference system Used to crop all images in folder_path. If crs
 #' it will automatically reprojected into this one. Default: crs of smallest Extent.
 #' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
-#' @param method character.
-#' @param safe_output logical. If cropped data should be safed permanently in the Environment put safe_output = TRUE.
-#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
 #' @return SpatRaster-Stack
 #' @seealso
@@ -22,21 +18,25 @@
 crop.all <- function(method = "Input",
                      crs = NULL,
                      ext = NULL,
-                     safe_output = FALSE,
                      ...) {
   tiff_list <- list();
+  Input <- envrmt$path_raster
 
-  all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Input-Folder
+  all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Raster Input Folder
   print(all_files_in_distribution);
 
   tiff_paths <- grep(".tif$", all_files_in_distribution, value=TRUE); # Select tiff-files
   number_of_tiffs <- length(tiff_paths);
 
   for (i in 1:number_of_tiffs){
-    tiff_list[[i]] <- terra::rast(paste0(Input, tiff_paths[[i]]))
+    tiff_list[[i]] <- terra::rast(file.path(Input, tiff_paths[[i]]))
+
     if (is.null(ext)){
-      tiff_list[[i]] <- terra::crop(tiff_list[[i]], terra::ext(terra::rast(paste0(Input, "res_area.tif"))))
+      tiff_list[[i]] <- terra::crop(tiff_list[[i]], terra::ext(terra::rast(file.path(envrmt$path_dep, "res_area.tif"))))
+    } else {
+      tiff_list[[i]] <- terra::crop(tiff_list[[i]], ext)
     }
+
     if (i == 1){
       tiff_stack <- tiff_list[[i]]
     }
@@ -55,10 +55,8 @@ crop.all <- function(method = "Input",
       }
     }
   };
-
-  if (safe_output == TRUE){
-    terra::writeRaster(tiff_stack, paste0(Output, "tiff_stack.tif"), overwrite = TRUE)
-  }
+  return(tiff_stack);
+  terra::writeRaster(tiff_stack, file.path(envrmt$path_rworkflow, "tiff_stack.tif"), overwrite = TRUE)
 }
 
 #' Preparing CSV-Data
@@ -78,9 +76,10 @@ crop.all <- function(method = "Input",
 #' @examples
 #'
 prep.csv <- function(method = "proc",
-                     safe_output = FALSE,
+                     safe_output = TRUE,
                      ...){
   csv_list <- list();
+  Input <- envrmt$path_tabular
 
   all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Input-Folder
 
@@ -88,7 +87,7 @@ prep.csv <- function(method = "proc",
   number_of_csvs <- length(csv_paths);
 
   for (i in 1:number_of_csvs){
-    csv_data <- read.csv(paste0(Input, csv_paths[[i]]), sep = ",")
+    csv_data <- read.csv(file.path(Input, paste0(csv_paths[[i]])), sep = ",")
     cn_data <- colnames(csv_data)
     number_of_cn <- length(cn_data)
 
@@ -110,13 +109,7 @@ prep.csv <- function(method = "proc",
 
     csv_data$daymonth <- NULL
 
-    if (safe_output == TRUE){
-      write.csv(csv_data, paste0(Output, csv_data[[1,1]], "_no_NAs.csv"), row.names = FALSE)
-      write.csv(csv_data, file.path(envrmt$path_tmp, paste0("csv_", i, "_no_NAs.csv")), row.names = FALSE)
-    }
-    else {
-      write.csv(csv_data, file.path(envrmt$path_tmp, paste0("csv_", i, "_no_NAs.csv")), row.names = FALSE)
-    }
+    write.csv(csv_data, file.path(envrmt$path_tworkflow, paste0(csv_data[[1,1]], "_no_NAs.csv")), row.names = FALSE)
   };
 }
 
@@ -139,61 +132,52 @@ prep.csv <- function(method = "proc",
 #'
 proc.csv <- function(method = "all",
                      rbind = TRUE,
-                     safe_output = FALSE,
+                     safe_output = TRUE,
                      ...){
   csv_list <- list();
 
-  all_files_in_distribution <- list.files(path = envrmt$path_tmp, recursive = T); #reads all data in Input-Folder
+  all_files_in_distribution <- list.files(path = envrmt$path_tworkflow, recursive = T); #reads all data in Input-Folder
 
   csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE);
   number_of_csvs <- length(csv_paths);
 
   for (i in 1:number_of_csvs){
 
-   x <- read.csv(file.path(envrmt$path_tmp, csv_paths[i]))
+    x <- read.csv(file.path(envrmt$path_tworkflow, csv_paths[i]))
 
-   cn_x <- colnames(x)
-   number_of_cn <- length(cn_x)
+    cn_x <- colnames(x)
+    number_of_cn <- length(cn_x)
 
-   for (j in 6:number_of_cn){
-     fo <- as.formula(paste(cn_x[j], " ~ month + year"))
-     y <- aggregate(fo, x, mean)
-     colnames(y) <- c("month","year",paste0("monthly_mean_", cn_x[j]))
+    for (j in 6:number_of_cn){
+      fo <- as.formula(paste(cn_x[j], " ~ month + year"))
+      y <- aggregate(fo, x, mean)
+      colnames(y) <- c("month","year",paste0("monthly_mean_", cn_x[j]))
 
-     y$plot <- x[[1,1]]
+      y$plot <- x[[1,1]]
 
-     y <- y[,c("plot","year","month",paste0("monthly_mean_", cn_x[j]))]
+      y <- y[,c("plot","year","month",paste0("monthly_mean_", cn_x[j]))]
 
-     if (j == 6){
-       mm <- y
-     } else {
-       mm <- cbind(mm, y[4])
-     }
-   }
-   if (rbind == FALSE){
-    if (safe_output == TRUE){
-      write.csv(mm, paste0(Output, mm[[1,1]], "_monthly_means.csv"), row.names = FALSE)
-      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_", i, "_mm.csv")), row.names = FALSE)
+      if (j == 6){
+        mm <- y
+      } else {
+        mm <- cbind(mm, y[4])
+      }
     }
-    else {
-      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_", i, "_mm.csv")), row.names = FALSE)
+    if (rbind == FALSE){
+      write.csv(mm, file.path(envrmt$path_tworkflow, paste0("csv_", i, "_mm.csv")), row.names = FALSE)
+    } else {
+      if (i == 1) {
+        mm_t <- mm
+      } else {
+        mm_t <- rbind(mm_t, mm)
+      }
     }
-   } else {
-     if (i == 1) {
-       mm_t <- mm
-     } else {
-       mm_t <- rbind(mm_t, mm)
-     }
-   }
   }
   if (rbind == TRUE){
     if (safe_output == TRUE){
-      write.csv(mm_t, paste0(Output, "all_monthly_means.csv"), row.names = FALSE)
-      write.csv(mm_t, file.path(envrmt$path_tmp, paste0("csv_mm.csv")), row.names = FALSE)
+      write.csv(mm_t, file.path(envrmt$path_tworkflow, "all_monthly_means.csv"), row.names = FALSE)
     }
-    else {
-      write.csv(mm, file.path(envrmt$path_tmp, paste0("csv_mm.csv")), row.names = FALSE)
-    }
+    return(mm_t)
   }
 }
 
@@ -213,24 +197,25 @@ proc.csv <- function(method = "all",
 #'
 #' @examples
 #'
-spat.csv <- function(safe_output = FALSE,
-                     method = "monthly",
+spat.csv <- function(method = "monthly",
+                     des_file,
+                     safe_output = TRUE,
                      ...){
   if (method == "monthly"){
-    data <- read.csv(file.path(envrmt$path_tmp, paste0("csv_mm.csv")));
+    data <- read.csv(file.path(envrmt$path_tworkflow, "all_monthly_means.csv"));
     cn_data <- colnames(data)
     names_of_stations <- as.vector(unlist(unique(data[1])))
     number_of_stations <- length(names_of_stations)
   }
   if (method == "daily"){
     csv_list <- list()
-    all_files_in_distribution <- list.files(path = envrmt$path_tmp, recursive = T)
+    all_files_in_distribution <- list.files(path = envrmt$path_tworkflow, recursive = T)
     csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE)
     number_of_csvs <- length(csv_paths)
 
     for (i in 1:number_of_csvs){
 
-      x <- read.csv(file.path(envrmt$path_tmp, csv_paths[i]))
+      x <- read.csv(file.path(envrmt$path_tworkflow, paste0(csv_paths[i])))
       x <- data.frame(x)
 
       if (i == 1) {
@@ -244,7 +229,7 @@ spat.csv <- function(safe_output = FALSE,
     number_of_stations <- length(names_of_stations)
   };
 
-  des <- read.csv(paste0(Input, "plot_description.csv"));
+  des <- read.csv(file.path(envrmt$path_dep, des_file));
 
   data$lat <- "";
   data$lon <- "";
@@ -280,13 +265,8 @@ spat.csv <- function(safe_output = FALSE,
                       names(data[(3 + length(cn_data)):length(names(data))])
     );
 
-    if (safe_output == TRUE){
-      write.csv(data, paste0(Output, "spat_monthly_means.csv"), row.names = FALSE)
-      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_mm.csv")), row.names = FALSE)
-    }
-    else {
-      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_mm.csv")), row.names = FALSE)
-    }
+    write.csv(data, file.path(envrmt$path_tworkflow, "spat_monthly_means.csv"), row.names = FALSE);
+    return(data)
   };
 
   if (method == "daily") {
@@ -294,12 +274,24 @@ spat.csv <- function(safe_output = FALSE,
       data[i] <- round(data[i], digits = 3)
     };
 
-    if (safe_output == TRUE){
-      write.csv(data, paste0(Output, "spat_daily.csv"), row.names = FALSE)
-      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_daily.csv")), row.names = FALSE)
-    }
-    else {
-      write.csv(data, file.path(envrmt$path_tmp, paste0("csv_spat_daily.csv")), row.names = FALSE)
-    }
+    write.csv(data, file.path(envrmt$path_tworkflow, "spat_daily.csv"), row.names = FALSE);
+    return(data)
   }
 }
+
+#' Final agregation for CSV-Data
+#'
+#' blabla
+#'
+#' @param
+#' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
+#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#'
+#' @return List
+#' @seealso
+#'
+#' @name final.csv
+#' @export final.csv
+#'
+#' @examples
+#'

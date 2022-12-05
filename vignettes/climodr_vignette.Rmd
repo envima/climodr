@@ -12,19 +12,12 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-
 Welcome to climatemodeller in R, short climodr. 
 This packages uses stational climate data and xy to automaticly create ready-to-use climate maps and statistics. This Vignette should guide you through the package, explain its functions and give you an idea of how to use climodr.
 
 # Getting Started with climodr
 
-The Idea of climodr is, to speed up climate modelling processes and make them easier to use. The package foresees that one needs to store relevant input data into one foulder and the package does the rest. However its also possible to split up and do the automated steps manually to adjust settings or to get into detail in certain steps. 
+The Idea of climodr is, to speed up climate modelling processes and make them easier to use. The package foresees that one needs to store relevant input data into one folder stucture and the package does the rest. However its also possible to split up and do the automated steps manually to adjust settings or to get into detail in certain steps. 
 
 *more cool stuff to follow*
 
@@ -37,6 +30,7 @@ Note: It may asks you to install all packages climodr needs to execute all its f
 ```{r install}
 #install climodr
 #devtools::install_github("envima/climodr")
+
 devtools::load_all()
 library(climodr)
 ```
@@ -51,12 +45,9 @@ Second it requieres you to give it a path for a working directory. Therefore use
 
 ```{r setup env}
 #setting up the environment for climodr
-climodr::hubs("C:/Users/Alexander/Documents/Uni/HiWi/Test/data/Input/",
-     "C:/Users/Alexander/Documents/Uni/HiWi/Test/data/Output/")
 
-climodr::envi.create("C:/Users/Alexander/Documents/Uni/HiWi/Test/data/")
+climodr::envi.create("E:/climodr/showcase")
 
-tempdir()
 ```
 
 # Pre-Processing
@@ -64,27 +55,85 @@ tempdir()
 ## Aggregate Raster-Data
 
 To guarantee a fast working package, its key to keep the data as small as possible. One way to reach this goal is to crop all data to the smallest extent possible _(?)_. 
-```{r crop data}
-climodr::crop.all(method = "Input", safe_output = TRUE)
-
-x <- terra::rast(paste0(Output, "tiff_stack.tif"))
-x
-terra::plot(x[[1:4]])
+```{r crop data, warning = FALSE}
+rast_data <- climodr::crop.all(method = "Input")
+terra::plot(rast_data[[3]])
 
 ```
 
+## Prepare tabular data for processing
 
-```{r check csv}
-climodr::check.csv(method = "proc", safe_output = TRUE)
+```{r prep csv}
+climodr::prep.csv(method = "proc", safe_output = TRUE)
 
+#check the created csv files
+csv_files <- grep("_no_NAs.csv$", list.files(envrmt$path_tworkflow), value=TRUE)
+csv_files
+```
+## Process tabular data to monthly means
+```{r proc csv}
+csv_data <- climodr::proc.csv(method = "all",
+                              rbind = TRUE,
+                              safe_output = TRUE)
+head(csv_data)
+```
 
+## Spatial aggregation of tabular data
+```{r spat csv}
+csv_spat <- climodr::spat.csv(method = "monthly",
+                              des_file = "plot_description.csv",
+                              safe_output = TRUE)
+head(csv_spat)
+```
+
+## finalize tabular data for modelling
+
+```{r finalize csv, eval = FALSE}
+csv_fin <- climodr::fin.csv(method = "monthly",
+                            safe_output = TRUE)
 ```
 
 # Processing
 
-## Modelling
+## Models
 
-## Validation
+timespan = Vector with last two digits of years to build models from (in this example 2017 - 2021)\
+response = Vector of rows to create models for. (In this example Ta_200, rH_200, SWDR_200, P_RT_NRT)\
+classifier = Vector of all model variants to be used. In this case random forest = "rf", partial-least-squares = "pls", neural networks = "nnet" and linear regression = "lm"\
+\
+NOTE: This constellation already creates 64 models, this will need a lot of time\
+\
+seed = Number to "pick randomnes". With the seed one can reproduce random pulls.\
+p = Number of how much in percentage should be splitted from the data into training data.\
+fold = Charackter. Method to Create Space/Time folds. "LLO", "LTO" or "LLTO".\
+predrows = Vector of rownumbers used as predictors. \
+k = Number of unique temporal or spatial units.\
+tc_method = Train controll method. Default is crossvalidation "cv".\
+metric = Summary Metric to select optimal model. Default: Root Mean Square Error "RMSE".\
+```{r model, eval = FALSE}
+climodr::calc.model(timespan = c(17:21),
+                    response = c(6,9,12,13),
+                    classifier = c("rf", "pls","nnet" ,"lm"),
+                    seed = 707,
+                    p = 0.8,
+                    fold = "LTO",
+                    predrows = c(16:57),
+                    k = 12,
+                    tc_method = "cv",
+                    metric = "RMSE")
+```
+
+## Predictions
+
+```{r predict, eval = FALSE}
+climodr::predict()
+```
+
+## Validations
+
+```{r validate, eval=FALSE}
+climodr::validate()
+```
 
 # Plotting
 
