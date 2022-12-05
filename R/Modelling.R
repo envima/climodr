@@ -151,6 +151,6 @@ calc.model <- function(timespan,
   })
 
   # save total loop analytics for eval
-  saveRDS(df_total, paste0(Output, fold, "eval_df.rds"));
+  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, "_eval_df.rds")));
   return(df_total)
 }

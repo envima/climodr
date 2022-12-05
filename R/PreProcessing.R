@@ -23,7 +23,6 @@ crop.all <- function(method = "Input",
   Input <- envrmt$path_raster
 
   all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Raster Input Folder
-  print(all_files_in_distribution);
 
   tiff_paths <- grep(".tif$", all_files_in_distribution, value=TRUE); # Select tiff-files
   number_of_tiffs <- length(tiff_paths);
