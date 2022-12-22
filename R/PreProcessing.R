@@ -91,7 +91,7 @@ prep.csv <- function(method = "proc",
     number_of_cn <- length(cn_data)
 
     csv_data$daymonth <- strftime(csv_data[,2], format = "%m-%d")
-    csv_data$year<- strftime(csv_data[,2], format = "%y")
+    csv_data$year <- strftime(csv_data[,2], format = "%y")
     csv_data$month <- strftime(csv_data[,2], format = "%m")
     csv_data$day <- strftime(csv_data[,2], format = "%d")
 
@@ -105,7 +105,7 @@ prep.csv <- function(method = "proc",
       csv_data[,j] <- ifelse(is.na(csv_data[,j]), csv_data$temp_col, csv_data[,j])
       csv_data$temp_col <- NULL
     }
-
+    csv_data <- tidyr::drop_na(csv_data)
     csv_data$daymonth <- NULL
 
     write.csv(csv_data, file.path(envrmt$path_tworkflow, paste0(csv_data[[1,1]], "_no_NAs.csv")), row.names = FALSE)
@@ -198,6 +198,7 @@ proc.csv <- function(method = "all",
 #'
 spat.csv <- function(method = "monthly",
                      des_file,
+                     crs = NULL,
                      safe_output = TRUE,
                      ...){
   if (method == "monthly"){
@@ -264,6 +265,27 @@ spat.csv <- function(method = "monthly",
                       names(data[(3 + length(cn_data)):length(names(data))])
     );
 
+    if (is.null(crs)){
+      crs <- terra::crs(terra::rast(file.path(envrmt$path_dep, "res_area.tif")))
+    }
+
+    data$lat <- as.numeric(data$lat)
+    data$lon <- as.numeric(data$lon)
+    sp::coordinates(data) <- ~ lon + lat
+    sp::proj4string(data) <- sp::CRS("+proj=longlat +datum=WGS84")
+    data <- sp::spTransform(data, crs)
+
+    n <- names(data)
+    l <- length(n)
+    data <- data.frame(data)
+    data$optional <- NULL
+    data <- data[, c(n[1:(l-1)],
+                  "lat",
+                  "lon",
+                  n[l]
+                  )
+                ]
+
     write.csv(data, file.path(envrmt$path_tworkflow, "spat_monthly_means.csv"), row.names = FALSE);
     return(data)
   };
@@ -273,6 +295,24 @@ spat.csv <- function(method = "monthly",
       data[i] <- round(data[i], digits = 3)
     };
 
+    if (is.null(crs)){
+      crs <- terra::crs(terra::rast(file.path(envrmt$path_dep, "res_area.tif")))
+    }
+
+    sp::coordinates(data) <- ~ lon + lat
+    sp::proj4string(data) <- sp::CRS("+proj=longlat +datum=WGS84")
+    data <- sp::spTransform(data, crs)
+
+    n <- names(data)
+    l <- length(n)
+    df <- data.frame(data)
+    df$optional <- NULL
+    df <- df[, c(n[1:(l-1)],
+                 "lat",
+                 "lon",
+                 n[l]
+                 )
+            ]
     write.csv(data, file.path(envrmt$path_tworkflow, "spat_daily.csv"), row.names = FALSE);
     return(data)
   }
@@ -294,3 +334,38 @@ spat.csv <- function(method = "monthly",
 #'
 #' @examples
 #'
+fin.csv <- function(method = "monthly",
+                    crs = NULL,
+                    safe_output = TRUE,
+                    ...){
+  if (method == "monthly"){
+    data <- read.csv(file.path(envrmt$path_tworkflow, "spat_monthly_means.csv"));
+  };
+
+  tiff_list <- list();
+
+  all_files_in_distribution <- list.files(path = file.path(envrmt$path_wraster), recursive = T); #reads all data in Workflow Raster Folder
+
+  tiff_paths <- grep(".tif$", all_files_in_distribution, value=TRUE); # Select tiff-files
+  number_of_tiffs <- length(tiff_paths);
+
+  for (i in 1:number_of_tiffs){
+    tiff_list[[i]] <- terra::rast(file.path(envrmt$path_wraster, tiff_paths[[i]]))
+    if (i == 1){
+      tiff_stack <- tiff_list[[i]]
+    } else {
+      terra::add(tiff_stack) <- tiff_list[[i]]
+    }
+  };
+
+  data$ID <- seq(1:length(data[,1]));
+  extr <- terra::extract(tiff_stack,
+                         data.frame(x = data$lon,
+                                    y = data$lat)
+                         );
+  data <- merge(data, extr, by = "ID");
+  data$ID <- NULL;
+
+  write.csv(data, file.path(envrmt$path_tfinal, "final_monthly.csv"), row.names = FALSE);
+  return(data)
+}

@@ -91,6 +91,7 @@ head(csv_spat)
 ```{r finalize csv, eval = FALSE}
 csv_fin <- climodr::fin.csv(method = "monthly",
                             safe_output = TRUE)
+head(csv_fin)
 ```
 
 # Processing

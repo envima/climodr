@@ -36,3 +36,20 @@ for (i in v){
   write.csv(x, paste0(Output, "BALE", i, ".csv"), row.names = FALSE)
 }
 
+
+
+csv_list <- list()
+Input <- envrmt$path_tabular
+
+all_files_in_distribution <- list.files(path = Input, recursive = T) #reads all data in Input-Folder
+
+csv_paths <- grep(".csv$", all_files_in_distribution, value=TRUE)
+number_of_csvs <- length(csv_paths)
+
+for (i in 1:number_of_csvs){
+  csv_data <- read.csv(file.path(Input, paste0(csv_paths[[i]])), sep = ",")
+  csv_new <- csv_data[which(csv_data$year == 18), ]
+  csv_new$year <- NULL
+  csv_new$X <- NULL
+  write.csv(csv_new, file.path(envrmt$path_tabular, paste0(csv_paths[[i]])), row.names = FALSE)
+}

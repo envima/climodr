@@ -28,9 +28,11 @@ calc.model <- function(timespan,
                        k = NULL,
                        tc_method = "cv",
                        metric = "RMSE",
+                       doParallel = FALSE,
                        ...){
   data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
   df_total <- data.frame();
+  library(DescTools)
 
   for (y in timespan) try  ({
 
@@ -42,30 +44,31 @@ calc.model <- function(timespan,
 
     for (s in response) try({
       set.seed(seed)
-      partition_indexes <- createDataPartition(data$plotID,
-                                               times = 1,
-                                               p = p,
-                                               list = FALSE)
+      partition_indexes <- caret::createDataPartition(data$plot,
+                                                      times = 1,
+                                                      p = p,
+                                                      list = FALSE)
       trainingDat <- data[partition_indexes, ]
       testingDat <- data[-partition_indexes, ]
 
       # Saving Algorithm needs to be added
 
       if (fold == "LLO"){
-        folds <- CreateSpacetimeFolds(trainingDat, spacevar = "plotID", k = k) #set k to the number of unique spatial or temporal units. (k = 3)
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot", k = k) #set k to the number of unique spatial or temporal units. (k = 3)
       }
 
       if (fold == "LTO"){
-        folds <- CreateSpacetimeFolds(trainingDat, timevar = "datetime", k = k) #set k to the number of unique spatial or temporal units. (k = 12)
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime", k = k) #set k to the number of unique spatial or temporal units. (k = 12)
       }
 
       if (fold == "LLTO"){
-        folds <- CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plotID")
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plotID")
       }
 
-      ctrl <- trainControl(method = "cv",index = folds$index,
-                        savePredictions=TRUE)
-
+      ctrl <- caret::trainControl(method = "cv",
+                                  index = folds$index,
+                                  savePredictions=TRUE
+                                  )
 
       predictors <- trainingDat[ ,predrows]
 
@@ -74,9 +77,10 @@ calc.model <- function(timespan,
       sensor <- colnames(trainingDat[s])
 
       for (i in 1:length(classifier)) try ({
-        ctrl <- trainControl(method = tc_method,
-                             index = folds$index,
-                             indexOut = folds$indexOut
+        ctrl <- caret::trainControl(
+          method = tc_method,
+          index = folds$index,
+          indexOut = folds$indexOut
         )
 
         method = classifier[i]
@@ -110,26 +114,30 @@ calc.model <- function(timespan,
           ifnnet <- FALSE
         }
 
-        cr <- detectCores()
-        cl <- makeCluster(cr-4)
-        registerDoParallel(cl)
+        if (doParallel == TRUE){
+          cr <- parallel::detectCores()
+          cl <- parallel::makeCluster(cr-4)
+          doParallel::registerDoParallel(cl)
+        }
 
-        ffsmodel <- ffs(predictors,
-                        response,
-                        metric = metric,
-                        withinSE = TRUE,
-                        method = method,
-                        importance =TRUE,
-                        tuneLength = tuneLength,
-                        tuneGrid = tuneGrid,
-                        trControl = ctrl,
-                        trace = ifnnet,
-                        linout = TRUE,
-                        verbose = ifnnet)
+        ffsmodel <- CAST::ffs(predictors,
+                              response,
+                              metric = metric,
+                              withinSE = TRUE,
+                              method = method,
+                              importance =TRUE,
+                              tuneLength = tuneLength,
+                              tuneGrid = tuneGrid,
+                              trControl = ctrl,
+                              trace = ifnnet,
+                              linout = TRUE,
+                              verbose = ifnnet)
 
-        stopCluster(cl)
+        if (doParallel == TRUE){
+          stopCluster(cl)
+        }
 
-        saveRDS(ffsmodel, paste0(Output, time, fold, classifier[i], "_", sensor, "_ffs_model.rds"))
+        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, fold, classifier[i], "_", sensor, "_ffs_model.rds")))
 
         mod <- ffsmodel
         accuracy <- min(mod$selectedvars_perf)
