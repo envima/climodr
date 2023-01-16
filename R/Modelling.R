@@ -25,6 +25,7 @@ calc.model <- function(timespan,
                        p = 0.8,
                        fold = "LLO",
                        predrows = NULL,
+                       mnote = NULL,
                        k = NULL,
                        tc_method = "cv",
                        metric = "RMSE",
@@ -51,18 +52,19 @@ calc.model <- function(timespan,
       trainingDat <- data[partition_indexes, ]
       testingDat <- data[-partition_indexes, ]
 
-      # Saving Algorithm needs to be added
+      save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(time, mnote, "_", "trainingDat.RData")))
+      save(testingDat, file = file.path(envrmt$path_tfinal, paste0(time, mnote, "_", "testingDat.RData")))
 
       if (fold == "LLO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot", k = k) #set k to the number of unique spatial or temporal units. (k = 3)
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot", k = 3) #set k to the number of unique spatial or temporal units. (k = 3)
       }
 
       if (fold == "LTO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime", k = k) #set k to the number of unique spatial or temporal units. (k = 12)
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime") #set k to the number of unique spatial or temporal units. (k = 12)
       }
 
       if (fold == "LLTO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plotID")
+        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
       }
 
       ctrl <- caret::trainControl(method = "cv",
@@ -73,20 +75,16 @@ calc.model <- function(timespan,
       predictors <- trainingDat[ ,predrows]
 
       response <- trainingDat[ ,s]
-      print(colnames(trainingDat[s]))
-      sensor <- colnames(trainingDat[s])
+      if (s == 6){sensor = "tem"}
+      if (s == 9){sensor = "reh"}
+      if (s == 12){sensor = "pre"}
+      if (s == 13){sensor = "sun"}
+      print(paste0(colnames(trainingDat[s]), " = ", sensor))
 
       for (i in 1:length(classifier)) try ({
-        ctrl <- caret::trainControl(
-          method = tc_method,
-          index = folds$index,
-          indexOut = folds$indexOut
-        )
-
         method = classifier[i]
         print(method)
 
-        tuneLength = 2
         tuneGrid = NULL
 
         if (method == "gbm"){
@@ -122,43 +120,47 @@ calc.model <- function(timespan,
 
         ffsmodel <- CAST::ffs(predictors,
                               response,
-                              metric = metric,
-                              withinSE = TRUE,
+                              metric = "RMSE",
+                              withinSE = FALSE,
                               method = method,
-                              importance =TRUE,
+                              importance = TRUE,
                               tuneLength = tuneLength,
                               tuneGrid = tuneGrid,
-                              trControl = ctrl,
-                              trace = ifnnet,
-                              linout = TRUE,
-                              verbose = ifnnet)
+                              trControl = ctrl
+                              #trace = ifnnet,
+                              #linout = TRUE,
+                              #verbose = ifnnet
+                              )
 
         if (doParallel == TRUE){
           stopCluster(cl)
         }
 
-        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, fold, classifier[i], "_", sensor, "_ffs_model.rds")))
+        saveRDS(ffsmodel, file.path(envrmt$path_ffsmodels, paste0(time, fold, mnote, classifier[i], "_", sensor, "_ffs_model.rds")))
 
         mod <- ffsmodel
         accuracy <- min(mod$selectedvars_perf)
 
-        df <- data.frame(year_month = time,
-                         classifier = mod$method,
-                         accuracy = accuracy,
-                         Nrmse = accuracy / (max(response) - min(response)),
-                         sensor = sensor
+        df <- data.frame(
+          year_month = time,
+          classifier = method,
+          accuracy = accuracy,
+          Nrmse = accuracy / (max(response) - min(response)),
+          sensor = sensor,
+          modeltype = fold,
+          note = mnote
         )
 
         df$variables[1] <- list(c(mod$selectedvars))
         df_total <- rbind(df_total,df)
 
-        remove(data_y, data_ym, ffsmodel, idx_y, idx_ym, mod, testingDat, trainingDat)
+        remove(data_y, data_ym, ffsmodel, idx_y, idx_ym, mod)
         gc()
       })
     })
   })
 
   # save total loop analytics for eval
-  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, "_eval_df.rds")));
+  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, mnote, "_eval_df.rds")));
   return(df_total)
 }
