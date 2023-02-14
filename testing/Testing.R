@@ -1,7 +1,7 @@
 devtools::load_all()
 
 ### Initiate Climodr ###
-climodr::envi.create("E:/climodr/showcase")
+climodr::envi.create("D:/users/kluga/showcase")
 
 ### Pre-Processing ###
 
@@ -37,14 +37,15 @@ head(csv_fin)
 # Modelling
 climodr::calc.model(timespan = c(18),
                     climresp = c(6), # c(6, 9, 12, 13)
-                    classifier = c("rf", "pls","nnet" ,"lm"),
+                    classifier = c("pls","lm"),
                     seed = 707,
                     p = 0.8,
                     fold = "LLO",
-                    mnote = "normal",
+                    mnote = "no0410",
                     predrows = c(16:55),
                     tc_method = "cv",
-                    metric = "RMSE")
+                    metric = "RMSE"
+)
 
 # Prediction
 climodr::climpred(fold = "LLO",

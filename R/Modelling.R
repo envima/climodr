@@ -41,7 +41,7 @@ calc.model <- function(timespan,
     data_y <- data_o[data_o$year %like% y, ]
     data <- data_y[complete.cases(data_y), ]
     time <- y
-    print(time)
+    print("Training models for year ", time)
 
 
     for (s in climresp) try({
@@ -84,7 +84,8 @@ calc.model <- function(timespan,
 
       for (i in 1:length(classifier)) try ({
         method = classifier[i]
-        print(method)
+        print("method = ", method)
+        tuneGrid <- NULL
 
         if (method == "gbm"){
           tuneLength <- 10
