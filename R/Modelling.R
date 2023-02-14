@@ -19,7 +19,7 @@
 #' @examples
 #'
 calc.model <- function(timespan,
-                       response,
+                       climresp,
                        classifier = c("rf", "pls","nnet" ,"lm"),
                        seed = NULL,
                        p = 0.8,
@@ -31,9 +31,10 @@ calc.model <- function(timespan,
                        metric = "RMSE",
                        doParallel = FALSE,
                        ...){
+  library(DescTools)
+
   data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
   df_total <- data.frame();
-  library(DescTools)
 
   for (y in timespan) try  ({
 
@@ -43,7 +44,7 @@ calc.model <- function(timespan,
     print(time)
 
 
-    for (s in response) try({
+    for (s in climresp) try({
       set.seed(seed)
       partition_indexes <- caret::createDataPartition(data$plot,
                                                       times = 1,
@@ -72,20 +73,18 @@ calc.model <- function(timespan,
                                   savePredictions=TRUE
                                   )
 
-      predictors <- trainingDat[ ,predrows]
+      preds <- trainingDat[ ,predrows]
 
-      response <- trainingDat[ ,s]
+      resps <- trainingDat[ ,s]
       if (s == 6){sensor = "tem"}
       if (s == 9){sensor = "reh"}
       if (s == 12){sensor = "pre"}
       if (s == 13){sensor = "sun"}
-      print(paste0(colnames(trainingDat[s]), " = ", sensor))
+      print(paste0(colnames(trainingDat[s]), " -> ", sensor))
 
       for (i in 1:length(classifier)) try ({
         method = classifier[i]
         print(method)
-
-        tuneGrid = NULL
 
         if (method == "gbm"){
           tuneLength <- 10
@@ -98,18 +97,15 @@ calc.model <- function(timespan,
           tuneGrid <- expand.grid(mtry = 2)
         }
         if (method == "pls"){
-          predictors <- data.frame(scale(predictors))
+          preds <- data.frame(scale(preds))
           tuneLength <- 10
         }
         if (method == "nnet"){
           tuneLength <- 1
-          predictors <- data.frame(scale(predictors))
-          tuneGrid <- expand.grid(size = seq(2,ncol(predictors),2),
+          preds <- data.frame(scale(preds))
+          tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
                                   decay = seq(0,0.1,0.025)
                                   )
-          ifnnet <- TRUE
-        } else {
-          ifnnet <- FALSE
         }
 
         if (doParallel == TRUE){
@@ -118,25 +114,25 @@ calc.model <- function(timespan,
           doParallel::registerDoParallel(cl)
         }
 
-        ffsmodel <- CAST::ffs(predictors,
-                              response,
+        ffsmodel <- CAST::ffs(predictors = preds,
+                              response = resps,
                               metric = "RMSE",
                               withinSE = FALSE,
                               method = method,
                               importance = TRUE,
                               tuneLength = tuneLength,
                               tuneGrid = tuneGrid,
-                              trControl = ctrl
-                              #trace = ifnnet,
-                              #linout = TRUE,
-                              #verbose = ifnnet
+                              trControl = ctrl,
+                              linout = TRUE,
+                              verbose = FALSE,
+                              trace = FALSE
                               )
 
         if (doParallel == TRUE){
           stopCluster(cl)
         }
 
-        saveRDS(ffsmodel, file.path(envrmt$path_ffsmodels, paste0(time, fold, mnote, classifier[i], "_", sensor, "_ffs_model.rds")))
+        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, "_", fold, "_", mnote, "_", classifier[i], "_", sensor, "_ffs_model.rds")))
 
         mod <- ffsmodel
         accuracy <- min(mod$selectedvars_perf)
@@ -145,7 +141,7 @@ calc.model <- function(timespan,
           year_month = time,
           classifier = method,
           accuracy = accuracy,
-          Nrmse = accuracy / (max(response) - min(response)),
+          Nrmse = accuracy / (max(resps) - min(resps)),
           sensor = sensor,
           modeltype = fold,
           note = mnote

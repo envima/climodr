@@ -5,14 +5,6 @@ climodr::envi.create("E:/climodr/showcase")
 
 ### Pre-Processing ###
 
-# Cropping tiffs
-
-# x <- climodr::crop.all(method = "Input", safe_output = TRUE)
-
-x <- terra::rast(file.path(envrmt$path_wraster, "2018_testdata_layer.tif"))
-x
-terra::plot(x[[1:4]])
-
 #---- Aggregate CSVs ----#
 
 # Prepare CSV-Data
@@ -44,12 +36,16 @@ head(csv_fin)
 
 # Modelling
 climodr::calc.model(timespan = c(18),
-                    response = c(6,9,12,13),
+                    climresp = c(6), # c(6, 9, 12, 13)
                     classifier = c("rf", "pls","nnet" ,"lm"),
                     seed = 707,
                     p = 0.8,
                     fold = "LLO",
                     mnote = "normal",
-                    predrows = c(16:56),
+                    predrows = c(16:55),
                     tc_method = "cv",
                     metric = "RMSE")
+
+# Prediction
+climodr::climpred(fold = "LLO",
+                  AOA = FALSE)

@@ -2,62 +2,44 @@ Package: climodr
 Type: Package
 Title: Climate modeling with point data from climate stations
 Version: 0.1.0
-Authors@R: 
+Author: 
     c(person(given = "Luise",
-            family = "Wraase",
-            role = c("aut"),
-            email = "luise.wraase@geo.uni-marburg.de"))
+             family = "Wraase",
+             role = c("aut"),
+             email = "luise.wraase@geo.uni-marburg.de"))
     c(person(given = "Seda",
-            family = "Bekar",
-            role = c("aut"),
-            email = "seda.bekar@students.uni-marburg.de"))
+             family = "Bekar",
+             role = c("aut"),
+             email = "seda.bekar@students.uni-marburg.de"))
     c(person(given = "Alexander"
-            family = "Klug")
-            role = c("aut", "cre")
-            email = "kluga@students-uni-marburg.de"))
+             family = "Klug")
+             role = c("aut", "cre")
+             email = "kluga@students-uni-marburg.de"))
 Maintainer: umweltinformatik@geo.uni-marburg.de
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
     caret,
     CAST,
-    corrplot,
-    cowplot,
+    data.table,
     DescTools,
     doParallel,
     dplyr,
-    envimaR (>= 0.1.0),
-    geodata,
-    ggnewscale,
     ggplot2,
-    ggpubr,
-    ggspatial,
-    ggthemes,
-    grid,
-    gridExtra,
-    lattice,
-    lubridate,
-    mapview,
-    plotly,
+    parallel,
     pls,
     randomForest,
     raster,
-    rasterVis,
-    readr,
-    reshape2,
     rgdal,
     sf,
     sp,
-    stars,
+    stringr,
     terra,
-    viridis
 Depends: 
     tidyverse
-Remotes: 
-    github::envima/envimaR@HEAD
 Suggests: 
     knitr,
     rmarkdown

@@ -233,10 +233,12 @@ spat.csv <- function(method = "monthly",
 
   data$lat <- "";
   data$lon <- "";
+  data$elevation <- "";
 
   for (i in 1:number_of_stations){
     data$lat[which(data$plot == names_of_stations[i])] <- des$lat[which(grepl(names_of_stations[i], des$plot))]
     data$lon[which(data$plot == names_of_stations[i])] <- des$lon[which(grepl(names_of_stations[i], des$plot))]
+    data$elevation[which(data$plot == names_of_stations[i])] <- des$elevation[which(grepl(names_of_stations[i], des$plot))]
   };
 
   if (method == "monthly"){
@@ -248,7 +250,8 @@ spat.csv <- function(method = "monthly",
                     "day",
                     cn_data[4:length(cn_data)],
                     "lat",
-                    "lon"
+                    "lon",
+                    "elevation"
     )];
 
     mms <- 6:(2 + length(cn_data));
