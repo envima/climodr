@@ -44,7 +44,8 @@ climodr::calc.model(timespan = c(18),
                     mnote = "no0410",
                     predrows = c(16:55),
                     tc_method = "cv",
-                    metric = "RMSE"
+                    metric = "RMSE",
+                    doParallel = TRUE
 )
 
 # Prediction
