@@ -41,7 +41,7 @@ calc.model <- function(timespan,
     data_y <- data_o[data_o$year %like% y, ]
     data <- data_y[complete.cases(data_y), ]
     time <- y
-    print(time)
+    print("Training models for year ", time)
 
 
     for (s in climresp) try({
@@ -84,21 +84,26 @@ calc.model <- function(timespan,
 
       for (i in 1:length(classifier)) try ({
         method = classifier[i]
-        print(method)
+        print("method = ", method)
+        tuneGrid <- NULL
 
         if (method == "gbm"){
           tuneLength <- 10
+          classifier <-"gbm"
         }
         if (method == "lm"){
           tuneLength <- 10
+          classifier <- "lim"
         }
         if (method == "rf"){
           tuneLength <- 1
           tuneGrid <- expand.grid(mtry = 2)
+          classifier <- "raf"
         }
         if (method == "pls"){
           preds <- data.frame(scale(preds))
           tuneLength <- 10
+          classifier <- "pls"
         }
         if (method == "nnet"){
           tuneLength <- 1
@@ -106,6 +111,7 @@ calc.model <- function(timespan,
           tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
                                   decay = seq(0,0.1,0.025)
                                   )
+          classifier <- "nnt"
         }
 
         if (doParallel == TRUE){
@@ -139,7 +145,7 @@ calc.model <- function(timespan,
 
         df <- data.frame(
           year_month = time,
-          classifier = method,
+          classifier = classifier,
           accuracy = accuracy,
           Nrmse = accuracy / (max(resps) - min(resps)),
           sensor = sensor,
