@@ -99,7 +99,7 @@ head(csv_fin)
 ## Models
 
 timespan = Vector with last two digits of years to build models from (in this example 2017 - 2021)\
-response = Vector of rows to create models for. (In this example Ta_200, rH_200, SWDR_200, P_RT_NRT)\
+climresp = Vector of rows to create models for. (In this example Ta_200, rH_200, SWDR_200, P_RT_NRT)\
 classifier = Vector of all model variants to be used. In this case random forest = "rf", partial-least-squares = "pls", neural networks = "nnet" and linear regression = "lm"\
 \
 NOTE: This constellation already creates 64 models, this will need a lot of time\
@@ -111,23 +111,27 @@ predrows = Vector of rownumbers used as predictors. \
 k = Number of unique temporal or spatial units.\
 tc_method = Train controll method. Default is crossvalidation "cv".\
 metric = Summary Metric to select optimal model. Default: Root Mean Square Error "RMSE".\
+doParallel = Logical Parameter. When set True, the Model-Process will paralellize on all cores except two, so your PC will slow down a lot. Only recomended for PCs with at least 8 Cores. Warning: Your PC wont be able to process other stuff efficiently during paralellization.\
+
 ```{r model, eval = FALSE}
 climodr::calc.model(timespan = c(17:21),
-                    response = c(6,9,12,13),
+                    climresp = c(6,9,12,13),
                     classifier = c("rf", "pls","nnet" ,"lm"),
                     seed = 707,
                     p = 0.8,
                     fold = "LTO",
                     predrows = c(16:57),
+                    mnote = "normal",
                     k = 12,
                     tc_method = "cv",
-                    metric = "RMSE")
+                    metric = "RMSE",
+                    doParallel = TRUE)
 ```
 
 ## Predictions
 
 ```{r predict, eval = FALSE}
-climodr::predict()
+climodr::climpred()
 ```
 
 ## Validations
