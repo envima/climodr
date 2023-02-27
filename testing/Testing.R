@@ -34,9 +34,13 @@ csv_fin <- climodr::fin.csv(method = "monthly",
 # Check one last time
 head(csv_fin)
 
+### Modelling ###
+
+#---- Calculate Models ----#
+
 # Modelling
 climodr::calc.model(timespan = c(18),
-                    climresp = c(6), # c(6, 9, 12, 13)
+                    climresp = c(6, 9, 12, 13),
                     classifier = c("rf", "pls","nnet" ,"lm"),
                     seed = 707,
                     p = 0.8,
@@ -46,6 +50,6 @@ climodr::calc.model(timespan = c(18),
                     tc_method = "cv",
                     metric = "RMSE")
 
-# Prediction
+# Prediction (inclusive AOA)
 climodr::climpred(fold = "LLO",
-                  AOA = FALSE)
+                  AOA = TRUE)
