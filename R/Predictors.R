@@ -1,6 +1,6 @@
-#' Calculate DEM-Based Predictors
+#' DEM-Based Predictors
 #'
-#' blabla
+#' Calculate DEM-Based Predictors
 #'
 #' @param
 #' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.

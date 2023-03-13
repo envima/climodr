@@ -1,16 +1,17 @@
-#' Modelling
+#' Prediction
 #'
-#' Creates Models for each climate value
+#' Predictdata with the created models
 #'
 #'
-#' @return tiff, rds
+#' @return
 #' @seealso
 #'
-#' @name predict
-#' @export predict
+#' @name climpred
+#' @export climpred
 #'
 #' @examples
 #'
+
 climpred <- function(){
 # read in dem
   b_dem <- terra::rast(file.path(envrmt$path_wraster, "dem_layer.tif"))
