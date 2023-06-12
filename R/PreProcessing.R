@@ -31,7 +31,7 @@ prep.csv <- function(method = "proc",
     number_of_cn <- length(cn_data)
 
     csv_data$daymonth <- strftime(csv_data[,2], format = "%m-%d")
-    csv_data$year <- strftime(csv_data[,2], format = "%y")
+    csv_data$year <- strftime(csv_data[,2], format = "%Y")
     csv_data$month <- strftime(csv_data[,2], format = "%m")
     csv_data$day <- strftime(csv_data[,2], format = "%d")
 
@@ -180,26 +180,15 @@ spat.csv <- function(method = "monthly",
   };
 
   if (method == "monthly"){
-    data$day <- 1
-    data$datetime <-as.Date(with(data,paste(year,month,day,sep="-")),"%y-%m-%d");
-    data <- data[,c(cn_data[1],
-                    "datetime",
-                    cn_data[2:3],
-                    "day",
-                    cn_data[4:length(cn_data)],
-                    "lat",
-                    "lon"
-    )];
+    monthly_means <- 4:length(cn_data);
 
-    mms <- 6:(2 + length(cn_data));
-
-    for (i in mms){
+    for (i in monthly_means){
       data[i] <- round(data[i], digits = 3)
     };
 
-    names(data)  <- c(names(data[1:5]),
-                      gsub("monthly_mean_", "", names(data[mms])),
-                      names(data[(3 + length(cn_data)):length(names(data))])
+    names(data)  <- c(names(data[1:3]),
+                      gsub("monthly_mean_", "", names(data[monthly_means])),
+                      names(data[(4 + length(monthly_means)):length(names(data))])
     );
 
     if (is.null(crs)){
@@ -213,15 +202,9 @@ spat.csv <- function(method = "monthly",
     data <- sp::spTransform(data, crs)
 
     n <- names(data)
-    l <- length(n)
     data <- data.frame(data)
     data$optional <- NULL
-    data <- data[, c(n[1:(l-1)],
-                  "lat",
-                  "lon",
-                  n[l]
-                  )
-                ]
+    data <- data[, c(n, "lat", "lon")]
 
     write.csv(data, file.path(envrmt$path_tworkflow, "spat_monthly_means.csv"), row.names = FALSE);
     return(data)
@@ -241,15 +224,10 @@ spat.csv <- function(method = "monthly",
     data <- sp::spTransform(data, crs)
 
     n <- names(data)
-    l <- length(n)
-    df <- data.frame(data)
-    df$optional <- NULL
-    df <- df[, c(n[1:(l-1)],
-                 "lat",
-                 "lon",
-                 n[l]
-                 )
-            ]
+    data <- data.frame(data)
+    data$optional <- NULL
+    data <- data[, c(n, "lat", "lon")]
+
     write.csv(data, file.path(envrmt$path_tworkflow, "spat_daily.csv"), row.names = FALSE);
     return(data)
   }
@@ -302,6 +280,8 @@ fin.csv <- function(method = "monthly",
                          );
   data <- merge(data, extr, by = "ID");
   data$ID <- NULL;
+  data$datetime <- NULL;
+  data_n <- tidyr::drop_na(data)
 
   write.csv(data, file.path(envrmt$path_tfinal, "final_monthly.csv"), row.names = FALSE);
   return(data)

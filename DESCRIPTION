@@ -25,7 +25,6 @@ Imports:
     caret,
     CAST,
     data.table,
-    DescTools,
     doParallel,
     dplyr,
     ggplot2,

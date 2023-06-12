@@ -14,7 +14,12 @@
 
 climpred <- function(){
 # read in dem
-  b_dem <- terra::rast(file.path(envrmt$path_wraster, "dem_layer.tif"))
+  b_dem <- terra::rast(file.path(envrmt$path_wraster,
+                                 grep(pattern = "dem_",
+                                      list.files(envrmt$path_wraster),
+                                      value = TRUE)
+                                 )
+                       )
 
 # read in all models
   mod_list <- as.data.frame(list.files(path = envrmt$path_models, pattern = "ffs_model.rds", recursive = TRUE))
@@ -29,23 +34,23 @@ climpred <- function(){
 #  mod_df <- data.frame()
 
 # create a list with all raster images
-  tiff_list <- list.files(path = envrmt$path_wraster, pattern = "testdata_layer.tif", recursive = TRUE)
+  tiff_list <- list.files(path = envrmt$path_wraster, pattern = "_layer.tif", recursive = TRUE)
 
-  for (i in 1:lenght(tiff_list)){
+  for (i in 1:length(tiff_list)){
     rasterStack <- terra::rast(file.path(envrmt$path_wraster, tiff_list[i]))
     terra::add(rasterStack) <- b_dem
 
-    for (j in 1:length(mod_list)){
-      mod <- readRDS(file.path(envrmt$path_models, mod_list[[j]]))
+    for (j in 1:nrow(mod_list)){
+      mod <- readRDS(file.path(envrmt$path_models, mod_list[j, ]))
 
 # write pretty names
-      seq = gsub(".*/", "", mod_list[[j]])
-      n.mod = stringr::str_extract(seq, "^.*(?=(_ffs_model.rds))") # everything excluding the back
+      seq <- gsub(".*/", "", mod_list[j, ])
+      n.mod <- stringr::str_extract(seq, "^.*(?=(_ffs_model.rds))") # everything excluding the back
 
 # make prediction
-      prediction = terra::predict(rasterStack, mod, na.rm = T)
+      prediction <- terra::predict(rasterStack, mod, na.rm = T)
 # adjust layer name
-      names(prediction) = paste0(n.mod,"_anl_pred")
+      names(prediction) <- paste0(n.mod, "_anl_pred")
       print(names(prediction))
 # save prediction as tif
       terra::writeRaster(prediction,
@@ -60,7 +65,7 @@ climpred <- function(){
       parallel::stopCluster(cl)
 
       terra::writeRaster(aoa$AOA,
-                         file.path(envrmt$path_predictions, paste0(n.mod,"_anl_aoa.tif")),
+                         file.path(envrmt$path_predictions, "aoa", paste0(n.mod, "_anl_aoa.tif")),
                          overwrite = TRUE)
     } # end prediction loop
   } # end raster loop

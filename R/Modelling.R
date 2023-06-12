@@ -50,31 +50,50 @@ calc.model <- function(timespan,
                        tc_method = "cv",
                        metric = "RMSE",
                        doParallel = FALSE,
+                       autocorrelation = FALSE,
                        ...){
-  library(DescTools)
-
   data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
   df_total <- data.frame();
 
   for (y in timespan) try  ({
 
-    data_y <- data_o[data_o$year %like% y, ]
+    data_y <- data_o[c(which(data_o$year == y)), ]
     data <- data_y[complete.cases(data_y), ]
     time <- y
-    print("Training models for year ", time)
+    print(paste("Training models for year", time))
 
 
     for (s in climresp) try({
       set.seed(seed)
+
+      if(autocorrelation == "TRUE"){
+
+        data <- data_y[complete.cases(data_y), ]
+
+        if (s == climresp[1]){
+          delect <- read.csv(file.path(envrmt$path_statistics, "tem_delect.csv"))
+        }
+        if (s == climresp[2]){
+          delect <- read.csv(file.path(envrmt$path_statistics, "reh_delect.csv"))
+        }
+        if (s == climresp[3]){
+          delect <- read.csv(file.path(envrmt$path_statistics, "pre_delect.csv"))
+        }
+        if (s == climresp[4]){
+          delect <- read.csv(file.path(envrmt$path_statistics, "sun_delect.csv"))
+        }
+        if (!(length(delect$variables) == 0)){
+          data <- data %>% select(-c(delect$variables))
+        }
+      }
+
       partition_indexes <- caret::createDataPartition(data$plot,
                                                       times = 1,
                                                       p = p,
                                                       list = FALSE)
+
       trainingDat <- data[partition_indexes, ]
       testingDat <- data[-partition_indexes, ]
-
-      save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(time, mnote, "_", "trainingDat.RData")))
-      save(testingDat, file = file.path(envrmt$path_tfinal, paste0(time, mnote, "_", "testingDat.RData")))
 
       if (fold == "LLO"){
         folds <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot", k = 3) #set k to the number of unique spatial or temporal units. (k = 3)
@@ -93,37 +112,44 @@ calc.model <- function(timespan,
                                   savePredictions=TRUE
                                   )
 
-      preds <- trainingDat[ ,predrows]
+      if (autocorrelation == TRUE){
+        preds <- trainingDat[ ,head(predrows, -length(delect$variables))]
+      } else {
+        preds <- trainingDat[ ,predrows]
+      } # end autocorrelation-loop
 
       resps <- trainingDat[ ,s]
-      if (s == 6){sensor = "tem"}
-      if (s == 9){sensor = "reh"}
-      if (s == 12){sensor = "pre"}
-      if (s == 13){sensor = "sun"}
+      if (s == climresp[1]){sensor <- "tem"}
+      if (s == climresp[2]){sensor <- "reh"}
+      if (s == climresp[3]){sensor <- "sun"}
+      if (s == climresp[4]){sensor <- "pre"}
       print(paste0(colnames(trainingDat[s]), " -> ", sensor))
+
+      save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(time, "_", mnote, "_", sensor, "_", "trainingDat.RData")))
+      save(testingDat, file = file.path(envrmt$path_tfinal, paste0(time, "_", mnote, "_", sensor, "_", "testingDat.RData")))
 
       for (i in 1:length(classifier)) try ({
         method = classifier[i]
-        print("method = ", method)
+        print(paste0("method = ", method))
         tuneGrid <- NULL
 
         if (method == "gbm"){
           tuneLength <- 10
-          classifier <-"gbm"
+          modclass <-"gbm"
         }
         if (method == "lm"){
           tuneLength <- 10
-          classifier <- "lim"
+          modclass <- "lim"
         }
         if (method == "rf"){
           tuneLength <- 1
           tuneGrid <- expand.grid(mtry = 2)
-          classifier <- "raf"
+          modclass <- "raf"
         }
         if (method == "pls"){
           preds <- data.frame(scale(preds))
           tuneLength <- 10
-          classifier <- "pls"
+          modclass <- "pls"
         }
         if (method == "nnet"){
           tuneLength <- 1
@@ -131,7 +157,7 @@ calc.model <- function(timespan,
           tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
                                   decay = seq(0,0.1,0.025)
                                   )
-          classifier <- "nnt"
+          modclass <- "nnt"
         }
 
         if (doParallel == TRUE){
@@ -142,7 +168,7 @@ calc.model <- function(timespan,
 
         ffsmodel <- CAST::ffs(predictors = preds,
                               response = resps,
-                              metric = "RMSE",
+                              metric = "Rsquared",
                               withinSE = FALSE,
                               method = method,
                               importance = TRUE,
@@ -158,16 +184,17 @@ calc.model <- function(timespan,
           stopCluster(cl)
         }
 
-        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, "_", fold, "_", mnote, "_", classifier[i], "_", sensor, "_ffs_model.rds")))
+        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, "_", fold, "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
 
         mod <- ffsmodel
         accuracy <- min(mod$selectedvars_perf)
 
         df <- data.frame(
           year_month = time,
-          classifier = classifier,
+          classifier = modclass,
           accuracy = accuracy,
           Nrmse = accuracy / (max(resps) - min(resps)),
+          Rsqrd = summary(mod)$r.squared
           sensor = sensor,
           modeltype = fold,
           note = mnote
@@ -178,11 +205,11 @@ calc.model <- function(timespan,
 
         remove(data_y, data_ym, ffsmodel, idx_y, idx_ym, mod)
         gc()
-      })
-    })
-  })
+      }) # end classifier loop (modeltype)
+    }) # end climresp loop  (response sensor)
+  }) # end timespan loop (year, month, etc.)
 
   # save total loop analytics for eval
-  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, mnote, "_eval_df.rds")));
+  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, "_", mnote, "_eval_df.rds")));
   return(df_total)
 }
