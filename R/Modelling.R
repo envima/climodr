@@ -194,7 +194,7 @@ calc.model <- function(timespan,
           classifier = modclass,
           accuracy = accuracy,
           Nrmse = accuracy / (max(resps) - min(resps)),
-          Rsqrd = summary(mod)$r.squared
+          Rsqrd = summary(mod)$r.squared,
           sensor = sensor,
           modeltype = fold,
           note = mnote

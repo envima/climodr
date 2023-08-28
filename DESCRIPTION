@@ -24,6 +24,7 @@ LazyData: true
 Imports:
     caret,
     CAST,
+    corrplot,
     data.table,
     doParallel,
     dplyr,
@@ -33,6 +34,7 @@ Imports:
     randomForest,
     raster,
     rgdal,
+    lares,
     sf,
     sp,
     stringr,

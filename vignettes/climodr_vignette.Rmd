@@ -1,5 +1,5 @@
 ---
-title: "climodr v.Alpha_1.0.0"
+title: "climodr"
 output: 
   rmarkdown::html_vignette:
     toc: TRUE
@@ -11,8 +11,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+v.Alpha_1.0.0
 
-Welcome to climatemodeller in R, short climodr. 
+Welcome to climate modeller in R, short climodr. 
 This packages uses point data from climate stations, spectral imagery and elevation models to automatically create ready-to-use climate maps and statistics. This Vignette should guide you through the package, explain its functions and give you an idea of how to use climodr.
 
 # Getting Started with climodr
@@ -101,7 +102,7 @@ head(csv_data)
 
 ## Spatial aggregation of tabular data
 
-# Next, the stations have to be located in space, with a coordinate system. This step is crucial to process the data in a modelation usecase.\
+Next, the stations have to be located in space, with a coordinate system. This step is crucial to process the data in a modelation usecase.\
 
 Note: For some reason the coordinates slide between SWDR_200 and P_RT_NRT. This is no problem, but the order is still weird. Should be adressed in future.
 ```{r spat csv}
@@ -129,10 +130,9 @@ Next, one tests the data for autocorrelation. The evaluation vector contains all
 Note: A few columns are masked out, because they cause errors. Needs to be address in future.\
 Note': The visualization is quite messy, when there are a lot of predictors. Maybe make it prettier in future.
 ```{r autocorr}
-eval_vector <- c(4:43) 
+eval_vector <- c(4:43) #4:43
 
-climodr::autocorr(eval_vector,
-                  plot = FALSE)
+climodr::autocorr(eval_vector, plot.corrplot = FALSE)
 ```
 
 ## Create climate models 
@@ -174,7 +174,7 @@ climodr::calc.model(timespan = c(2018),
 
 ## Predictions
 
-# Further we can predict the scenes using the models with the `climpred` function. `climpred` also calculates an AOA.\ 
+Further we can predict the scenes using the models with the `climpred` function. `climpred` also calculates an AOA.\ 
 
 Note: There are no options yet, but it works. Because the evaluation data frame doesn't work right now, it predicts all models. In Future, it will only predict the models which perform best. 
 

@@ -233,7 +233,7 @@ spat.csv <- function(method = "monthly",
   }
 }
 
-#' Final agregation for CSV-Data
+#' Final aggregation for CSV-Data
 #'
 #' blabla
 #'

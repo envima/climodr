@@ -13,7 +13,7 @@
 #' @examples
 #'
 
-autocorr <- function(eval){
+autocorr <- function(eval, plot.corrplot = TRUE){
   #get data from PreProcessing
   data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
 
@@ -46,62 +46,64 @@ autocorr <- function(eval){
   p.mat <- cor.mtest(data_c);
   head(p.mat[, 1:5]);
 
-  col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"));
-  corrplot::corrplot(c,
-              method="color",
-              col=col(200),
-              type="upper",
-              order="hclust",
-              addCoef.col = "black", # Add coefficient of correlation
-              tl.col="black",
-              tl.srt=45, #Text label color and rotation
+  if (plot.corrplot == TRUE){
+    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"));
+    corrplot::corrplot(c,
+                       method="color",
+                       col=col(200),
+                       type="upper",
+                       order="hclust",
+                       addCoef.col = "black", # Add coefficient of correlation
+                       tl.col="black",
+                       tl.srt=45, #Text label color and rotation
 
-              # Combine with significance
-              p.mat = p.mat, sig.level = 0.01, insig = "blank",
+                       # Combine with significance
+                       p.mat = p.mat, sig.level = 0.01, insig = "blank",
 
-              # hide correlation coefficient on the principal diagonal
-              diag=FALSE
-              );
+                       # hide correlation coefficient on the principal diagonal
+                       diag=FALSE
+    );
 
-  #with significance
-  corrplot::corrplot(c,
-                     type="upper",
-                     order="hclust",
-                     p.mat = p.mat,
-                     sig.level = 0.01);
+    #with significance
+    corrplot::corrplot(c,
+                       type="upper",
+                       order="hclust",
+                       p.mat = p.mat,
+                       sig.level = 0.01);
 
-  # Leave blank on no significant coefficient
-  corrplot::corrplot(c,
-                     type="upper",
-                     order="hclust",
-                     p.mat = p.mat,
-                     sig.level = 0.01,
-                     insig = "blank");
+    # Leave blank on no significant coefficient
+    corrplot::corrplot(c,
+                       type="upper",
+                       order="hclust",
+                       p.mat = p.mat,
+                       sig.level = 0.01,
+                       insig = "blank");
 
-  corrplot::corrplot(c,
-                     method="number",
-                     type = "lower");
+    corrplot::corrplot(c,
+                       method="number",
+                       type = "lower");
 
-  corrplot::corrplot(c,
-                     type  = "lower",
-                     method="color",
-                     addCoef.col="black",
-                     order = "AOE",
-                     number.cex=0.75);
+    corrplot::corrplot(c,
+                       type  = "lower",
+                       method="color",
+                       addCoef.col="black",
+                       order = "AOE",
+                       number.cex=0.75);
+  }
 
   # Now with a variable for sensor
   tem <- lares::corr_var(data_c, Ta_200, max_pvalue = 0.05,
-                  ignore = c("rH_200", "SWDR_200","P_RT_NRT"),
-                  top = 50);
+                         ignore = c("rH_200", "SWDR_200","P_RT_NRT"),
+                         top = 50);
   pre <- lares::corr_var(data_c, P_RT_NRT, max_pvalue = 0.05,
-                  ignore = c("rH_200", "SWDR_200","Ta_200"),
-                  top = 50);
+                         ignore = c("rH_200", "SWDR_200","Ta_200"),
+                         top = 50);
   sun <- lares::corr_var(data_c, SWDR_200, max_pvalue = 0.05,
-                  ignore = c("rH_200", "Ta_200","P_RT_NRT"),
-                  top = 50);
+                         ignore = c("rH_200", "Ta_200","P_RT_NRT"),
+                         top = 50);
   reh <- lares::corr_var(data_c, rH_200, max_pvalue = 0.05,
-                  ignore = c("Ta_200", "SWDR_200","P_RT_NRT"),
-                  top = 50);
+                         ignore = c("Ta_200", "SWDR_200","P_RT_NRT"),
+                         top = 50);
 
   # Temperature data frame
   temdf <- tem$data;

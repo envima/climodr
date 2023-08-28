@@ -1,7 +1,7 @@
 devtools::load_all()
 
-### Initiate Climodr ###
-climodr::envi.create("E:/climodr/showcase")
+### Initiate climodr ###
+climodr::envi.create("E:/climodr/vignette")
 
 ### Pre-Processing ###
 
