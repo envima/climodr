@@ -163,7 +163,7 @@ climodr::autocorr(eval_vector, plot.corrplot = FALSE)
 # Modelling
 climodr::calc.model(timespan = c(2020),
                     climresp = c(5,6),
-                    classifier = c("rf", "pls","nnet" ,"lm"),
+                    classifier = c("rf", "pls" ,"lm", "gbm"),
                     seed = 707,
                     p = 0.8,
                     folds = "all",
@@ -174,7 +174,6 @@ climodr::calc.model(timespan = c(2020),
                     autocorrelation = TRUE)
 
 # Prediction
-
 mod_tem <- readRDS(file.path(envrmt$path_models, "20201_LLO_normal_raf_tem_ffs_model.rds"))
 mod_reh <- readRDS(file.path(envrmt$path_models, "20201_LLO_normal_raf_reh_ffs_model.rds"))
 tif <- terra::rast(file.path(envrmt$path_rfinal, "hai_202001_mean.tif"))
