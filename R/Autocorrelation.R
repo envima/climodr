@@ -15,7 +15,7 @@
 
 autocorr <- function(eval, plot.corrplot = TRUE){
   #get data from PreProcessing
-  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
+  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_daily.csv"));
 
   #subset data
   data <- data_o[ ,eval]; #c(6,9,12,13,17:21,24:36,38,39,41,44:57)
@@ -95,34 +95,34 @@ autocorr <- function(eval, plot.corrplot = TRUE){
   tem <- lares::corr_var(data_c, Ta_200, max_pvalue = 0.05,
                          ignore = c("rH_200", "SWDR_200","P_RT_NRT"),
                          top = 50);
-  pre <- lares::corr_var(data_c, P_RT_NRT, max_pvalue = 0.05,
-                         ignore = c("rH_200", "SWDR_200","Ta_200"),
-                         top = 50);
-  sun <- lares::corr_var(data_c, SWDR_200, max_pvalue = 0.05,
-                         ignore = c("rH_200", "Ta_200","P_RT_NRT"),
-                         top = 50);
+#  pre <- lares::corr_var(data_c, P_RT_NRT, max_pvalue = 0.05,
+#                         ignore = c("rH_200", "SWDR_200","Ta_200"),
+#                         top = 50);
+#  sun <- lares::corr_var(data_c, SWDR_200, max_pvalue = 0.05,
+#                         ignore = c("rH_200", "Ta_200","P_RT_NRT"),
+#                         top = 50);
   reh <- lares::corr_var(data_c, rH_200, max_pvalue = 0.05,
                          ignore = c("Ta_200", "SWDR_200","P_RT_NRT"),
                          top = 50);
 
   # Temperature data frame
   temdf <- tem$data;
-  temdfvar <- temdf[temdf$corr<=0,];
+  temdfvar <- temdf[temdf$corr <= 0,];
   write.csv(temdfvar, file.path(envrmt$path_statistics, "tem_delect.csv"));
 
   # Pecipitation data frame
-  predf <- pre$data;
-  predfvar <- predf[predf$corr<=0,];
-  write.csv(predfvar, file.path(envrmt$path_statistics, "pre_delect.csv"));
+#  predf <- pre$data;
+#  predfvar <- predf[predf$corr <= 0,];
+#  write.csv(predfvar, file.path(envrmt$path_statistics, "pre_delect.csv"));
 
   # solar radiation data frame
-  sundf <- sun$data;
-  sundfvar <- sundf[sundf$corr<=0,];
-  write.csv(sundfvar, file.path(envrmt$path_statistics, "sun_delect.csv"));
+#  sundf <- sun$data;
+#  sundfvar <- sundf[sundf$corr <= 0,];
+#  write.csv(sundfvar, file.path(envrmt$path_statistics, "sun_delect.csv"));
 
   # reh data frame
   rehdf <- reh$data;
-  rehdfvar <- rehdf[rehdf$corr<=0,];
+  rehdfvar <- rehdf[rehdf$corr <= 0,];
   write.csv(rehdfvar,file.path(envrmt$path_statistics, "reh_delect.csv"));
 
 

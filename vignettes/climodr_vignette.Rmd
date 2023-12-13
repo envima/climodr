@@ -102,7 +102,7 @@ head(csv_data)
 
 ## Spatial aggregation of tabular data
 
-Next, the stations have to be located in space, with a coordinate system. This step is crucial to process the data in a modelation usecase.\
+Next, the stations have to be located in space, with a coordinate system. This step is crucial to process the data in a modelation use case.\
 
 Note: For some reason the coordinates slide between SWDR_200 and P_RT_NRT. This is no problem, but the order is still weird. Should be adressed in future.
 ```{r spat csv}

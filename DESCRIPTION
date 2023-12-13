@@ -34,6 +34,7 @@ Imports:
     randomForest,
     raster,
     rgdal,
+    RStoolbox,
     lares,
     sf,
     sp,

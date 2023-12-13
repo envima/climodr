@@ -43,7 +43,7 @@ calc.model <- function(timespan,
                        classifier = c("rf", "pls","nnet" ,"lm"),
                        seed = NULL,
                        p = 0.8,
-                       fold = "LLO",
+                       folds = "all",
                        predrows = NULL,
                        mnote = NULL,
                        k = NULL,
@@ -52,164 +52,203 @@ calc.model <- function(timespan,
                        doParallel = FALSE,
                        autocorrelation = FALSE,
                        ...){
-  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_monthly.csv"));
+  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_daily.csv"));
   df_total <- data.frame();
+
+  # for convenience to the user; all means all folds will be calculated.
+  if (folds == "all"){
+    folds <- c("LLO", "LTO", "LLTO")
+  }
 
   for (y in timespan) try  ({
 
     data_y <- data_o[c(which(data_o$year == y)), ]
-    data <- data_y[complete.cases(data_y), ]
-    time <- y
-    print(paste("Training models for year", time))
+    data_y <- data_y[complete.cases(data_y), ]
+    months <- unique(data_y$month)
 
+    for (m in months) try ({
+      data_m <- data_y[c(which(data_y$month == m)), ]
+      print(paste0("Training monthly models for ", y,".  ", m, "/", length(months)))
 
-    for (s in climresp) try({
-      set.seed(seed)
+      for (s in climresp) try({
+        set.seed(seed)
 
-      if(autocorrelation == "TRUE"){
+        if(autocorrelation == "TRUE"){
 
-        data <- data_y[complete.cases(data_y), ]
+          data <- data_m[complete.cases(data_m), ]
 
-        if (s == climresp[1]){
-          delect <- read.csv(file.path(envrmt$path_statistics, "tem_delect.csv"))
-        }
-        if (s == climresp[2]){
-          delect <- read.csv(file.path(envrmt$path_statistics, "reh_delect.csv"))
-        }
-        if (s == climresp[3]){
-          delect <- read.csv(file.path(envrmt$path_statistics, "pre_delect.csv"))
-        }
-        if (s == climresp[4]){
-          delect <- read.csv(file.path(envrmt$path_statistics, "sun_delect.csv"))
-        }
-        if (!(length(delect$variables) == 0)){
-          data <- data %>% select(-c(delect$variables))
-        }
-      }
+          if (s == climresp[1]){
+            delect <- read.csv(file.path(envrmt$path_statistics, "tem_delect.csv"))
+          }
+          if (s == climresp[2]){
+            delect <- read.csv(file.path(envrmt$path_statistics, "reh_delect.csv"))
+          }
+#          if (s == climresp[3]) try ({
+#            delect <- read.csv(file.path(envrmt$path_statistics, "pre_delect.csv"))
+#          })
+#          if (s == climresp[4]) try ({
+#            delect <- read.csv(file.path(envrmt$path_statistics, "sun_delect.csv"))
+#          })
 
-      partition_indexes <- caret::createDataPartition(data$plot,
-                                                      times = 1,
-                                                      p = p,
-                                                      list = FALSE)
-
-      trainingDat <- data[partition_indexes, ]
-      testingDat <- data[-partition_indexes, ]
-
-      if (fold == "LLO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot", k = 3) #set k to the number of unique spatial or temporal units. (k = 3)
-      }
-
-      if (fold == "LTO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime") #set k to the number of unique spatial or temporal units. (k = 12)
-      }
-
-      if (fold == "LLTO"){
-        folds <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
-      }
-
-      ctrl <- caret::trainControl(method = "cv",
-                                  index = folds$index,
-                                  savePredictions=TRUE
-                                  )
-
-      if (autocorrelation == TRUE){
-        preds <- trainingDat[ ,head(predrows, -length(delect$variables))]
-      } else {
-        preds <- trainingDat[ ,predrows]
-      } # end autocorrelation-loop
-
-      resps <- trainingDat[ ,s]
-      if (s == climresp[1]){sensor <- "tem"}
-      if (s == climresp[2]){sensor <- "reh"}
-      if (s == climresp[3]){sensor <- "sun"}
-      if (s == climresp[4]){sensor <- "pre"}
-      print(paste0(colnames(trainingDat[s]), " -> ", sensor))
-
-      save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(time, "_", mnote, "_", sensor, "_", "trainingDat.RData")))
-      save(testingDat, file = file.path(envrmt$path_tfinal, paste0(time, "_", mnote, "_", sensor, "_", "testingDat.RData")))
-
-      for (i in 1:length(classifier)) try ({
-        method = classifier[i]
-        print(paste0("method = ", method))
-        tuneGrid <- NULL
-
-        if (method == "gbm"){
-          tuneLength <- 10
-          modclass <-"gbm"
-        }
-        if (method == "lm"){
-          tuneLength <- 10
-          modclass <- "lim"
-        }
-        if (method == "rf"){
-          tuneLength <- 1
-          tuneGrid <- expand.grid(mtry = 2)
-          modclass <- "raf"
-        }
-        if (method == "pls"){
-          preds <- data.frame(scale(preds))
-          tuneLength <- 10
-          modclass <- "pls"
-        }
-        if (method == "nnet"){
-          tuneLength <- 1
-          preds <- data.frame(scale(preds))
-          tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
-                                  decay = seq(0,0.1,0.025)
-                                  )
-          modclass <- "nnt"
+          if (!(length(delect$variables) == 0)){
+            data <- data %>% dplyr::select(-c(delect$variables))
+          }
         }
 
-        if (doParallel == TRUE){
-          cr <- parallel::detectCores()
-          cl <- parallel::makeCluster(cr-4)
-          doParallel::registerDoParallel(cl)
-        }
+        partition_indexes <- caret::createDataPartition(data$plot,
+                                                        times = 1,
+                                                        p = p,
+                                                        list = FALSE)
 
-        ffsmodel <- CAST::ffs(predictors = preds,
-                              response = resps,
-                              metric = "Rsquared",
-                              withinSE = FALSE,
-                              method = method,
-                              importance = TRUE,
-                              tuneLength = tuneLength,
-                              tuneGrid = tuneGrid,
-                              trControl = ctrl,
-                              linout = TRUE,
-                              verbose = FALSE,
-                              trace = FALSE
-                              )
+        trainingDat <- data[partition_indexes, ]
+        testingDat <- data[-partition_indexes, ]
 
-        if (doParallel == TRUE){
-          stopCluster(cl)
-        }
+        for (f in 1:length(folds)) try( {
 
-        saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(time, "_", fold, "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
+          set.seed(seed)
 
-        mod <- ffsmodel
-        accuracy <- min(mod$selectedvars_perf)
+          if (folds[f] == "LLO"){
+            fold <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot")
+          }
+          if (folds[f] == "LTO"){
+            fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime")
+          }
+          if (folds[f] == "LLTO"){
+            fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
+          }
 
-        df <- data.frame(
-          year_month = time,
-          classifier = modclass,
-          accuracy = accuracy,
-          Nrmse = accuracy / (max(resps) - min(resps)),
-          Rsqrd = summary(mod)$r.squared,
-          sensor = sensor,
-          modeltype = fold,
-          note = mnote
-        )
+          ctrl <- caret::trainControl(method = "cv",
+                                      index = fold$index,
+                                      savePredictions = TRUE)
 
-        df$variables[1] <- list(c(mod$selectedvars))
-        df_total <- rbind(df_total,df)
+          if (autocorrelation == TRUE){
+            preds <- trainingDat[ ,head(predrows, -length(delect$variables))]
+          } else {
+            preds <- trainingDat[ ,predrows]
+          } # end autocorrelation-loop
 
-        remove(data_y, data_ym, ffsmodel, idx_y, idx_ym, mod)
-        gc()
-      }) # end classifier loop (modeltype)
-    }) # end climresp loop  (response sensor)
+          # set response
+          resps <- trainingDat[ ,s]
+
+          # define sensors
+          if (s == climresp[1]){sensor <- "tem"}
+          if (s == climresp[2]){sensor <- "reh"}
+#         if (s == climresp[3]){sensor <- "sun"}
+#         if (s == climresp[4]){sensor <- "pre"}
+            print(paste0('The response column ',
+                         colnames(trainingDat[s]),
+                         ' will be safed as ',
+                         sensor, '.'))
+
+          # save the training and testing data for further evaluation
+          save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(y, m, "_", mnote, "_", sensor, "_", "trainingDat.RData")))
+          save(testingDat, file = file.path(envrmt$path_tfinal, paste0(y, m, "_", mnote, "_", sensor, "_", "testingDat.RData")))
+
+          # start classifier loop
+          for (i in 1:length(classifier)) try ({
+
+            method <- classifier[i]
+            print(paste0("Next model: ", method))
+            tuneLength = 2
+            tuneGrid <- NULL
+
+            # adjust settings for different model types
+            if (method == "gbm"){
+              tuneLength <- 10
+              ctrl = trainControl(method = "repeatedcv",
+                                  number = 10,
+                                  repeats = 10,
+                                  savePredictions = TRUE)
+              modclass <-"gbm"
+            }
+            if (method == "lm"){
+              tuneLength <- 10
+              modclass <- "lim"
+            }
+            if (method == "rf"){
+              tuneLength <- 1
+              tuneGrid <- expand.grid(mtry = 2)
+              modclass <- "raf"
+            }
+            if (method == "pls"){
+#              preds <- data.frame(scale(preds))
+              tuneLength <- 10
+              modclass <- "pls"
+            }
+            if (method == "nnet"){
+              tuneLength <- 1
+              preds <- data.frame(scale(preds))
+              tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
+                                      decay = seq(0,0.1,0.025)
+              )
+              modclass <- "nnt"
+            }
+
+            # Optional: activate parallelisation for faster computing
+            if (doParallel == TRUE){
+              cr <- parallel::detectCores()
+              cl <- parallel::makeCluster(cr - 2)
+              doParallel::registerDoParallel(cl)
+            }
+
+            # calculate model
+            ffsmodel <- CAST::ffs(predictors = preds,
+                                  response = resps,
+                                  metric = "RMSE",
+                                  withinSE = FALSE,
+                                  method = method,
+                                  importance = TRUE,
+                                  tuneLength = tuneLength,
+                                  tuneGrid = tuneGrid,
+                                  trControl = ctrl,
+                                  linout = TRUE,
+                                  verbose = FALSE,
+                                  trace = FALSE
+            )
+
+            # stop paralellization, if it was activated
+            if (doParallel == TRUE){
+              stopCluster(cl)
+            }
+
+            # save all models
+            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(y, m, "_", fold, "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
+
+            # create data frame for model evaluation
+            if (method == "gbm"){
+              accuracy = min(ffsmodel$results$RMSE)
+            } else {
+              accuracy <- min(ffsmodel$selectedvars_perf)
+            }
+
+            df <- data.frame(
+              year_month = paste0(y, m),
+              classifier = modclass,
+              accuracy = accuracy,
+              Nrmse = accuracy / (max(resps) - min(resps)),
+              Rsqrd = ffsmodel$results[1,3],
+              sensor = sensor,
+              modeltype = folds[f],
+              note = mnote)
+
+          #add the vars in list
+            if (method == "gbm"){
+              df$variables[1] = list(c(colnames(ffsmodel$ptype)))
+            } else {
+              df$variables[1] = list(c(ffsmodel$selectedvars))
+            }
+
+            df_total <- rbind(df_total, df)
+
+            remove(ffsmodel)
+            gc()
+          }) # end classifier loop (modeltype)
+        }) # end fold loop
+      }) # end climresp loop  (response sensor)
+    }) # end months loop
   }) # end timespan loop (year, month, etc.)
 
   # save total loop analytics for eval
-  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(fold, "_", mnote, "_eval_df.rds")));
+  saveRDS(df_total, file.path(envrmt$path_statistics, paste0(mnote, "_mod_eval_df.rds")));
   return(df_total)
 }

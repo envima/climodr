@@ -24,14 +24,15 @@ envi.create <- function(proj_path,
                      "output/predictions/",
                      "output/predictions/aoa/",
                      "output/maps/",
+                     "output/rfinal/",
                      "output/statistics/",
+                     "output/tfinal/",
                      "workflow/models/",
                      "workflow/preds/",
-                     "workflow/tabular/tworkflow/",
-                     "workflow/tabular/tfinal/",
+                     "workflow/tworkflow/",
                      "workflow/tmp/",
-                     "workflow/wraster/",
-                     "workflow/wvector/"
+                     "workflow/rworkflow/",
+                     "workflow/vworkflow/"
                      );
 
   if (exists("appendProjectDirList") && appendProjectDirList[[1]] != "") {
