@@ -1,56 +1,11 @@
 devtools::load_all()
 
 ### Initiate climodr ###
+# at home:
 climodr::envi.create("E:/climodr/exploratories")
 
-### getting the data ###
-
-# if(!require('remotes')) install.packages("remotes")
-# if(!require('httr')) install.packages('httr')
-# remotes::install_github('environmentalinformatics-marburg/tubedb/rTubeDB')
-
-library(rTubeDB)
-library(dplyr)
-tubedb <- rTubeDB::TubeDB(url = "http://137.248.186.133:61036",
-                          user = "alexander.klug",
-                          password = "p4ybtxO4")
-
-regionDF <- rTubeDB::query_regions(tubedb)
-plotDF <- rTubeDB::query_region_plots(tubedb, "BE")
-sensorDF <- rTubeDB::query_region_sensors(tubedb, "BE")
-
-# creating meta data
-plotDF.hainich <- plotDF %>% filter(plotDF$general_station %in% c("HEF", "HEG", "HEW"))
-plotDF.hainich <- plotDF.hainich[1:103, -c(4)]
-names(plotDF.hainich) <- c("plot", "general_station", "logger_type", "lat", "lon", "elevation")
-write.csv(plotDF.hainich,
-          file.path(envrmt$path_dep, "plot_description.csv"),
-          row.names = FALSE,
-          quote = FALSE)
-
-# download data
-data_o <- rTubeDB::query_timeseries(tubedb,
-                                    plot = row.names(plotDF.hainich),
-                                    sensor = c("Ta_200",
-                                               "rH_200"),
-                                    datetimeFormat = "POSIXlt")
-# saving raw data
-write.csv(data_o, row.names = FALSE, (file.path(envrmt$path_tmp, "hainich_raw.csv")))
-
-# splitting up stations (for now)
-stations <- unique(data_o$plot)
-for (i in 1:length(stations)){
-  data <- data_o[which(data_o$plot == stations[i]), ]
-  write.csv(data,
-            row.names = FALSE,
-            file.path(envrmt$path_tabular,
-                       paste0(stations[i], ".csv")
-                       )
-            )
-}
-
-remove(data, data_o, stations, i, regionDF, sensorDF, plotDF, plotDF.filtered, tubedb)
-gc()
+# in Lab II:
+climodr::envi.create("F:/users/kluga/exploratories")
 
 # --------------------------------------------------------------------------- #
 ### Pre-Processing ###
@@ -65,69 +20,12 @@ coord.sys <- terra::crs("EPSG:25832")
 climodr::crop.all(method = "MB_Timeseries",
                   ext = aoi,
                   crs = coord.sys)
-# calculate indices
 
+# calculate indices
 climodr::calc.indices
 
 # mean rasters
-
-all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T); #reads all data in Workflow Raster Folder
-dates <- as.Date(stringr::str_sub(all_files, 5, 12), format = "%Y%m%d")
-months <- strftime(dates, format = "%m")
-
-for (i in unique(months)[10:12]){
-  print(paste0("Calculating means for ",
-               unique(strftime(dates, format = "%B"))[as.integer(i)],
-               "..  ",
-               i, "/", length(unique(months))))
-  month_rasters <- all_files[which(months == i)]
-  rstack <- terra::rast()
-  rmean <- terra::rast()
-
-  print(paste0("Reading ", length(month_rasters), " files for this month..  "))
-
-  for (j in 1:length(month_rasters)){
-    x <- terra::rast(file.path(envrmt$path_rfinal, month_rasters[j]))
-    terra::add(rstack) <- x
-  } # end j-loop
-
-  n <- terra::nlyr(rstack)
-  l <- length(terra::sources(rstack))
-  vsort <- names(rstack)[1:(n/l)]
-  rstack <- rstack[[sort(names(rstack))]]
-
-  print("Calculate monthly means for each layer.. ")
-  for (k in seq(1, n, l)){
-    print("  ...  ")
-    a <- rstack[[k:(k+l-1)]]
-    b <- terra::app(a, fun = "mean")
-    names(b) <- names(a)[1]
-    terra::add(rmean) <- b
-  } # end k-loop
-
-  print("Writing raster..")
-  terra::writeRaster(rmean,
-                     file.path(envrmt$path_rfinal,
-                               paste0("hai_2020",
-                                      unique(months)[as.integer(i)],
-                                      "_mean.tif")
-                               )
-                     )
-  remove(rstack, rmean, j, n, l, vsort, k, a, b)
-  gc()
-} # end i-loop
-
-data_order <- names(terra::rast(file.path(envrmt$path_rworkflow, "hai_20200104_ind.tif")))
-all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T)
-
-for (i in 1:12){
-  data <- terra::rast(file.path(envrmt$path_rfinal, all_files[i]))
-  data <- data[[data_order]]
-  data$EVI <- NULL
-  data$EVI2 <- NULL
-  print(i)
-  terra::writeRaster(data, file.path(envrmt$path_rfinal, "new", all_files[i]))
-}
+climodr::aggregate.rast()
 
 # --------------------------------------------------------------------------- #
 
@@ -171,7 +69,8 @@ climodr::calc.model(timespan = c(2020),
                     predrows = c(9:47),
                     tc_method = "cv",
                     metric = "RMSE",
-                    autocorrelation = TRUE)
+                    autocorrelation = TRUE,
+                    doParallel = TRUE)
 
 # Prediction
 mod_tem <- readRDS(file.path(envrmt$path_models, "20201_LLO_normal_raf_tem_ffs_model.rds"))

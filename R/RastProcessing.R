@@ -133,3 +133,78 @@ calc.indices <- function(vi = NULL){
     gc()
   }
 }
+
+#' Aggregate Rasters
+#'
+#' Aggregate spatial raster files for desired timespan (eg. daily, monthly, annual..)
+#'
+#' @param method character.
+#'
+#' @return SpatRaster-Stack
+#' @seealso
+#'
+#' @name aggregate.rast
+#' @export aggregate.rast
+#'
+#' @examples
+#'
+
+aggregate.rast <- function(){
+  all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T); #reads all data in Workflow Raster Folder
+  dates <- as.Date(stringr::str_sub(all_files, 5, 12), format = "%Y%m%d")
+  months <- strftime(dates, format = "%m")
+
+  for (i in unique(months)){
+    print(paste0("Calculating means for ",
+                 unique(strftime(dates, format = "%B"))[as.integer(i)],
+                 "..  ",
+                 i, "/", length(unique(months))))
+    month_rasters <- all_files[which(months == i)]
+    rstack <- terra::rast()
+    rmean <- terra::rast()
+
+    print(paste0("Reading ", length(month_rasters), " files for this month..  "))
+
+    for (j in 1:length(month_rasters)){
+      x <- terra::rast(file.path(envrmt$path_rfinal, month_rasters[j]))
+      terra::add(rstack) <- x
+    } # end j-loop
+
+    n <- terra::nlyr(rstack)
+    l <- length(terra::sources(rstack))
+    vsort <- names(rstack)[1:(n/l)]
+    rstack <- rstack[[sort(names(rstack))]]
+
+    print("Calculate monthly means for each layer.. ")
+    for (k in seq(1, n, l)){
+      print("  ...  ")
+      a <- rstack[[k:(k+l-1)]]
+      b <- terra::app(a, fun = "mean", na.rm = TRUE)
+      names(b) <- names(a)[1]
+      terra::add(rmean) <- b
+    } # end k-loop
+
+    print("Writing raster..")
+    terra::writeRaster(rmean,
+                       file.path(envrmt$path_rfinal,
+                                 paste0("hai_2020",
+                                        unique(months)[as.integer(i)],
+                                        "_mean.tif")
+                       )
+    )
+    remove(rstack, rmean, j, n, l, vsort, k, a, b)
+    gc()
+  } # end i-loop
+
+  data_order <- names(terra::rast(file.path(envrmt$path_rworkflow, "hai_20200104_ind.tif")))
+  all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T)
+
+  for (i in 1:12){
+    data <- terra::rast(file.path(envrmt$path_rfinal, all_files[i]))
+    data <- data[[data_order]]
+    data$EVI <- NULL
+    data$EVI2 <- NULL
+    print(i)
+    terra::writeRaster(data, file.path(envrmt$path_rfinal, "new", all_files[i]))
+  }
+}
