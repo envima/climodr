@@ -7,6 +7,31 @@ climodr::envi.create("E:/climodr/exploratories")
 # in Lab II:
 climodr::envi.create("F:/users/kluga/exploratories")
 
+### Create Log-file ###
+
+library(log4r)
+
+my_logfile <- file.path(envrmt$path_tmp, "logfile.txt")
+
+my_console_appender <- console_appender(layout = default_log_layout())
+my_file_appender <- file_appender(my_logfile, append = TRUE,
+                                 layout = default_log_layout())
+
+my_logger <- log4r::logger(threshold = "INFO",
+                           appenders= list(my_console_appender,my_file_appender))
+
+log4r_info <- function() {
+  log4r::info(my_logger, "Info_message.")
+}
+
+log4r_error <- function() {
+  log4r::error(my_logger, "Error_message")
+}
+
+log4r_debug <- function() {
+  log4r::debug(my_logger, "Debug_message")
+}
+
 # --------------------------------------------------------------------------- #
 ### Pre-Processing ###
 

@@ -55,12 +55,24 @@ calc.model <- function(timespan,
   data_o <- read.csv(file.path(envrmt$path_tfinal, "final_daily.csv"));
   df_total <- data.frame();
 
+  # Optional: activate parallelisation for faster computing
+  if (doParallel == TRUE){
+    # talk to the user
+    print("Starting parallelization.")
+
+    cr <- parallel::detectCores()
+    cl <- parallel::makeCluster(cr * 0.75)
+    doParallel::registerDoParallel(cl)
+  }
+
   # talk to the user
   print("Starting to calculate desired models...")
 
   # for convenience to the user; all means all folds will be calculated.
   if (folds == "all"){
-    folds <- c("LLO", "LTO", "LLTO")
+    dofolds <- c("LLO", "LTO", "LLTO")
+  } else {
+    dofolds <- folds
   }
 
   for (y in timespan) try  ({
@@ -114,21 +126,21 @@ calc.model <- function(timespan,
         trainingDat <- data[partition_indexes, ]
         testingDat <- data[-partition_indexes, ]
 
-        for (f in 1:length(folds)) try( {
+        for (f in 1:length(dofolds)) try( {
 
           set.seed(seed)
 
-          if (folds[f] == "LLO"){
+          if (dofolds[f] == "LLO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot")
             # talk to the user
             print("Run with spatial folds for cross validation...")
           }
-          if (folds[f] == "LTO"){
+          if (dofolds[f] == "LTO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime")
             # talk to the user
             print("Run with temporal folds for cross validation...")
           }
-          if (folds[f] == "LLTO"){
+          if (dofolds[f] == "LLTO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
             # talk to the user
             print("Run with spatio-temporal folds for cross validation...")
@@ -173,10 +185,10 @@ calc.model <- function(timespan,
             # adjust settings for different model types
             if (method == "gbm"){
               tuneLength <- 10
-              ctrl = trainControl(method = "repeatedcv",
-                                  number = 10,
-                                  repeats = 10,
-                                  savePredictions = TRUE)
+              ctrl = caret::trainControl(method = "repeatedcv",
+                                         number = 10,
+                                         repeats = 10,
+                                         savePredictions = TRUE)
               modclass <-"gbm"
               # talk to the user
               print(paste0("Next model: Stochastic Gradient Boosting.  ", i, "/", length(classifier)))
@@ -212,16 +224,6 @@ calc.model <- function(timespan,
               print(paste0("Next model: Neural Networks.  ", i, "/", length(classifier)))
             }
 
-            # Optional: activate parallelisation for faster computing
-            if (doParallel == TRUE){
-              # talk to the user
-              print("Starting parallelization.")
-
-              cr <- parallel::detectCores()
-              cl <- parallel::makeCluster(cr - 2)
-              doParallel::registerDoParallel(cl)
-            }
-
             # talk to the user
             print("Computing model...")
 
@@ -240,15 +242,8 @@ calc.model <- function(timespan,
                                   trace = FALSE
             )
 
-            # stop paralellization, if it was activated
-            if (doParallel == TRUE){
-              #talk to the user
-              print("Ending parallelization.")
-              stopCluster(cl)
-            }
-
             # save all models
-            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(y, m, "_", fold, "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
+            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(y, m, "_", dofolds[f], "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
 
             # create data frame for model evaluation
             if (method == "gbm"){
@@ -264,7 +259,7 @@ calc.model <- function(timespan,
               Nrmse = accuracy / (max(resps) - min(resps)),
               Rsqrd = ffsmodel$results[1,3],
               sensor = sensor,
-              modeltype = folds[f],
+              modeltype = dofolds[f],
               note = mnote)
 
           #add the vars in list
@@ -290,4 +285,12 @@ calc.model <- function(timespan,
   # save total loop analytics for eval
   saveRDS(df_total, file.path(envrmt$path_statistics, paste0(mnote, "_mod_eval_df.rds")));
   return(df_total)
+
+  # stop paralellization, if it was activated
+  if (doParallel == TRUE){
+    #talk to the user
+    print("Ending parallelization.")
+    parallel::stopCluster(cl)
+  }
+
 }
