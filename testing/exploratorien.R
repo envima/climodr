@@ -86,7 +86,7 @@ climodr::autocorr(eval_vector, plot.corrplot = FALSE)
 # Modelling
 climodr::calc.model(timespan = c(2020),
                     climresp = c(5,6),
-                    classifier = c("rf", "pls" ,"lm", "gbm"),
+                    classifier = c("rf", "pls" ,"lm"),
                     seed = 707,
                     p = 0.8,
                     folds = "all",

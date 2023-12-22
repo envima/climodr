@@ -65,9 +65,6 @@ calc.model <- function(timespan,
     doParallel::registerDoParallel(cl)
   }
 
-  # talk to the user
-  print("Starting to calculate desired models...")
-
   # for convenience to the user; all means all folds will be calculated.
   if (folds == "all"){
     dofolds <- c("LLO", "LTO", "LLTO")
@@ -88,7 +85,7 @@ calc.model <- function(timespan,
       data_m <- data_y[c(which(data_y$month == m)), ]
 
       # talk to the user
-      print(paste0("Training monthly models for ", y,".  ", m, "/", length(months)))
+      print(paste0("Training monthly models for ", y,".  Month-Nr.: ", m, "/", length(months)))
 
       for (s in climresp) try({
         set.seed(seed)
@@ -96,7 +93,7 @@ calc.model <- function(timespan,
         if(autocorrelation == "TRUE"){
 
           # talk to the user
-          print("Deleting autocorrelating data...")
+          print("Use autocorellation data for filtering..")
 
           data <- data_m[complete.cases(data_m), ]
 
@@ -126,24 +123,24 @@ calc.model <- function(timespan,
         trainingDat <- data[partition_indexes, ]
         testingDat <- data[-partition_indexes, ]
 
-        for (f in 1:length(dofolds)) try( {
+        for (f in dofolds) try( {
 
           set.seed(seed)
 
-          if (dofolds[f] == "LLO"){
+          if (f == "LLO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot")
             # talk to the user
-            print("Run with spatial folds for cross validation...")
+            print(paste0("Run with spatial folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
           }
-          if (dofolds[f] == "LTO"){
+          if (f == "LTO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime")
             # talk to the user
-            print("Run with temporal folds for cross validation...")
+            print(paste0("Run with temporal folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
           }
-          if (dofolds[f] == "LLTO"){
+          if (f == "LLTO"){
             fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
             # talk to the user
-            print("Run with spatio-temporal folds for cross validation...")
+            print(paste0("Run with spatio-temporal folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
           }
 
           ctrl <- caret::trainControl(method = "cv",
@@ -243,7 +240,7 @@ calc.model <- function(timespan,
             )
 
             # save all models
-            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(y, m, "_", dofolds[f], "_", mnote, "_", modclass, "_", sensor, "_ffs_model.rds")))
+            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(mnote, "_", sensor, "_", y, m, "_", dofolds[f], "_", modclass, "_ffs_model.rds")))
 
             # create data frame for model evaluation
             if (method == "gbm"){
@@ -259,7 +256,7 @@ calc.model <- function(timespan,
               Nrmse = accuracy / (max(resps) - min(resps)),
               Rsqrd = ffsmodel$results[1,3],
               sensor = sensor,
-              modeltype = dofolds[f],
+              modeltype = f,
               note = mnote)
 
           #add the vars in list
@@ -273,11 +270,11 @@ calc.model <- function(timespan,
 
             remove(ffsmodel)
             gc()
-          }) # end classifier loop (modeltype)
-        }) # end fold loop
-      }) # end climresp loop  (response sensor)
-    }) # end months loop
-  }) # end timespan loop (year, month, etc.)
+          }) # end classifier loop [i]
+        }) # end fold loop [f]
+      }) # end climresp loop [s]
+    }) # end months loop [m]
+  }) # end timespan loop [y]
 
   #talk to the user
   print("Done! Saving evaluation data frame.")
