@@ -1,21 +1,22 @@
 Package: climodr
 Type: Package
 Title: Climate modeling with point data from climate stations
-Version: 0.1.0
-Author: 
-    c(person(given = "Luise",
-             family = "Wraase",
-             role = c("aut"),
-             email = "luise.wraase@geo.uni-marburg.de"))
-    c(person(given = "Seda",
-             family = "Bekar",
-             role = c("aut"),
-             email = "seda.bekar@students.uni-marburg.de"))
-    c(person(given = "Alexander"
-             family = "Klug")
-             role = c("aut", "cre")
-             email = "kluga@students-uni-marburg.de"))
-Maintainer: umweltinformatik@geo.uni-marburg.de
+Version: 0.0.0.9000
+Authors@R: 
+    c(person("Alexander", "Klug",
+             email = "kluga@students-uni-marburg.de",
+             role = c("aut", "cre")),
+      person("Luise", "Wraase",
+             email = "luise.wraase@geo.uni-marburg.de",
+             role = c("aut")),
+      person("Seda", "Bekar",
+             email = "seda.bekar@students.uni-marburg.de",
+             role = c("ctb"))
+             )
+Author: Alexander Klug [aut, cre],
+  Luise Wraase [aut],
+  Seda Bekar [ctb]
+Maintainer: Alexander Klug <kluga@students.uni-marburg.de>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
@@ -28,18 +29,12 @@ Imports:
     data.table,
     doParallel,
     dplyr,
-    ggplot2,
     parallel,
     pls,
     randomForest,
-    raster,
-    rgdal,
-    RStoolbox,
-    lares,
-    sf,
     sp,
     stringr,
-    terra,
+    terra
 Depends: 
     tidyverse
 Suggests: 

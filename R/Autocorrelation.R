@@ -13,18 +13,32 @@
 #' @examples
 #'
 
-autocorr <- function(eval, plot.corrplot = TRUE){
+autocorr <- function(
+    method = "monthly",
+    pred,
+    resp,
+    plot.corrplot = TRUE)
+  {
   #get data from PreProcessing
-  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_daily.csv"));
+  data_o <- read.csv(
+    file.path(
+      envrmt$path_tfinal,
+      paste0(
+        "final_",
+        method,
+        ".csv"
+        )
+      )
+    )
 
   #subset data
-  data <- data_o[ ,eval]; #c(6,9,12,13,17:21,24:36,38,39,41,44:57)
+  data <- data_o[ ,c(pred, resp)]
 
   #duplicated data
   #data_d <- data[duplicated(data),];
-  data_c <- data[complete.cases(data), ];
+  data <- data[complete.cases(data), ]
 
-  c <- cor(data_c);
+  c <- stats::cor(data)
 
   ### -- smol function from stack overflow for cor-test -- ##
   cor.mtest <- function(mat, ...) {
@@ -43,7 +57,7 @@ autocorr <- function(eval, plot.corrplot = TRUE){
   };
 
   # matrix of the p-value of the correlation
-  p.mat <- cor.mtest(data_c);
+  p.mat <- cor.mtest(data);
   head(p.mat[, 1:5]);
 
   if (plot.corrplot == TRUE){
@@ -91,46 +105,62 @@ autocorr <- function(eval, plot.corrplot = TRUE){
                        number.cex=0.75);
   }
 
-  # Now with a variable for sensor
-  tem <- lares::corr_var(data_c, Ta_200, max_pvalue = 0.05,
-                         ignore = c("rH_200", "SWDR_200","P_RT_NRT"),
-                         top = 50);
-#  pre <- lares::corr_var(data_c, P_RT_NRT, max_pvalue = 0.05,
-#                         ignore = c("rH_200", "SWDR_200","Ta_200"),
-#                         top = 50);
-#  sun <- lares::corr_var(data_c, SWDR_200, max_pvalue = 0.05,
-#                         ignore = c("rH_200", "Ta_200","P_RT_NRT"),
-#                         top = 50);
-  reh <- lares::corr_var(data_c, rH_200, max_pvalue = 0.05,
-                         ignore = c("Ta_200", "SWDR_200","P_RT_NRT"),
-                         top = 50);
+# Now with a variable for sensor
+  corlist <- list()
+  sensor_names <- names(data)[c(1:length(pred))]
 
-  # Temperature data frame
-  temdf <- tem$data;
-  temdfvar <- temdf[temdf$corr <= 0,];
-  write.csv(temdfvar, file.path(envrmt$path_statistics, "tem_delect.csv"));
+# thanks to lares maintainer Bernardo Lares <laresbernardo@gmail.com>
+# for supporting this part on StackOverflow
 
-  # Pecipitation data frame
-#  predf <- pre$data;
-#  predfvar <- predf[predf$corr <= 0,];
-#  write.csv(predfvar, file.path(envrmt$path_statistics, "pre_delect.csv"));
+  if(length(pred) == 1){
+    var_name <- sensor_names[1]
+    var_sym <- rlang::sym(var_name)  # Construct symbol from string
+    corlist[[1]] <- lares::corr_var(
+      df = data,
+      var = !!var_sym,
+      max_pvalue = 0.05,
+      top = 50)
+  } else {
+    for (i in 1:length(pred)){
+      var_name <- sensor_names[i]
+      var_sym <- rlang::sym(var_name)  # Construct symbol from string
+      corlist[[i]] <- lares::corr_var(
+        df = data,
+        var = !!var_sym,
+        max_pvalue = 0.05,
+        ignore = names(data)[c(1:length(pred)[-i])],
+        top = 50
+      )
+    }
+  } # end if-conditions
 
-  # solar radiation data frame
-#  sundf <- sun$data;
-#  sundfvar <- sundf[sundf$corr <= 0,];
-#  write.csv(sundfvar, file.path(envrmt$path_statistics, "sun_delect.csv"));
+  for (i in 1:length(corlist)){
+    df <- corlist[[i]]$data
+    var <- df[df$corr <= 0, ]
+    write.csv(
+      var,
+      file.path(
+        envrmt$path_statistics,
+        paste0(
+          sensor_names[i],
+          "_delect.csv"
+          )
+        )
+      )
+  } # end corlist-loop
 
-  # reh data frame
-  rehdf <- reh$data;
-  rehdfvar <- rehdf[rehdf$corr <= 0,];
-  write.csv(rehdfvar,file.path(envrmt$path_statistics, "reh_delect.csv"));
-
-
-  new <- data_o%>% select(-c(rehdfvar$variables));
-
-  data <- data[rehdfvar$variables,];
-
-
-    # variance infection factor (vif-factor)
-
+print(
+  paste0(
+    "Calculated autocorrelations for these sensors [",
+    sensor_names,
+    "]."
+    )
+  )
+saveRDS(
+  sensor_names,
+  file.path(
+    envrmt$path_tmp,
+    "sensor_names.rds"
+    )
+  )
 } # end function

@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-v.Alpha_1.0.0
+Version 0.0.0.9000
 
 Welcome to climate modeller in R, short climodr. 
 This packages uses point data from climate stations, spectral imagery and elevation models to automatically create ready-to-use climate maps and statistics. This Vignette should guide you through the package, explain its functions and give you an idea of how to use climodr.
@@ -44,7 +44,7 @@ With the *envi.create()* function, one just points out a path, where the package
 ```{r setup env}
 #setting up the environment for climodr
 
-climodr::envi.create("E:/climodr/vignette")
+envi.create("E:/climodr/vignette")
 ```
 
 Climodr then creates an environment with three main folders:\
@@ -80,7 +80,7 @@ Note: Raster preperation and index calculation is not included in the package ye
 
 First, we have to prepare the tabular data for further uses. The prep.csv function cleans up and removes all NA values from the data.
 ```{r prep csv}
-climodr::prep.csv(method = "proc", safe_output = TRUE)
+prep.csv(method = "proc", safe_output = TRUE)
 
 #check the created csv files
 csv_files <- grep("_no_NAs.csv$", 
@@ -94,7 +94,7 @@ Next, the data needs to be aggregated for monthly means.\
 
 Note: In future the user will be able to choose the time period. 
 ```{r proc csv}
-csv_data <- climodr::proc.csv(method = "all",
+csv_data <- proc.csv(method = "monthly",
                               rbind = TRUE,
                               safe_output = TRUE)
 head(csv_data)
@@ -106,18 +106,34 @@ Next, the stations have to be located in space, with a coordinate system. This s
 
 Note: For some reason the coordinates slide between SWDR_200 and P_RT_NRT. This is no problem, but the order is still weird. Should be adressed in future.
 ```{r spat csv}
-csv_spat <- climodr::spat.csv(method = "monthly",
-                              des_file = "plot_description.csv",
-                              safe_output = TRUE)
+csv_spat <- spat.csv(method = "monthly",
+                     des_file = "plot_description.csv",
+                     safe_output = TRUE)
 head(csv_spat)
 ```
+
+## Pre-Process Raster Data for data extraction
+
+```{r crop all}
+crop.all(method = "MB_Timeseries", overwrite = TRUE)
+```
+
+```{r calc indices}
+calc.indices(vi = "all",
+             bands = c("blue", "green", "red", 
+                       "nir", "nirb", 
+                       "re1", "re2", "re3", 
+                       "swir1", "swir2"),
+             overwrite = TRUE)
+```
+
 
 ## Finalize tabular data for modelling
 
 Next, one needs to extract the data at the stations from the aerial imagery.
 ```{r finalize csv}
-csv_fin <- climodr::fin.csv(method = "monthly",
-                            safe_output = TRUE)
+csv_fin <- fin.csv(method = "monthly",
+                   safe_output = TRUE)
 head(csv_fin)
 ```
 
@@ -129,10 +145,13 @@ Next, one tests the data for autocorrelation. The evaluation vector contains all
 
 Note: A few columns are masked out, because they cause errors. Needs to be address in future.\
 Note': The visualization is quite messy, when there are a lot of predictors. Maybe make it prettier in future.
-```{r autocorr}
-eval_vector <- c(4:43) #4:43
-
-climodr::autocorr(eval_vector, plot.corrplot = FALSE)
+```{r autocorr, warning = FALSE}
+autocorr(
+  method = "monthly",
+  pred = 5, 
+  resp = c(8:24),
+  plot.corrplot = FALSE
+  )
 ```
 
 ## Create climate models 
@@ -158,18 +177,25 @@ doParallel = Logical Parameter. When set True, the Model-Process will paralleliz
 
 Note: Loop doesn't work with more climresp'S; Cuts when looped into climresp = 9, runs if started mannually; climresp = 12 doesnt work; climresp = 15 doesnt work -> Eval vector gets overwritten, statistics dont work.
 ```{r model, eval = FALSE, warning = FALSE}
-climodr::calc.model(timespan = c(2018),
-                    climresp = c(4:7),
-                    classifier = c("rf", "pls", "nnet" , "lm"),
-                    seed = 707,
-                    p = 0.8,
-                    fold = "LLO",
-                    mnote = "normal",
-                    predrows = c(8:43),
-                    tc_method = "cv",
-                    metric = "RMSE",
-                    autocorrelation = TRUE,
-                    doParallel = FALSE)
+calc.model(
+  method = "monthly",
+  timespan = c(2017),
+  climresp = c(5),
+  classifier = c(
+    "rf", 
+    "pls", 
+    "nnet", 
+    "lm"
+    ),
+  seed = 707,
+  p = 0.8,
+  folds = "LLO",
+  mnote = "vignette",
+  predrows = c(8:24),
+  tc_method = "cv",
+  metric = "RMSE",
+  autocorrelation = TRUE,
+  doParallel = FALSE)
 ```
 
 ## Predictions
@@ -179,8 +205,10 @@ Further we can predict the scenes using the models with the `climpred` function.
 Note: There are no options yet, but it works. Because the evaluation data frame doesn't work right now, it predicts all models. In Future, it will only predict the models which perform best. 
 
 ```{r predict, eval = FALSE}
-climodr::climpred()
+climpred()
 ```
+
+
 Lets show the list of predictions:
 ```{r list predictions}
 predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
@@ -188,11 +216,15 @@ aoalist <- list.files(file.path(envrmt$path_predictions, "aoa"), pattern = ".tif
 
 head(predlist)
 ```
+
+
 Now lets plot the second one, which was the linear regression model for temperature. 
 ```{r plot predictions}
 pred <- terra::rast(file.path(envrmt$path_predictions, predlist[2]))
 terra::plot(pred, main = "LLO_lim_tem")
 ```
+
+
 Now lets apply the aoa on the prediction, to see, which areas are applicable.
 ```{r}
 aoa <- terra::rast(file.path(envrmt$path_predictions, "aoa", aoalist[2]))
@@ -207,7 +239,7 @@ We can now validate the prediction with our test-dataset, that was created durin
 
 Note: Validation doesn't work fully yet, because the evaluation data frame is still buggy. 
 ```{r validate, eval = FALSE}
-climodr::validate()
+validate()
 ```
 
 # Plotting
@@ -227,6 +259,6 @@ To-Do:
 - summary 
 - plot
 ```{r statistics, eval = FALSE}
-climodr::climstats(method = "vif")
+climstats(method = "vif")
 ```
 

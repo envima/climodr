@@ -1,7 +1,7 @@
 devtools::load_all()
 
 ### Initiate climodr ###
-climodr::envi.create("E:/climodr/exploratories")
+climodr::envi.create("E:/climodr/exploratories/Schorfheide_100")
 
 ### getting the data ###
 
@@ -17,9 +17,9 @@ climodr::get.data(method = "tubeDB",
 # --------------------------------------------------------------------------- #
 ### Pre-Processing ###
 
-# define areo of interest and coordinate reference system
-aoi <- terra::vect(file.path(envrmt$path_vector, "exploratorium_hainich.gpkg"))
-coord.sys <- terra::crs("EPSG:25832")
+# define area of interest and coordinate reference system
+aoi <- terra::vect(file.path(envrmt$path_vector, "be_sch_area.gpkg"))
+coord.sys <- terra::crs("EPSG:32632")
 
 ## --- Prepare Raster Data --- ##
 
@@ -27,69 +27,9 @@ coord.sys <- terra::crs("EPSG:25832")
 climodr::crop.all(method = "MB_Timeseries",
                   ext = aoi,
                   crs = coord.sys)
+
 # calculate indices
-
-climodr::calc.indices
-
-# mean rasters
-
-all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T); #reads all data in Workflow Raster Folder
-dates <- as.Date(stringr::str_sub(all_files, 5, 12), format = "%Y%m%d")
-months <- strftime(dates, format = "%m")
-
-for (i in unique(months)[10:12]){
-  print(paste0("Calculating means for ",
-               unique(strftime(dates, format = "%B"))[as.integer(i)],
-               "..  ",
-               i, "/", length(unique(months))))
-  month_rasters <- all_files[which(months == i)]
-  rstack <- terra::rast()
-  rmean <- terra::rast()
-
-  print(paste0("Reading ", length(month_rasters), " files for this month..  "))
-
-  for (j in 1:length(month_rasters)){
-    x <- terra::rast(file.path(envrmt$path_rfinal, month_rasters[j]))
-    terra::add(rstack) <- x
-  } # end j-loop
-
-  n <- terra::nlyr(rstack)
-  l <- length(terra::sources(rstack))
-  vsort <- names(rstack)[1:(n/l)]
-  rstack <- rstack[[sort(names(rstack))]]
-
-  print("Calculate monthly means for each layer.. ")
-  for (k in seq(1, n, l)){
-    print("  ...  ")
-    a <- rstack[[k:(k+l-1)]]
-    b <- terra::app(a, fun = "mean")
-    names(b) <- names(a)[1]
-    terra::add(rmean) <- b
-  } # end k-loop
-
-  print("Writing raster..")
-  terra::writeRaster(rmean,
-                     file.path(envrmt$path_rfinal,
-                               paste0("hai_2020",
-                                      unique(months)[as.integer(i)],
-                                      "_mean.tif")
-                               )
-                     )
-  remove(rstack, rmean, j, n, l, vsort, k, a, b)
-  gc()
-} # end i-loop
-
-data_order <- names(terra::rast(file.path(envrmt$path_rworkflow, "hai_20200104_ind.tif")))
-all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T)
-
-for (i in 1:12){
-  data <- terra::rast(file.path(envrmt$path_rfinal, all_files[i]))
-  data <- data[[data_order]]
-  data$EVI <- NULL
-  data$EVI2 <- NULL
-  print(i)
-  terra::writeRaster(data, file.path(envrmt$path_rfinal, "new", all_files[i]))
-}
+climodr::calc.indices()
 
 # --------------------------------------------------------------------------- #
 
@@ -100,7 +40,7 @@ climodr::prep.csv(method = "proc", safe_output = TRUE)
 csv_data <- climodr::proc.csv(method = "all",
                               rbind = TRUE,
                               safe_output = TRUE)
-head(csv_data)
+head(csv_data)            # month and year were copied, daily_mean_year.1
 
 # make csv data spatial
 csv_spat <- climodr::spat.csv(method = "monthly",
@@ -113,45 +53,58 @@ head(csv_spat)
 csv_fin <- climodr::fin.csv(method = "monthly",
                             crs = coord.sys,
                             safe_output = TRUE)
-head(csv_fin)
+head(csv_fin)[, c(1:12)]
 
 # --------------------------------------------------------------------------- #
 ### modelling ###
-
-
-eval_vector <- c(5, 6, 9:47)
+eval_vector <- c(5, 8:24)
 climodr::autocorr(eval_vector, plot.corrplot = FALSE)
 
 # Modelling
-climodr::calc.model(timespan = c(2020),
-                    climresp = c(5,6),
-                    classifier = c("rf", "pls" ,"lm", "gbm"),
+climodr::calc.model(timespan = c(2017),
+                    climresp = c(5),
+                    classifier = c("rf", "pls", "nnet", "lm"),
                     seed = 707,
                     p = 0.8,
                     folds = "all",
-                    mnote = "f20run",
-                    predrows = c(9:47),
+                    mnote = "sch100",
+                    predrows = c(8:24),
                     tc_method = "cv",
                     metric = "RMSE",
-                    autocorrelation = TRUE)
+                    autocorrelation = FALSE)
+
+# eval_df
+eval_df <- readRDS(file.path(envrmt$path_statistics, "sch100_mod_eval_df.rds"))
 
 # Prediction
-mod_tem <- readRDS(file.path(envrmt$path_models, "20201_LLO_normal_raf_tem_ffs_model.rds"))
-mod_reh <- readRDS(file.path(envrmt$path_models, "20201_LLO_normal_raf_reh_ffs_model.rds"))
-tif <- terra::rast(file.path(envrmt$path_rfinal, "hai_202001_mean.tif"))
-dgm <- terra::rast(file.path(envrmt$path_rfinal, "hai_dgm.tif"))
+mod_tem <- readRDS(file.path(envrmt$path_models, "sch100_tem_20177_LLO_pls_ffs_model.rds"))
+
+#mod_reh <- readRDS(file.path(envrmt$path_models, "f20run_reh_20207_LLO_pls_ffs_model.rds"))
+tif <- terra::rast(file.path(envrmt$path_rfinal, "sch_201707_100_mean_ind.tif"))
+dgm <- terra::rast(file.path(envrmt$path_raster, "sch_100_dgm.tif"))
 dgm <- terra::resample(dgm, tif)
 terra::add(tif) <- dgm
 
 pred_tem <- terra::predict(tif, mod_tem, na.rm = T)
-pred_reh <- terra::predict(tif, mod_reh, na.rm = T)
-terra::writeRaster(pred_tem, file.path(envrmt$path_preds, "hai_202001_tem_pred.tif"))
-terra::writeRaster(pred_reh, file.path(envrmt$path_preds, "hai_202001_reh_pred.tif"))
+#pred_reh <- terra::predict(tif, mod_reh, na.rm = T)
+terra::writeRaster(pred_tem, file.path(envrmt$path_predictions, "sch_201707_tem_pred.tif"), overwrite = TRUE)
+#terra::writeRaster(pred_reh, file.path(envrmt$path_predictions, "hai_202007_reh_pred.tif"))
 
 aoa_tem <- CAST::aoa(tif, mod_tem)
-aoa_reh <- CAST::aoa(tif, mod_reh)
-terra::writeRaster(aoa_tem$AOA, file.path(envrmt$path_preds, "hai_202001_tem_aoa.tif"))
-terra::writeRaster(aoa_reh$AOA, file.path(envrmt$path_preds, "hai_202001_reh_aoa.tif"))
+#aoa_reh <- CAST::aoa(tif, mod_reh)
+terra::writeRaster(aoa_tem$AOA, file.path(envrmt$path_aoa, "hai_202007_tem_aoa.tif"))
+#terra::writeRaster(aoa_reh$AOA, file.path(envrmt$path_aoa, "hai_202007_reh_aoa.tif"))
 
 terra::plot(pred)
 terra::plot(aoa$AOA, add = TRUE)
+
+df <- readRDS(file.path(envrmt$path_statistics, "f20run_mod_eval_df.rds"))
+
+
+points <- terra::vect(csv_fin,
+                      geom = c("lon", "lat"),
+                      crs = coord.sys)
+terra::plot(aoi)
+terra::plot(points,
+            add = TRUE)
+

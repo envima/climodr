@@ -12,33 +12,78 @@
 #' @examples
 #'
 
-climpred <- function(){
-# read in dem
-  b_dem <- terra::rast(file.path(envrmt$path_wraster,
-                                 grep(pattern = "dem_",
-                                      list.files(envrmt$path_wraster),
-                                      value = TRUE)
-                                 )
-                       )
+climpred <- function(
+    method = "monthly",
+    mnote){
+
+  # create a list with all raster images
+  tiff_list <- list.files(
+    path = envrmt$path_rfinal,
+    pattern = ".tif",
+    recursive = TRUE
+  )
+
+  # read dgm
+  dgm <- terra::rast(
+    file.path(
+      envrmt$path_rfinal,
+      grep(
+        pattern = "_dgm_",
+        tiff_list,
+        value = TRUE)
+      )
+    )
+
 
 # read in all models
-  mod_list <- as.data.frame(list.files(path = envrmt$path_models, pattern = "ffs_model.rds", recursive = TRUE))
-  colnames(mod_list)[1] <- "mod"
+  mod_list <- list.files(
+    path = envrmt$path_models,
+    pattern = "_model.rds",
+    recursive = TRUE
+    )
 
-# extract the best models, measured by rmse
-#  finmod <- list.files(envrmt$path_models ,pattern = "best_rmse",full.names = TRUE)
-# normal
-#  e_rmse <- readRDS(finmod[1])
+# read eval_df
+  eval_df <- readRDS(
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_mod_eval_df.rds"
+        )
+      )
+    )
 
-# create empty model data frame
-#  mod_df <- data.frame()
+# filter for best models
+  dates <- unique(eval_df[, 1])
+  for (i in 1:length(dates)){
+    mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
+    ifelse(
+      i == 1,
+      mod_df <- mod_date[
+        which(mod_date$Nrmse == min(mod_date$Nrmse)), ],
+      mod_df[i, ] <- mod_date[
+        which(mod_date$Nrmse == min(mod_date$Nrmse)), ]
+      )
+# read fitting raster
+    raster <- terra::rast(
+      file.path(
+        envrmt$path_rfinal,
+        grep(
+          pattern = dates[i],
+          tiff_list,
+          value = TRUE
+        )
+      )
+    )
+    terra::add(raster) <- dgm
 
-# create a list with all raster images
-  tiff_list <- list.files(path = envrmt$path_wraster, pattern = "_layer.tif", recursive = TRUE)
+    mod <- readRDS(
+      file.path(
+        envrmt$path_models,
 
-  for (i in 1:length(tiff_list)){
-    rasterStack <- terra::rast(file.path(envrmt$path_wraster, tiff_list[i]))
-    terra::add(rasterStack) <- b_dem
+      )
+    )
+  } # end i loop
 
     for (j in 1:nrow(mod_list)){
       mod <- readRDS(file.path(envrmt$path_models, mod_list[j, ]))
@@ -68,5 +113,4 @@ climpred <- function(){
                          file.path(envrmt$path_predictions, "aoa", paste0(n.mod, "_anl_aoa.tif")),
                          overwrite = TRUE)
     } # end prediction loop
-  } # end raster loop
 } # end function loop

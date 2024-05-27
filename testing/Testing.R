@@ -40,22 +40,23 @@ head(csv_fin)
 
 # check data for autocorrelation
 # vector with excluded data
-eval_vector <- c(6, 9, 12, 15, 16:28, 30, 31, 33, 34, 37:52, 54, 55) # -c(29(NBR), 32(NDB), 35(NDT), 36(NDS), -53(tpi))
+eval_vector <- c(5, 6, 9:47)
 climodr::autocorr(eval_vector)
 
 # Modelling
 climodr::calc.model(timespan = c(18),
-                    climresp = c(6),
+                    climresp = c(6:9),
                     classifier = c("rf", "pls","nnet" ,"lm"),
                     seed = 707,
                     p = 0.8,
-                    fold = "LLO",
-                    mnote = "normal",
+                    folds = "all",
+                    mnote = "testrn",
                     predrows = c(16:55),
                     tc_method = "cv",
                     metric = "RMSE",
+                    doParallel = TRUE,
                     autocorrelation = TRUE)
 
 # Prediction (inclusive AOA)
-climodr::climpred(fold = "LLO",
+climodr::climpred(doParallel = TRUE,
                   AOA = TRUE)

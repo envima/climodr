@@ -38,24 +38,37 @@
 #'
 #' @examples
 #'
-calc.model <- function(timespan,
-                       climresp,
-                       classifier = c("rf", "pls", "lm"),
-                       seed = NULL,
-                       p = 0.8,
-                       folds = "all",
-                       predrows = NULL,
-                       mnote = NULL,
-                       k = NULL,
-                       tc_method = "cv",
-                       metric = "RMSE",
-                       doParallel = FALSE,
-                       autocorrelation = FALSE,
-                       ...){
-  data_o <- read.csv(file.path(envrmt$path_tfinal, "final_daily.csv"));
-  df_total <- data.frame();
+calc.model <- function(
+    method = "monthly",
+    timespan,
+    climresp,
+    classifier = c("rf", "pls", "lm", "glm"),
+    seed = NULL,
+    p = 0.8,
+    folds = "all",
+    predrows,
+    mnote = NULL,
+    k = NULL,
+    tc_method = "cv",
+    metric = "RMSE",
+    doParallel = FALSE,
+    autocorrelation = FALSE,
+    ...)
+{
+  data_o <- read.csv(
+    file.path(
+      envrmt$path_tfinal,
+      paste0(
+        "final_",
+        method,
+        ".csv"
+        )
+      )
+    )
+  df_total <- data.frame()
 
-  # Optional: activate parallelisation for faster computing
+# ------------------------- Parallelisation --------------------------------- #
+  # Optional: activate for faster computing
   if (doParallel == TRUE){
     # talk to the user
     print("Starting parallelization.")
@@ -65,6 +78,8 @@ calc.model <- function(timespan,
     doParallel::registerDoParallel(cl)
   }
 
+# --------------------------------------------------------------------------- #
+
   # for convenience to the user; all means all folds will be calculated.
   if (folds == "all"){
     dofolds <- c("LLO", "LTO", "LLTO")
@@ -72,6 +87,7 @@ calc.model <- function(timespan,
     dofolds <- folds
   }
 
+# Beginning of Y-Loop ------------------------------------------ Timespan --- #
   for (y in timespan) try  ({
 
     data_y <- data_o[c(which(data_o$year == y)), ]
@@ -81,39 +97,51 @@ calc.model <- function(timespan,
     # talk to the user
     print(paste0("Training models for ", y, ".  Year-Nr.: ", which(timespan == y), "/", length(timespan)))
 
+# Loop for monthly models ----------------------------------------- Month --- #
     for (m in months) try ({
       data_m <- data_y[c(which(data_y$month == m)), ]
 
       # talk to the user
-      print(paste0("Training monthly models for ", y,".  Month-Nr.: ", m, "/", length(months)))
+      print(paste0("Training monthly models for ", y,".  Month-Nr.: ", m))
 
+# Loop for the climate sensors --------------------------------- Climresp --- #
       for (s in climresp) try({
-        set.seed(seed)
+
+        if (!is.null(seed)){set.seed(seed)}
+
+## Autocorellation Condition ------------------------------------------------ #
+        sensor_names <- readRDS(
+          file.path(
+            envrmt$path_tmp,
+            "sensor_names.rds"
+          )
+        )
 
         if(autocorrelation == "TRUE"){
-
           # talk to the user
           print("Use autocorellation data for filtering..")
-
           data <- data_m[complete.cases(data_m), ]
-
-          if (s == climresp[1]){
-            delect <- read.csv(file.path(envrmt$path_statistics, "tem_delect.csv"))
-          }
-          if (s == climresp[2]){
-            delect <- read.csv(file.path(envrmt$path_statistics, "reh_delect.csv"))
-          }
-#          if (s == climresp[3]) try ({
-#            delect <- read.csv(file.path(envrmt$path_statistics, "pre_delect.csv"))
-#          })
-#          if (s == climresp[4]) try ({
-#            delect <- read.csv(file.path(envrmt$path_statistics, "sun_delect.csv"))
-#          })
+          delect <-
+            read.csv(
+              file.path(
+                envrmt$path_statistics,
+                paste0(
+                  sensor_names[which(s == climresp)],
+                  "_delect.csv"
+                  )
+                )
+              )
 
           if (!(length(delect$variables) == 0)){
-            data <- data %>% dplyr::select(-c(delect$variables))
+            data <- data %>%
+              dplyr::select(-c(delect$variables))
           }
-        }
+        } else {
+          data <- data_m[
+            complete.cases(data_m), ]
+        } # end autocorrelation loop
+
+# Create Training and Test Data --------------------------------------------- #
 
         partition_indexes <- caret::createDataPartition(data$plot,
                                                         times = 1,
@@ -123,58 +151,109 @@ calc.model <- function(timespan,
         trainingDat <- data[partition_indexes, ]
         testingDat <- data[-partition_indexes, ]
 
-        for (f in dofolds) try( {
-
-          set.seed(seed)
-
+# Loop for SpaceTimeFolds --------------------------------------- DoFolds --- #
+        for (fo in 1:length(dofolds)){
+          f <- dofolds[fo]
+          if(!is.null(seed)){set.seed(seed)}
           if (f == "LLO"){
-            fold <- CAST::CreateSpacetimeFolds(trainingDat, spacevar = "plot")
+            fold <- CAST::CreateSpacetimeFolds(
+              trainingDat,
+              spacevar = "plot"
+              )
             # talk to the user
-            print(paste0("Run with spatial folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
-          }
+            print(
+              paste0(
+                "Run with spatial folds for cross validation.  Fold-Nr.: ",
+                which(f == dofolds), "/", length(dofolds)
+                )
+              )
+            } # end LLO
           if (f == "LTO"){
-            fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar = "datetime")
+            fold <- CAST::CreateSpacetimeFolds(
+              trainingDat,
+              timevar = "datetime"
+              )
             # talk to the user
-            print(paste0("Run with temporal folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
-          }
+            print(
+              paste0(
+                "Run with temporal folds for cross validation.  Fold-Nr.: ",
+                which(f == dofolds), "/", length(dofolds)
+                )
+              )
+            } # end LTO
           if (f == "LLTO"){
-            fold <- CAST::CreateSpacetimeFolds(trainingDat, timevar= "datetime", spacevar = "plot")
+            fold <- CAST::CreateSpacetimeFolds(
+              trainingDat,
+              timevar = "datetime",
+              spacevar = "plot"
+            )
             # talk to the user
-            print(paste0("Run with spatio-temporal folds for cross validation.  Fold-Nr.: ", which(f == dofolds), "/", length(dofolds)))
-          }
-
-          ctrl <- caret::trainControl(method = "cv",
-                                      index = fold$index,
-                                      savePredictions = TRUE)
-
+            print(
+              paste0(
+                "Run with spatio-temporal folds for cross validation.  Fold-Nr.: ",
+                which(f == dofolds), "/", length(dofolds)
+                )
+              )
+            } # end LLTO
+          ctrl <- caret::trainControl(
+            method = "cv",
+            index = fold$index,
+            savePredictions = TRUE
+            )
           if (autocorrelation == TRUE){
-            preds <- trainingDat[ ,head(predrows, -length(delect$variables))]
+            preds <- trainingDat[, head(predrows,
+                                        -length(delect$variables)
+                                        )
+                                 ]
           } else {
-            preds <- trainingDat[ ,predrows]
+            preds <- trainingDat[, predrows]
           } # end autocorrelation-loop
 
           # set response
           resps <- trainingDat[ ,s]
 
-          # define sensors
-          if (s == climresp[1]){sensor <- "tem"}
-          if (s == climresp[2]){sensor <- "reh"}
-#         if (s == climresp[3]){sensor <- "sun"}
-#         if (s == climresp[4]){sensor <- "pre"}
-
           # talk to the user
-            print(paste0('The response sensor ',
-                         colnames(trainingDat[s]),
-                         ' will be safed as ',
-                         sensor, '.'))
+          print(
+            paste0(
+              "Calculate models for sensor: ",
+              sensor_names[which(s == climresp)])
+            )
 
           # save the training and testing data for further evaluation
-          save(trainingDat, file = file.path(envrmt$path_tfinal, paste0(y, m, "_", mnote, "_", sensor, "_", "trainingDat.RData")))
-          save(testingDat, file = file.path(envrmt$path_tfinal, paste0(y, m, "_", mnote, "_", sensor, "_", "testingDat.RData")))
+          save(
+            trainingDat,
+            file = file.path(
+              envrmt$path_tfinal,
+              paste0(
+                y,
+                m,
+                "_",
+                mnote,
+                "_",
+                sensor_names[which(s == climresp)],
+                "_trainingDat.RData"
+                )
+              )
+            )
+          save(
+            testingDat,
+            file = file.path(
+              envrmt$path_tfinal,
+              paste0(
+                y,
+                m,
+                "_",
+                mnote,
+                "_",
+                sensor_names[which(s == climresp)],
+                "_testingDat.RData")
+              )
+            )
+
+# Loop for Classifiers --------------------------------------- Classifier --- #
 
           # start classifier loop
           for (i in 1:length(classifier)) try ({
-
             method <- classifier[i]
             tuneLength = 2
             tuneGrid <- NULL
@@ -182,10 +261,11 @@ calc.model <- function(timespan,
             # adjust settings for different model types
             if (method == "gbm"){
               tuneLength <- 10
-              ctrl = caret::trainControl(method = "repeatedcv",
-                                         number = 10,
-                                         repeats = 10,
-                                         savePredictions = TRUE)
+              ctrl <- caret::trainControl(
+                method = "repeatedcv",
+                number = 10,
+                repeats = 10,
+                savePredictions = TRUE)
               modclass <-"gbm"
               # talk to the user
               print(paste0("Next model: Stochastic Gradient Boosting.  ", i, "/", length(classifier)))
@@ -212,7 +292,6 @@ calc.model <- function(timespan,
             }
             if (method == "nnet"){
               tuneLength <- 1
-              preds <- data.frame(scale(preds))
               tuneGrid <- expand.grid(size = seq(2,ncol(preds),2),
                                       decay = seq(0,0.1,0.025)
               )
@@ -225,23 +304,45 @@ calc.model <- function(timespan,
             print("Computing model...")
 
             # calculate model
-            ffsmodel <- CAST::ffs(predictors = preds,
-                                  response = resps,
-                                  metric = "RMSE",
-                                  withinSE = FALSE,
-                                  method = method,
-                                  importance = TRUE,
-                                  tuneLength = tuneLength,
-                                  tuneGrid = tuneGrid,
-                                  trControl = ctrl,
-                                  linout = TRUE,
-                                  verbose = FALSE,
-                                  trace = FALSE
+            ffsmodel <- CAST::ffs(
+              predictors = preds,
+              response = resps,
+              metric = "RMSE",
+              withinSE = FALSE,
+              method = method,
+              importance = TRUE,
+              tuneLength = tuneLength,
+              tuneGrid = tuneGrid,
+              trControl = ctrl,
+              linout = TRUE,
+              verbose = FALSE,
+              trace = FALSE
+            )
+
+            date <- ifelse(
+              m < 10,
+              paste0(y, "0", m),
+              paste0(y, m)
             )
 
             # save all models
-            saveRDS(ffsmodel, file.path(envrmt$path_models, paste0(mnote, "_", sensor, "_", y, m, "_", dofolds[f], "_", modclass, "_ffs_model.rds")))
+            saveRDS(
+              ffsmodel,
+              file.path(
+                envrmt$path_models,
+                paste0(
+                  mnote,
+                  "_",
+                  sensor_names[which(s == climresp)],
+                  "_",
+                  date,
+                  "_",
+                  f,
+                  "_",
+                  modclass,
+                  "_ffs_model.rds")))
 
+# Evaluation Data Frame ----------------------------------------------------- #
             # create data frame for model evaluation
             if (method == "gbm"){
               accuracy = min(ffsmodel$results$RMSE)
@@ -250,12 +351,12 @@ calc.model <- function(timespan,
             }
 
             df <- data.frame(
-              year_month = paste0(y, m),
+              year_month = date,
               classifier = modclass,
               accuracy = accuracy,
               Nrmse = accuracy / (max(resps) - min(resps)),
               Rsqrd = ffsmodel$results[1,3],
-              sensor = sensor,
+              sensor = sensor_names[which(s == climresp)],
               modeltype = f,
               note = mnote)
 
@@ -268,10 +369,10 @@ calc.model <- function(timespan,
 
             df_total <- rbind(df_total, df)
 
-            remove(ffsmodel)
-            gc()
+#           remove(ffsmodel)
+#           gc()
           }) # end classifier loop [i]
-        }) # end fold loop [f]
+        } # end fold loop [f]
       }) # end climresp loop [s]
     }) # end months loop [m]
   }) # end timespan loop [y]

@@ -1,8 +1,10 @@
+#_____________________________________________________________________________#
+#_____________________________________________________________________________#
 #' Preparing CSV-Data
 #'
 #' Crops input data to the extent size
 #'
-#' @param method character. "proc" for ready-to-use data in seperate .csv-files. "tube" for raw-data in the right format. "AI" for raw-data in other formats. Default "proc"-Method.
+#' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data in the right format. "AI" for raw-data in other formats. Default "proc"-Method.
 #' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
@@ -19,48 +21,101 @@ prep.csv <- function(method = "proc",
                      ...){
 
 # Checkup for empty columns in the data, which creates a warning.
+# ---> Still not done
 
-  csv_list <- list();
-  Input <- envrmt$path_tabular
+# --------------------------------------------------------------------------- #
+# Method == "proc"
+  if (method == "proc"){
+    csv_list <- list()
+    all_files_in_distribution <- list.files(
+      path = envrmt$path_tabular,
+      recursive = T
+    ) #reads all data in Input-Folder
+    csv_paths <- grep(
+      ".csv$",
+      all_files_in_distribution,
+      value = TRUE
+    )
+    number_of_csvs <- length(csv_paths)
 
-  all_files_in_distribution <- list.files(path = Input, recursive = T); #reads all data in Input-Folder
+    for (i in 1:number_of_csvs){
+      csv_data <- read.csv(
+        file.path(
+          envrmt$path_tabular,
+          paste0(csv_paths[[i]])),
+        sep = ","
+      )
+      cn_data <- colnames(csv_data)
+      number_of_cn <- length(cn_data)
 
-  csv_paths <- grep(".csv$", all_files_in_distribution, value = TRUE);
-  number_of_csvs <- length(csv_paths);
+      csv_data$daymonth <- strftime(csv_data[,2], format = "%m-%d")
+      csv_data$year <- strftime(csv_data[,2], format = "%Y")
+      csv_data$month <- strftime(csv_data[,2], format = "%m")
+      csv_data$day <- strftime(csv_data[,2], format = "%d")
 
-  for (i in 1:number_of_csvs){
-    csv_data <- read.csv(file.path(Input, paste0(csv_paths[[i]])), sep = ",")
-    cn_data <- colnames(csv_data)
-    number_of_cn <- length(cn_data)
+      csv_data <- csv_data[,
+                           c(cn_data[1:2],
+                             "daymonth",
+                             "year",
+                             "month",
+                             "day",
+                             cn_data[3:number_of_cn]
+                           )
+      ]
 
-    csv_data$daymonth <- strftime(csv_data[,2], format = "%m-%d")
-    csv_data$year <- strftime(csv_data[,2], format = "%Y")
-    csv_data$month <- strftime(csv_data[,2], format = "%m")
-    csv_data$day <- strftime(csv_data[,2], format = "%d")
+      cn_data <- colnames(csv_data)
+      number_of_cn <- length(cn_data)
 
-    csv_data <- csv_data[, c(cn_data[1:2], "daymonth", "year", "month", "day", cn_data[3:number_of_cn])]
+      for (j in 7:number_of_cn){
+        csv_data <- transform(
+          csv_data,
+          temp_col = ave(
+            csv_data[, j],
+            daymonth,
+            FUN = function(x) mean(x, na.rm = TRUE)
+          )
+        )
+        csv_data[, j] <- ifelse(
+          is.na(csv_data[, j]),
+          csv_data$temp_col,
+          csv_data[, j]
+        )
+        csv_data$temp_col <- NULL
+      }
 
-    cn_data <- colnames(csv_data)
-    number_of_cn <- length(cn_data)
+      csv_data <- tidyr::drop_na(csv_data)
+      csv_data$daymonth <- NULL
 
-    for (j in 7:number_of_cn){
-      csv_data <- transform(csv_data, temp_col = ave(csv_data[,j], daymonth, FUN = function(x) mean(x, na.rm = TRUE)))
-      csv_data[,j] <- ifelse(is.na(csv_data[,j]), csv_data$temp_col, csv_data[,j])
-      csv_data$temp_col <- NULL
+      write.csv(
+        csv_data,
+        file.path(
+          envrmt$path_tworkflow,
+          paste0(csv_data[[1, 1]],
+                 "_no_NAs.csv")
+        ),
+        row.names = FALSE
+      )
     }
-    csv_data <- tidyr::drop_na(csv_data)
-    csv_data$daymonth <- NULL
+    print(
+      paste0(
+        "Removed NAs from ",
+        number_of_csvs,
+        "stations"
+      )
+    )
+  } # end proc - method
+# --------------------------------------------------------------------------- #
+} # end function
 
-    write.csv(csv_data, file.path(envrmt$path_tworkflow, paste0(csv_data[[1,1]], "_no_NAs.csv")), row.names = FALSE)
-  };
-}
 
+#_____________________________________________________________________________#
+#_____________________________________________________________________________#
 #' Processing CSV-Data
 #'
 #' Calculate necessary Data from Stationary Data
 #'
 #' @param method character.
-#' @param rbind logical.
+#' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be safed in a seperate file.
 #' @param safe_output logical. If data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
@@ -72,58 +127,204 @@ prep.csv <- function(method = "proc",
 #'
 #' @examples
 #'
-proc.csv <- function(method = "all",
+proc.csv <- function(method = "monthly",
                      rbind = TRUE,
                      safe_output = TRUE,
                      ...){
-  csv_list <- list();
+# Method == "monthly"
+  if (method == "monthly"){
+    csv_list <- list()
+    all_files_in_distribution <- list.files(
+      path = envrmt$path_tworkflow,
+      recursive = T
+    ) # reads all data in Input-Folder
 
-  all_files_in_distribution <- list.files(path = envrmt$path_tworkflow, recursive = T); #reads all data in Input-Folder
+    csv_paths <- grep(
+      "_no_NAs.csv$",
+      all_files_in_distribution,
+      value = TRUE
+    )
+    number_of_csvs <- length(csv_paths)
 
-  csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE);
-  number_of_csvs <- length(csv_paths);
+    for (i in 1:number_of_csvs){
+      x <- read.csv(
+        file.path(
+          envrmt$path_tworkflow,
+          csv_paths[i]
+        )
+      ) # read in one csv file per i
 
-  for (i in 1:number_of_csvs){
+      cn_x <- colnames(x)
+      number_of_cn <- length(cn_x)
 
-    x <- read.csv(file.path(envrmt$path_tworkflow, csv_paths[i]))
+      for (j in 6:number_of_cn){
+        fo <- as.formula(
+          paste(cn_x[j], " ~ month + year")
+        )
+        y <- aggregate(fo, x, mean)
+        colnames(y) <- c(
+          "month",
+          "year",
+          paste0(
+            "monthly_mean_",
+            cn_x[j]
+          )
+        )
+        y$plot <- x[[1, 1]]
+# Add datetime for spacetimefolds later
+        y$datetime <- with(y, ISOdate(year, month, 1))
 
-    cn_x <- colnames(x)
-    number_of_cn <- length(cn_x)
+        y <- y[,
+               c("plot",
+                 "datetime",
+                 "year",
+                 "month",
+                 paste0(
+                   "monthly_mean_",
+                   cn_x[j]
+                 )
+               )
+            ]
 
-    for (j in 6:number_of_cn){
-      fo <- as.formula(paste(cn_x[j], " ~ day + month + year"))
-      y <- aggregate(fo, x, mean)
-      colnames(y) <- c("day", "month", "year", paste0("daily_mean_", cn_x[j]))
+        ifelse(j == 6,
+               dm <- y,
+               dm <- cbind(dm, y[5])
+               )
+      } # end j loop
 
-      y$plot <- x[[1,1]]
-
-      y <- y[,c("plot", "year", "month", "day", paste0("daily_mean_", cn_x[j]))]
-
-      if (j == 6){
-        dm <- y
+      if (rbind == FALSE){
+        write.csv(
+          dm,
+          file.path(
+            envrmt$path_tworkflow,
+            paste0(x[[1, 1]], "_monthly_mean.csv")
+          ),
+          row.names = FALSE
+        )
       } else {
-        dm <- cbind(dm, y[5])
-      }
-    }
-    if (rbind == FALSE){
-      write.csv(dm, file.path(envrmt$path_tworkflow, paste0("csv_", i, "_dm.csv")), row.names = FALSE)
-    } else {
-      if (i == 1) {
-        dm_t <- dm
-      } else {
-        dm_t <- rbind(dm_t, dm)
-      }
-    }
-  }
-  if (rbind == TRUE){
-    if (safe_output == TRUE){
-      write.csv(dm_t, file.path(envrmt$path_tworkflow, "all_daily_means.csv"), row.names = FALSE)
-    }
-    return(dm_t)
-  }
-}
+        ifelse(
+          i == 1,
+          dm_t <- dm,
+          dm_t <- rbind(dm_t, dm)
+        )
+      } # end if condition
+    } # end i loop
+    # --------------------------------------------------------------------------- #
+    if (rbind == TRUE){
+      if (safe_output == TRUE){
+        write.csv(
+          dm_t,
+          file.path(
+            envrmt$path_tworkflow,
+            "all_monthly_means.csv"
+          ),
+          row.names = FALSE
+        )
+      } # end safe output
+      return(dm_t)
+    } # end if condition
+  } # end monthly loop
+# --------------------------------------------------------------------------- #
+# Method == "daily"
+  if (method == "daily"){
+    csv_list <- list()
+    all_files_in_distribution <- list.files(
+      path = envrmt$path_tworkflow,
+      recursive = T
+    ) # reads all data in Input-Folder
 
-#' Spatial agregation for CSV-Data
+    csv_paths <- grep(
+      "_no_NAs.csv$",
+      all_files_in_distribution,
+      value = TRUE
+    )
+    number_of_csvs <- length(csv_paths)
+
+    for (i in 1:number_of_csvs){
+      x <- read.csv(
+        file.path(
+          envrmt$path_tworkflow,
+          csv_paths[i]
+        )
+      )
+      cn_x <- colnames(x)
+      number_of_cn <- length(cn_x)
+
+      for (j in 6:number_of_cn){
+        fo <- as.formula(
+          paste(cn_x[j], " ~ day + month + year")
+        )
+        y <- aggregate(fo, x, mean)
+        colnames(y) <- c(
+          "day",
+          "month",
+          "year",
+          paste0(
+            "daily_mean_",
+            cn_x[j]
+          )
+        )
+        y$plot <- x[[1, 1]]
+
+# Add datetime for spacetimefolds later
+        y$datetime <- with(y, ISOdate(year, month, day))
+        y <- y[,
+               c(
+                 "plot",
+                 "year",
+                 "month",
+                 "day",
+                 paste0(
+                   "daily_mean_",
+                   cn_x[j]
+                 )
+               )
+        ]
+
+        ifelse(j == 6,
+               dm <- y,
+               dm <- cbind(dm, y[5])
+        )
+      } # end j loop
+
+      if (rbind == FALSE){
+        write.csv(
+          dm,
+          file.path(
+            envrmt$path_tworkflow,
+            paste0("csv_", i, "_dm.csv")
+          ),
+          row.names = FALSE
+        )
+      } else {
+        ifelse(
+          i == 1,
+          dm_t <- dm,
+          dm_t <- rbind(dm_t, dm)
+        )
+      } # end if condition
+    } # end i loop
+    # --------------------------------------------------------------------------- #
+    if (rbind == TRUE){
+      if (safe_output == TRUE){
+        write.csv(
+          dm_t,
+          file.path(
+            envrmt$path_tworkflow,
+            "all_daily_means.csv"
+          ),
+          row.names = FALSE
+        )
+      } # end safe output
+      return(dm_t)
+    } # end if condition
+  } # end daily loop
+} # end function
+
+
+#_____________________________________________________________________________#
+#_____________________________________________________________________________#
+#' Spatial aggregation for CSV-Data
 #'
 #' blabla
 #'
@@ -144,99 +345,227 @@ spat.csv <- function(method = "monthly",
                      crs = NULL,
                      safe_output = TRUE,
                      ...){
-  if (method == "monthly"){
-    data <- read.csv(file.path(envrmt$path_tworkflow, "all_daily_means.csv"));
-    cn_data <- colnames(data)
-    names_of_stations <- as.vector(unlist(unique(data[1])))
-    number_of_stations <- length(names_of_stations)
-  }; # end monthly loop 1
 
-  if (method == "daily"){
-    csv_list <- list()
-    all_files_in_distribution <- list.files(path = envrmt$path_tworkflow, recursive = T)
-    csv_paths <- grep("_no_NAs.csv$", all_files_in_distribution, value=TRUE)
-    number_of_csvs <- length(csv_paths)
+  data <- read.csv(
+    file.path(
+      envrmt$path_tworkflow,
+      paste0(
+        "all_",
+        method,
+        "_means.csv"
+        )
+      ),
+    row.names = NULL
+    )
+  cn_data <- colnames(data)
+  names_of_stations <- as.vector(
+    unlist(
+      unique(
+         data[1]
+        )
+      )
+    )
+  number_of_stations <- length(names_of_stations)
 
-    for (i in 1:number_of_csvs){
+# read plot description file
+  des <- read.csv(
+    file.path(
+      envrmt$path_dep,
+      des_file
+      )
+    )
 
-      x <- read.csv(file.path(envrmt$path_tworkflow, paste0(csv_paths[i])))
-      x <- data.frame(x)
-
-      if (i == 1) {
-        data <- x
-      } else {
-        data <- rbind(data, x)
-      }
-    }
-    cn_data <- colnames(data)
-    names_of_stations <- as.vector(unlist(unique(data[1])))
-    number_of_stations <- length(names_of_stations)
-  }; # end daily loop 1
-
-  des <- read.csv(file.path(envrmt$path_dep, des_file));
-
-  data$lat <- "";
-  data$lon <- "";
+  data$lat <- ""
+  data$lon <- ""
 
   for (i in 1:number_of_stations){
-    data$lat[which(data$plot == names_of_stations[i])] <- des$lat[which(grepl(names_of_stations[i], des$plot))]
-    data$lon[which(data$plot == names_of_stations[i])] <- des$lon[which(grepl(names_of_stations[i], des$plot))]
-  }; # end coordinate loop
+    data$lat[which(data$plot == names_of_stations[i])] <- des$lat[
+      which(
+        grepl(
+          names_of_stations[i],
+          des$plot
+          )
+        )
+      ]
 
+    data$lon[which(data$plot == names_of_stations[i])] <- des$lon[
+      which(
+        grepl(
+          names_of_stations[i],
+          des$plot
+          )
+        )
+      ]
+  } # end coordinate loop
+# --------------------------------------------------------------------------- #
+# Method = "monthly"
   if (method == "monthly"){
-    daily_means <- 5:length(cn_data);
+    monthly_means <- 5:length(cn_data)
+    data[monthly_means] <- round(
+      data[monthly_means],
+      digits = 3
+      )
 
-    for (i in daily_means){
-      data[i] <- round(data[i], digits = 3)
-    };
-
-    names(data)  <- c(names(data[1:4]),
-                      gsub("daily_mean_", "", names(data[daily_means])),
-                      names(data[(5 + length(daily_means)):length(names(data))])
-    );
+    names(data)  <- c(
+      names(data[1:4]),
+      gsub(
+        "monthly_mean_",
+        "",
+        names(data[monthly_means]
+              )
+        ),
+      names(
+        data[
+          (5 + length(monthly_means)):length(names(data))
+          ]
+        )
+      ) # end names
 
     if (is.null(crs)){
-      crs <- terra::crs(terra::rast(file.path(envrmt$path_dep, "res_area.tif")))
+      crs <- terra::crs(
+        terra::rast(
+          file.path(
+            envrmt$path_dep,
+            "res_area.tif"
+            )
+          )
+        )
+      }
+
+    data$lat <- as.numeric(data$lat)
+    data$lon <- as.numeric(data$lon)
+
+    points <- terra::vect(
+      data,
+      geom = c("lon", "lat"),
+      crs = "+proj=longlat +datum=WGS84"
+      )
+    points <- terra::project(points, crs)
+    data <- terra::as.data.frame(points, geom = "XY")
+
+    write.csv(
+      data,
+      file.path(
+        envrmt$path_tworkflow,
+        "spat_monthly_means.csv"
+        ),
+      row.names = FALSE
+      )
+
+    return(data)
+  } # end monthly condition
+
+# --------------------------------------------------------------------------- #
+# Method = "daily"
+  if (method == "daily"){
+    daily_means <- 6:length(cn_data)
+    data[daily_means] <- round(
+      data[daily_means],
+      digits = 3
+      )
+    names(data)  <- c(
+      names(data[1:5]),
+      gsub(
+        "daily_mean_",
+        "",
+        names(data[daily_means])
+        ),
+      names(
+        data[
+          (6 + length(daily_means)):length(names(data))
+          ]
+        )
+      ) # end names
+
+    if (is.null(crs)){
+      crs <- terra::crs(
+        terra::rast(
+          file.path(
+            envrmt$path_dep,
+            "res_area.tif"
+            )
+          )
+        )
     }
 
     data$lat <- as.numeric(data$lat)
     data$lon <- as.numeric(data$lon)
-    sp::coordinates(data) <- ~ lon + lat
-    sp::proj4string(data) <- sp::CRS("+proj=longlat +datum=WGS84")
-    data <- sp::spTransform(data, crs)
 
-    n <- names(data)
-    data <- data.frame(data)
-    data$optional <- NULL
-    data <- data[, c(n, "lat", "lon")]
+    points <- terra::vect(
+      data,
+      geom = c("lon", "lat"),
+      crs = "+proj=longlat +datum=WGS84"
+    )
+    points <- terra::project(points, crs)
+    data <- terra::as.data.frame(points, geom = "XY")
 
-    write.csv(data, file.path(envrmt$path_tworkflow, "spat_daily_means.csv"), row.names = FALSE);
+    write.csv(
+      data,
+      file.path(
+        envrmt$path_tworkflow,
+        "spat_daily_means.csv"
+        ),
+      row.names = FALSE
+      )
     return(data)
-  };
+  } # end daily condition
 
-  if (method == "daily") {
-    for (i in 6:length(cn_data)){
-      data[i] <- round(data[i], digits = 3)
-    };
+# --------------------------------------------------------------------------- #
+# method = "hourly"
+  if (method == "hourly") {
+    hourly_means <- 7:length(cn_data)
+    data[hourly_means] <- round(
+      data[hourly_means],
+      digits = 3
+      )
+
+    names(data)  <- c(
+      names(data[1:6]),
+      gsub(
+        "hourly_mean_",
+        "",
+        names(data[hourly_means])
+      ),
+      names(
+        data[
+          (7 + length(hourly_means)):ncol(data)
+        ]
+      )
+    ) # end names
 
     if (is.null(crs)){
-      crs <- terra::crs(terra::rast(file.path(envrmt$path_dep, "res_area.tif")))
-    }
+      crs <- terra::crs(
+        terra::rast(
+          file.path(
+            envrmt$path_dep,
+            "res_area.tif"
+            )
+          )
+        )
+      }
 
-    sp::coordinates(data) <- ~ lon + lat
-    sp::proj4string(data) <- sp::CRS("+proj=longlat +datum=WGS84")
-    data <- sp::spTransform(data, crs)
+    points <- terra::vect(
+      data,
+      geom = c("lon", "lat"),
+      crs = "+proj=longlat +datum=WGS84"
+    )
+    points <- terra::project(points, crs)
+    data <- terra::as.data.frame(points, geom = "XY")
 
-    n <- names(data)
-    data <- data.frame(data)
-    data$optional <- NULL
-    data <- data[, c(n, "lat", "lon")]
-
-    write.csv(data, file.path(envrmt$path_tworkflow, "spat_hourly_means.csv"), row.names = FALSE);
+    write.csv(
+      data,
+      file.path(
+        envrmt$path_tworkflow,
+        "spat_hourly_means.csv"
+        ),
+      row.names = FALSE
+      )
     return(data)
   }
 }
 
+# ___________________________________________________________________________ #
+# ___________________________________________________________________________ #
 #' Final aggregation for CSV-Data
 #'
 #' blabla
@@ -257,46 +586,99 @@ fin.csv <- function(method = "monthly",
                     crs = NULL,
                     safe_output = TRUE,
                     ...){
+
   if (method == "monthly"){
-    data_o <- read.csv(file.path(envrmt$path_tworkflow, "spat_daily_means.csv"));
+    data_o <- read.csv(
+      file.path(
+        envrmt$path_tworkflow,
+        "spat_monthly_means.csv"
+        )
+      )
     data_o$ID <- seq(1:nrow(data_o))
-  };
+  }
 
-  all_files_in_distribution <- list.files(path = file.path(envrmt$path_rfinal), recursive = T); #reads all data in Workflow Raster Folder
+  all_files_in_distribution <- list.files(
+    path = file.path(envrmt$path_rfinal),
+    recursive = T
+    ) # reads all data in Workflow Raster Folder
 
-  sat_paths <- grep("mean.tif$", all_files_in_distribution, value = TRUE); # Select tiff-files
-  dgm_path <- grep("dgm.tif$", all_files_in_distribution, value = TRUE);
+  sat_paths <- grep(
+    "_ind.tif$",
+    all_files_in_distribution,
+    value = TRUE
+    ) # Select tiff-files
+  dgm_path <- grep(
+    "_dgm_",
+    all_files_in_distribution,
+    value = TRUE
+    ) # Select dgm
 
   if (method == "monthly"){
-    dgm <- terra::rast(file.path(envrmt$path_rfinal, dgm_path))
+    dgm <- terra::rast(
+      file.path(
+        envrmt$path_rfinal,
+        dgm_path
+        )
+      )
     extr_total <- data.frame()
 
     for (i in 1:length(sat_paths)){
-      month <- as.numeric(stringr::str_sub(sat_paths[i], 9, 10))
-      tiff <- terra::rast(file.path(envrmt$path_rfinal, sat_paths[i]))
-      data_sub <- data_o[which(data_o$month == month),]
+      month <- as.numeric(
+        stringr::str_sub(
+          gsub(
+            ".*?([0-9]+).*",
+            "\\1",
+            sat_paths[i]
+            ),
+          1, 2)
+        )
+      tiff <- terra::rast(
+        file.path(
+          envrmt$path_rfinal,
+          sat_paths[i]
+          )
+        )
+      data_sub <- data_o[
+        which(data_o$month == month),]
 
-      extr <- terra::extract(tiff,
-                             data.frame(x = data_sub$lon,
-                                        y = data_sub$lat)
-                            );
+      extr <- terra::extract(
+        tiff,
+        data.frame(
+          x = data_sub$x,
+          y = data_sub$y)
+        );
       extr$ID <- data_sub$ID
       extr_total <- rbind(extr_total, extr)
-    } # end monthly sat_paths loop
+    } # end i loop
 
-    extr_dgm <- terra::extract(dgm,
-                               data.frame(x = data_o$lon,
-                                          y = data_o$lat)
-                               )
-    extr <- merge(extr_dgm, extr_total, by = "ID")
-    data <- merge(data_o, extr, by = "ID")
-    data$ID <- NULL;
-    data$EVI <- NULL;
-    data$EVI2 <- NULL;
+    extr_dgm <- terra::extract(
+      dgm,
+      data.frame(x = data_o$x,
+                 y = data_o$y
+                 )
+      )
+    extr <- merge(
+      extr_dgm,
+      extr_total,
+      by = "ID"
+      )
+    data <- merge(
+      data_o,
+      extr,
+      by = "ID"
+      )
+    data$ID <- NULL
     data_n <- tidyr::drop_na(data)
 
-    write.csv(data_n, file.path(envrmt$path_tfinal, "final_daily.csv"), row.names = FALSE);
-    return(data)
+    write.csv(
+      data_n,
+      file.path(
+        envrmt$path_tfinal,
+        "final_monthly.csv"
+        ),
+      row.names = FALSE
+      )
+    return(data_n)
   } # end monthly loop
 
   if (method == "anual"){
@@ -323,4 +705,4 @@ fin.csv <- function(method = "monthly",
     write.csv(data_n, file.path(envrmt$path_tfinal, "final_anualy.csv"), row.names = FALSE);
     return(data)
   }; # end anual loop
-}
+} # end function
