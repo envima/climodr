@@ -14,7 +14,8 @@
 
 climpred <- function(
     method = "monthly",
-    mnote){
+    mnote,
+    AOA = TRUE){
 
   # create a list with all raster images
   tiff_list <- list.files(
@@ -32,14 +33,6 @@ climpred <- function(
         tiff_list,
         value = TRUE)
       )
-    )
-
-
-# read in all models
-  mod_list <- list.files(
-    path = envrmt$path_models,
-    pattern = "_model.rds",
-    recursive = TRUE
     )
 
 # read eval_df
@@ -77,40 +70,92 @@ climpred <- function(
     )
     terra::add(raster) <- dgm
 
+    modname <- paste0(
+      mnote,
+      "_",
+      mod_df[i, ]$sensor,
+      "_",
+      dates[i],
+      "_",
+      mod_df[i, ]$modeltype,
+      "_",
+      mod_df[i, ]$classifier
+    )
     mod <- readRDS(
       file.path(
         envrmt$path_models,
-
+        paste0(modname,
+               "_ffs_model.rds")
       )
     )
+
+    print(
+      paste0(
+        "Making ",
+        mod_df[i, ]$sensor,
+        " ",
+        mod_df[i, ]$classifier,
+        "-prediction for ",
+        dates[i],
+        "."
+        )
+      )
+
+    pred <- terra::predict(
+      raster,
+      mod,
+      na.rm = TRUE
+      )
+    names(pred) <- modname
+    terra::writeRaster(
+      pred,
+      file.path(
+        envrmt$path_predictions,
+        paste0(
+          modname,
+          "_prediction.tif"
+          )
+        ),
+      overwrite = TRUE
+    )
+
+    if (isTRUE(AOA)) try({
+      aoa <- CAST::aoa(
+        raster,
+        mod)
+      names(aoa) <- paste0(modname, "_aoa")
+      terra::writeRaster(
+        aoa,
+        file.path(
+          envrmt$path_aoa,
+          paste0(
+            modname,
+            "_aoa.tif"
+          )
+        ),
+        overwrite = TRUE
+      )
+    })
   } # end i loop
 
-    for (j in 1:nrow(mod_list)){
-      mod <- readRDS(file.path(envrmt$path_models, mod_list[j, ]))
+  for (i in 1:nrow(mod_df)){
+    mod_df$variables[[i]] <- paste(
+      mod_df$variables[[i]],
+      collapse = ", "
+      )
+  }
+  mod_df <- data.frame(mod_df)
+  mod_df <- apply(mod_df, 2, as.character)
 
-# write pretty names
-      seq <- gsub(".*/", "", mod_list[j, ])
-      n.mod <- stringr::str_extract(seq, "^.*(?=(_ffs_model.rds))") # everything excluding the back
-
-# make prediction
-      prediction <- terra::predict(rasterStack, mod, na.rm = T)
-# adjust layer name
-      names(prediction) <- paste0(n.mod, "_anl_pred")
-      print(names(prediction))
-# save prediction as tif
-      terra::writeRaster(prediction,
-                         file.path(envrmt$path_predictions,
-                                   paste0(n.mod,"_anl_pred.tif")),
-                         overwrite=TRUE)
-# do an AOA
-      cr <- parallel::detectCores()
-      cl <- parallel::makeCluster(cr - 2)
-      doParallel::registerDoParallel(cl)
-      aoa <- CAST::aoa(rasterStack, mod)
-      parallel::stopCluster(cl)
-
-      terra::writeRaster(aoa$AOA,
-                         file.path(envrmt$path_predictions, "aoa", paste0(n.mod, "_anl_aoa.tif")),
-                         overwrite = TRUE)
-    } # end prediction loop
+  write.csv(
+    mod_df,
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_best_models.csv"
+      )
+    ),
+    row.names = FALSE
+  )
 } # end function loop

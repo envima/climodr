@@ -32,7 +32,7 @@ Note: It may asks you to install all packages climodr needs to execute all its f
 #install climodr
 #devtools::install_github("envima/climodr")
 
-devtools::load_all()
+#devtools::load_all()
 library(climodr)
 ```
 
@@ -44,7 +44,8 @@ With the *envi.create()* function, one just points out a path, where the package
 ```{r setup env}
 #setting up the environment for climodr
 
-envi.create("E:/climodr/vignette")
+envi.create("E:/climodr/vignette",
+            memfrac = 0.8)
 ```
 
 Climodr then creates an environment with three main folders:\
@@ -205,33 +206,31 @@ Further we can predict the scenes using the models with the `climpred` function.
 Note: There are no options yet, but it works. Because the evaluation data frame doesn't work right now, it predicts all models. In Future, it will only predict the models which perform best. 
 
 ```{r predict, eval = FALSE}
-climpred()
+climpred(
+  method = "monthly",
+  mnote = "vignette", 
+  AOA = FALSE)
 ```
 
 
 Lets show the list of predictions:
 ```{r list predictions}
 predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
-aoalist <- list.files(file.path(envrmt$path_predictions, "aoa"), pattern = ".tif")
-
 head(predlist)
 ```
 
 
-Now lets plot the second one, which was the linear regression model for temperature. 
+
 ```{r plot predictions}
-pred <- terra::rast(file.path(envrmt$path_predictions, predlist[2]))
-terra::plot(pred, main = "LLO_lim_tem")
+climplot(
+  mnote = "vignette",
+  sensor = "Ta_200",
+  aoa = FALSE,
+  mapcolors = rev(heat.colors(50)),
+  scale_position = "bottomleft",
+  north_position = "topright"
+)
 ```
-
-
-Now lets apply the aoa on the prediction, to see, which areas are applicable.
-```{r}
-aoa <- terra::rast(file.path(envrmt$path_predictions, "aoa", aoalist[2]))
-terra::plot(pred, main = "LLO_lim_tem + AOA")
-terra::plot(aoa, add = TRUE)
-```
-Note: It works, the aoa says that the whole prediction is not applicable. 
 
 ## Validations
 
@@ -248,17 +247,4 @@ To-Do:
 ..the code Seda made.. (Should be included as function for plotting the modelled results as maps)\
 - quick map style (nice plot, and good color scale)\
 - first start for the users costumized\
--tidyterra package ?\
-
-## Maps
-
-
-
-## Statistics
-- vif
-- summary 
-- plot
-```{r statistics, eval = FALSE}
-climstats(method = "vif")
-```
-
+- tidyterra package ?\

@@ -19,7 +19,7 @@ Author: Alexander Klug [aut, cre],
 Maintainer: Alexander Klug <kluga@students.uni-marburg.de>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports:
@@ -29,6 +29,8 @@ Imports:
     data.table,
     doParallel,
     dplyr,
+    lares,
+    lattice,
     parallel,
     pls,
     randomForest,
@@ -39,6 +41,8 @@ Depends:
     tidyverse
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.1
+Config/testthat/edition: 3

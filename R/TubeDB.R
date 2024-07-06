@@ -30,14 +30,14 @@ get.data <- function(method = "tubeDB",
   sensorDF <- rTubeDB::query_region_sensors(tubedb, "BE")
 
   if (region == "Hainich"){
-    stations <- c("HEF", "HEG", "HEW")
+    stations <- c("HEG", "HEW")
   }
 
   if (region == "Schorfheide"){
     stations <- c()
   }
 
-  if (region == "Schwäbische Alb"){
+  if (region == "Schwaebische Alb"){
     stations <- c()
   }
 
