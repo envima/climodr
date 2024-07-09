@@ -49,7 +49,7 @@ To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.ht
 installed to your R. Once devtools is installed, you can simply add climodr by 
 following commands.  
 
-```{r install}
+```{r install dev}
 #install climodr
 # ---- GITHUB-LINK HIER EINFÜGEN -----
 devtools::load_all() # Solange Github-Repo noch privat
@@ -136,7 +136,7 @@ csv_files
 Next, the data needs to be aggregated for to the desired time steps.\
 In this version one can aggregate data into "monthly" and into "anual" data.\
 The *rbind* argument stores all climate station data into one file. This step is 
-recomended, since the data usually will become way shorter after the time 
+recommended, since the data usually will become way shorter after the time 
 aggregation and is easier to be processed further this way. 
 
 
@@ -149,7 +149,7 @@ head(csv_data)
 
 ## Spatial aggregation of tabular data
 
-Next, the stations have to be spacialy located in a coordinate system. This 
+Next, the stations have to be spatially located in a coordinate system. This 
 step is crucial to process the data in a modelation use case.\
 
 ```{r spat csv}
@@ -162,9 +162,9 @@ head(csv_spat)
 ## Pre-Process Raster Data for data extraction
 
 Now, that we have spatial points of our stations, we can continue with our raster 
-data. The prefered *method* here is "MB_Timeseries", which stands for 'Multiband 
-Timeseries'. Use this method, if you provide multiple singleband rasters or raster 
-stacks with different timestamps per scene. The functions sorts them by date and 
+data. The preferred *method* here is "MB_Timeseries", which stands for 'multi band 
+time series'. Use this method, if you provide multiple single band rasters or raster 
+stacks with different time stamps per scene. The functions sorts them by date and 
 crops the data to our study area.
 
 ```{r crop all}
@@ -228,26 +228,36 @@ autocorr(
 
 ## Create climate models 
 
+Now, that we've done all necessary previous steps, one can start modelling. This
+is by far the function with the most variables. Here we give a quick overview, 
+what these arguments do:
 
+timespan = Vector with last two digits of years to build models from (in this 
+example 2017 )\
+climresp = Vector of rows to create models for. (In this example Ta_200)\
+classifier = Vector of all model variants to be used. In this case random 
+forest = "rf", partial-least-squares = "pls", neural networks = "nnet" and 
+linear regression = "lm"\ 
+ \ 
+seed = Number to "pick randomness". With the seed one can reproduce random 
+pulls.\ 
+p = Fraction of random taken training data from full data.\ 
+folds = Character or vector. Method to Create spacetime folds. "all" ,"LLO", 
+"LTO" or "LLTO".\ 
+mnote = Character. "Model Note". 6 digits, Marks the different model runs in a
+project.\ 
+predrows = Vector with the row numbers used as predictors.\ 
+tc_method = Train control method. Default is cross validation "cv".\ 
+metric = Summary Metric to select optimal model. Default: Root Mean Square 
+Error "RMSE".\ 
+autocorrelation = Logical Parameter. TRUE, if the results of the autocorrelation 
+should be considered.\ 
+doParallel = Logical Parameter. When set True, the Model-Process will 
+parallelize on all cores except two, so your PC will slow down a lot. Only 
+recommended for PCs with at least 8 Cores. Warning: Your PC wont be able to 
+process other stuff efficiently during parallelization.\
 
-timespan = Vector with last two digits of years to build models from (in this example 2017 - 2021)\
-climresp = Vector of rows to create models for. (In this example Ta_200, rH_200, SWDR_200, P_RT_NRT)\
-classifier = Vector of all model variants to be used. In this case random forest = "rf", partial-least-squares = "pls", neural networks = "nnet" and linear regression = "lm"\
-\
-NOTE: This constellation already creates 64 models, this will need a lot of time\
-\
-seed = Number to "pick randomnes". With the seed one can reproduce random pulls.\
-p = Number of how much in percentage should be splitted from the data into training data.\
-fold = Charackter. Method to Create Space/Time folds. "LLO", "LTO" or "LLTO".\
-mnote = Charackter. 6 digits, if one mannually alters the data, e.g. leaves out one climate station.\
-predrows = Vector of rownumbers used as predictors.\
-k = Number of unique temporal or spatial units.\
-tc_method = Train control method. Default is cross validation "cv".\
-metric = Summary Metric to select optimal model. Default: Root Mean Square Error "RMSE".\
-autocorrelation = Logical Parameter. TRUE, if the results of the autocorrelation should be considered. 
-doParallel = Logical Parameter. When set True, the Model-Process will parallelize on all cores except two, so your PC will slow down a lot. Only recommended for PCs with at least 8 Cores. Warning: Your PC wont be able to process other stuff efficiently during parallelization.\
-
-Note: Loop doesn't work with more climresp'S; Cuts when looped into climresp = 9, runs if started mannually; climresp = 12 doesnt work; climresp = 15 doesnt work -> Eval vector gets overwritten, statistics dont work.
+Once all parameters are set, one can run the modelworkflow `calc.model` like this:
 ```{r model, eval = FALSE, warning = FALSE}
 calc.model(
   method = "monthly",
@@ -270,11 +280,16 @@ calc.model(
   doParallel = FALSE)
 ```
 
+Congratulations, you have created your first models using climodr.
+Climodr also creates an evaluation data frame, which is safed in the statistics
+folder. These performance information are later used to predict the best models 
+from this model run. 
+
 ## Predictions
 
-Further we can predict the scenes using the models with the `climpred` function. `climpred` also calculates an AOA.\ 
-
-Note: There are no options yet, but it works. Because the evaluation data frame doesn't work right now, it predicts all models. In Future, it will only predict the models which perform best. 
+Further we can predict the scenes using the models with the `climpred` function. `climpred` also calculates the area of applicability, if the `AOA` argument is
+set to *TRUE*. Keep in mind to use the same `mnote` as in your model run, so
+climodr predicts with the models you created in this modelrun.\ 
 
 ```{r predict, eval = FALSE}
 climpred(
@@ -290,8 +305,12 @@ predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
 head(predlist)
 ```
 
+The `climplot` function finally plots your predictions and saves them in the
+output folder. It uses the plotting functions from the `terra`-package. These 
+plots are very simple, but they consist of all important information you'll 
+need in a map. 
 
-
+You can plot your predictions like this:
 ```{r plot predictions}
 climplot(
   mnote = "vignette",
@@ -303,19 +322,4 @@ climplot(
 )
 ```
 
-## Validations
-
-We can now validate the prediction with our test-dataset, that was created during the `calc.model`-function. This way, one can receive simple statistics like a cross table or a prediction summary.
-
-Note: Validation doesn't work fully yet, because the evaluation data frame is still buggy. 
-```{r validate, eval = FALSE}
-validate()
-```
-
-# Plotting
-
-To-Do:
-..the code Seda made.. (Should be included as function for plotting the modelled results as maps)\
-- quick map style (nice plot, and good color scale)\
-- first start for the users costumized\
 - tidyterra package ?\
