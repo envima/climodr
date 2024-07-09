@@ -1,5 +1,5 @@
 ---
-title: "climodr"
+title: "A short introduction to climodr"
 output: 
   rmarkdown::html_vignette:
     toc: TRUE
@@ -14,36 +14,62 @@ vignette: >
 Version 0.0.0.9000
 
 Welcome to climate modeller in R, short climodr. 
-This packages uses point data from climate stations, spectral imagery and elevation models to automatically create ready-to-use climate maps and statistics. This Vignette should guide you through the package, explain its functions and give you an idea of how to use climodr.
+This packages uses point data from climate stations, spectral imagery and 
+elevation models to automatically create ready-to-use climate maps and 
+statistics. This Vignette should guide you through the package, explain its 
+functions and give you an idea of how to use climodr.
 
 # Getting Started with climodr
 
-The Idea of climodr is, to speed up climate modelling processes and make them easier to use. The package foresees that one needs to store relevant input data into one folder structure and the package does the rest. However its also possible to split up and do the automated steps manually to adjust settings or to get into detail in certain steps. 
-
-*more cool stuff to follow*
+The Idea of climodr is, to speed up climate modelling processes and make them 
+easier to use. The package foresees that one needs to store relevant input data 
+into one folder structure and the package does the rest using the example 
+workflow provided in this vignette. 
+The functions are still modifyable, so one can adjust the model workflow to your 
+liking.
 
 ## Downloading climodr
 
-To start with climodr, you first need to download and install the package from the Environmental Informatics Lab (envima) @ Marburg University from Github. To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html) installed to your R. Once devtools is installed, you can simply add climodr by following commands.   
-  
-Note: It may asks you to install all packages climodr needs to execute all its functions. Please install all of those.  
+To start with climodr, you first need to download and install the package 
+from CRAN.  
+
+```{r install, eval = FALSE}
+#install climodr
+install.packages("climodr")
+```
+
+It may asks you to install all packages climodr needs to execute all its 
+functions. Its mandatory to install these packages, otherwise climodr won't be
+able to execute its functions, as it takes many functions into its comprehensive
+workflow.
+
+You can also install the latest development version from the
+Environmental Informatics Lab (envima) @ Marburg University from Github. 
+To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html)
+installed to your R. Once devtools is installed, you can simply add climodr by 
+following commands.  
 
 ```{r install}
 #install climodr
-#devtools::install_github("envima/climodr")
-
-#devtools::load_all()
-library(climodr)
+# ---- GITHUB-LINK HIER EINFÜGEN -----
+devtools::load_all() # Solange Github-Repo noch privat
 ```
+
+Nice to add:
+Link to the help-pages on CRAN, once package is published
 
 ## How to setup climodr
 
 Setting up climodr just requires one step, before you can get started.  
-With the *envi.create()* function, one just points out a path, where the package should store all its data. 
+With the *envi.create()* function, one points out a path where the package 
+should store all its data. There is also the *memfrac* argument. This argument 
+allows you to change the fraction of your RAM the terra-package is allowed to use.
+By default this number is pretty low, so this way the process can be sped up.
 
 ```{r setup env}
-#setting up the environment for climodr
+library(climodr)
 
+#setting up the environment for climodr
 envi.create("E:/climodr/vignette",
             memfrac = 0.8)
 ```
@@ -69,31 +95,51 @@ The Output-Directory contains all the reade-to-use data in some basic formats, w
 
 The Workflow-Directory contains all steps in between the Input and the Output. In here there are models, test and training data, clean tabular data, and so on.
 
-Note: Do not delete any of these folders, since climodr requires those to run properly!
+Note: 
+ - Do not delete any of these folders, since climodr requires those to run properly!
+ - The higher you set the fraction of RAM that climodr will use, the slower the
+PC will become when running climodr, in case you want to do something in parallel 
+on the PC. Using a fraction > 0.8 can even make it hard to use a browser while
+using climodr.
 
 # Pre-Processing
 
-For this package, a small showcase product has been edited, which gets delivered with climodr. Its a small scene located south of the bale mountains in ethiopia. There are three climate stations located in this scene.\
+For this package, a small showcase product has been edited, which comes with 
+climodr. Its a small scene located in Hainich national park in Germany. There are 
+ten climate stations located in this scene.\
 
-Note: Raster preperation and index calculation is not included in the package yet. So one has to put a complete raster stack with all indices into the `workflow/wraster` folder.\
+Note: This is just an example with very few stations and a very small scene,
+which will not result into a good model and is only used for educational purposes. 
+
+You don't have to use raw format data. If you have data, that equals one of the 
+levels in this Pre-Processing step, you can step in at the corresponding stage.
+For now you'll need to take care that the data matches the pattern climodr 
+produces in this workflow. 
 
 ## Prepare tabular data for processing
 
-First, we have to prepare the tabular data for further uses. The prep.csv function cleans up and removes all NA values from the data.
+First, we have to prepare the raw tabular data for further uses. The prep.csv 
+function cleans up the data and removes all NA values from the data.
+
 ```{r prep csv}
 prep.csv(method = "proc", safe_output = TRUE)
 
 #check the created csv files
 csv_files <- grep("_no_NAs.csv$", 
                   list.files(envrmt$path_tworkflow), 
-                  value=TRUE)
+                   value=TRUE)
 csv_files
 ```
-## Process tabular data to monthly means
 
-Next, the data needs to be aggregated for monthly means.\
+## Process tabular data to means
 
-Note: In future the user will be able to choose the time period. 
+Next, the data needs to be aggregated for to the desired time steps.\
+In this version one can aggregate data into "monthly" and into "anual" data.\
+The *rbind* argument stores all climate station data into one file. This step is 
+recomended, since the data usually will become way shorter after the time 
+aggregation and is easier to be processed further this way. 
+
+
 ```{r proc csv}
 csv_data <- proc.csv(method = "monthly",
                               rbind = TRUE,
@@ -103,9 +149,9 @@ head(csv_data)
 
 ## Spatial aggregation of tabular data
 
-Next, the stations have to be located in space, with a coordinate system. This step is crucial to process the data in a modelation use case.\
+Next, the stations have to be spacialy located in a coordinate system. This 
+step is crucial to process the data in a modelation use case.\
 
-Note: For some reason the coordinates slide between SWDR_200 and P_RT_NRT. This is no problem, but the order is still weird. Should be adressed in future.
 ```{r spat csv}
 csv_spat <- spat.csv(method = "monthly",
                      des_file = "plot_description.csv",
@@ -115,9 +161,21 @@ head(csv_spat)
 
 ## Pre-Process Raster Data for data extraction
 
+Now, that we have spatial points of our stations, we can continue with our raster 
+data. The prefered *method* here is "MB_Timeseries", which stands for 'Multiband 
+Timeseries'. Use this method, if you provide multiple singleband rasters or raster 
+stacks with different timestamps per scene. The functions sorts them by date and 
+crops the data to our study area.
+
 ```{r crop all}
 crop.all(method = "MB_Timeseries", overwrite = TRUE)
 ```
+
+Next, we calculate some basic indices, so we can create more predictor variables
+for our models. Therefore *vi* chooses the vegetation indices one wants to create.
+You can either list the desired indices in a vector, or simply use "all" to 
+generate all available indices. For more detailed information use *?calc.indices*
+in the console.
 
 ```{r calc indices}
 calc.indices(vi = "all",
@@ -128,24 +186,37 @@ calc.indices(vi = "all",
              overwrite = TRUE)
 ```
 
-
 ## Finalize tabular data for modelling
 
-Next, one needs to extract the data at the stations from the aerial imagery.
+Now, that we have spatial points as well as raster data, we can extract additional
+predictor variables at the station points from the spatial raster data. Therefore 
+we use the *fin.csv* function. The functions extracts the station points from the
+spatial raster data and adds the data to our spatial points.
+
 ```{r finalize csv}
 csv_fin <- fin.csv(method = "monthly",
                    safe_output = TRUE)
 head(csv_fin)
 ```
+Now the data is ready for further modelling.
 
 # Processing
 
+In this step the spatial raster data and the climate station data is ready to use. 
+If your data isn't, check out the 'Pre-Processing' chapter.
+
 ## Test for Autocorrelation
 
-Next, one tests the data for autocorrelation. The evaluation vector contains all columns from the final table which should be tested for autocorrelation. It creates the first outputs in the package with one tabular-file per response-sensor, which contains all columns which should be excluded from the modulation because they autocorrelate. It also creates some visualization for the user of the autocorrelation.\
+First, one tests the data for autocorrelation. The evaluation vector contains 
+all columns with the response and predictor variables, which will be tested for 
+autocorrelation. It creates the first outputs in the package with one tabular-file 
+per response-sensor, which contains all columns which should be excluded from 
+the modulation because they autocorrelate. It also creates some visualization 
+for the user of the autocorrelation, if *plot.corrplot* is set to *TRUE*.\
 
-Note: A few columns are masked out, because they cause errors. Needs to be address in future.\
-Note': The visualization is quite messy, when there are a lot of predictors. Maybe make it prettier in future.
+Note': The visualization is quite messy, when there are a lot of predictors. 
+Maybe make it prettier in future.
+
 ```{r autocorr, warning = FALSE}
 autocorr(
   method = "monthly",
