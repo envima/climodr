@@ -100,7 +100,7 @@ prep.csv <- function(method = "proc",
       paste0(
         "Removed NAs from ",
         number_of_csvs,
-        "stations"
+        " stations"
       )
     )
   } # end proc - method
