@@ -13,18 +13,39 @@ vignette: >
 ---
 Version 0.0.0.9000
 
+# Introduction to climodr
+
 Welcome to climate modeller in R, short climodr. 
-This packages uses point data from climate stations, spectral imagery and 
-elevation models to automatically create ready-to-use climate maps and 
-statistics. This Vignette should guide you through the package, explain its 
-functions and give you an idea of how to use climodr.
+This package uses point data from climate stations, spectral imagery and 
+elevation models to automatically create ready-to-use climate maps.\ 
+
+First of all, the idea of climodr is to deliver an easy to use method for 
+creating high quality climate maps. Like the one we create in this vignette:
+
+![Temperature Map produced with climodr](map_vignette.png)
+
+Note: This example will be created with dummy data and will not create a good
+model, it is for educational purposes only.\ 
+\ 
+Lets take a look into the basic structure of climodr:
+![Climodr Structure](Climodr_Structure.png)
+
+Climodr is mainly split into four steps:\ 
+Environment, Pre-Processing, Processing and Plotting\ 
+With only these four steps climodr creates basic but resilient climate models and climate maps, without making it to complicated for the user.\ 
+
+This Vignette should guide you through the package, explain its functions and give 
+you an idea of how to use climodr. The example contains a few dummy climate stations, a metadata-file for the climate stations, a vector file containing our area of interest, a small multi band satellite image and a digital elevation model (DEM). And this is everything one needs to run climodr!\ 
+
+This example will create climate maps for our climate sensor TA_200, which is the air temperature measured at a height of 2m above ground.\ 
+
 
 # Getting Started with climodr
 
 The Idea of climodr is, to speed up climate modelling processes and make them 
 easier to use. The package foresees that one needs to store relevant input data 
 into one folder structure and the package does the rest using the example 
-workflow provided in this vignette. 
+workflow provided in this vignette.\ 
 The functions are still modifyable, so one can adjust the model workflow to your 
 liking.
 
@@ -49,10 +70,13 @@ To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.ht
 installed to your R. Once devtools is installed, you can simply add climodr by 
 following commands.  
 
-```{r install dev}
+```{r install dev, eval = FALSE}
 #install climodr
-# ---- GITHUB-LINK HIER EINFÜGEN -----
-devtools::load_all() # Solange Github-Repo noch privat
+#devtools::install_github(
+#  "https://github.com/envima/climodr.git", 
+#  auth_token = "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"
+#  )
+# devtools::load_all() # Solange Github-Repo noch privat
 ```
 
 Nice to add:
@@ -79,6 +103,8 @@ Climodr then creates an environment with three main folders:\
 - Output (for ready-to-use data created by climodr)\
 - Workflow (for climodr to store data during the process)\
 
+![Climodr Environment](Environment.png)
+
 The Input-Directory is the place, where all data, which shall be used for modelling, should be saved beforehand. It consists of four different folders:\
 - dep (Dependency, like a resolution image or metadata)\
 - raster (Raster data, work in progress)\
@@ -95,12 +121,14 @@ The Output-Directory contains all the reade-to-use data in some basic formats, w
 
 The Workflow-Directory contains all steps in between the Input and the Output. In here there are models, test and training data, clean tabular data, and so on.
 
+```
 Note: 
  - Do not delete any of these folders, since climodr requires those to run properly!
  - The higher you set the fraction of RAM that climodr will use, the slower the
 PC will become when running climodr, in case you want to do something in parallel 
 on the PC. Using a fraction > 0.8 can even make it hard to use a browser while
 using climodr.
+```
 
 # Pre-Processing
 
@@ -108,13 +136,15 @@ For this package, a small showcase product has been edited, which comes with
 climodr. Its a small scene located in Hainich national park in Germany. There are 
 ten climate stations located in this scene.\
 
+```
 Note: This is just an example with very few stations and a very small scene,
 which will not result into a good model and is only used for educational purposes. 
+```
 
-You don't have to use raw format data. If you have data, that equals one of the 
-levels in this Pre-Processing step, you can step in at the corresponding stage.
-For now you'll need to take care that the data matches the pattern climodr 
-produces in this workflow. 
+You don't have to use raw format data that wasn't pre-processed earlier. If you 
+have data, that equals one of the levels in this Pre-Processing step, you can 
+step in at the corresponding stage. For now you'll need to take care that the 
+data matches the pattern climodr produces in this workflow. 
 
 ## Prepare tabular data for processing
 
@@ -131,7 +161,7 @@ csv_files <- grep("_no_NAs.csv$",
 csv_files
 ```
 
-## Process tabular data to means
+## Process tabular data to average values
 
 Next, the data needs to be aggregated for to the desired time steps.\
 In this version one can aggregate data into "monthly" and into "anual" data.\
@@ -162,19 +192,17 @@ head(csv_spat)
 ## Pre-Process Raster Data for data extraction
 
 Now, that we have spatial points of our stations, we can continue with our raster 
-data. The preferred *method* here is "MB_Timeseries", which stands for 'multi band 
-time series'. Use this method, if you provide multiple single band rasters or raster 
-stacks with different time stamps per scene. The functions sorts them by date and 
-crops the data to our study area.
+data. The preferred *method* here is `"MB_Timeseries"`, which stands for **multi band time series**. Use this method, if you provide multiple single band rasters or raster 
+stacks with different time stamps (YYYYMMDD...) *in the file names* per scene. The function sorts them by date and crops the data to our study area.
 
 ```{r crop all}
 crop.all(method = "MB_Timeseries", overwrite = TRUE)
 ```
 
 Next, we calculate some basic indices, so we can create more predictor variables
-for our models. Therefore *vi* chooses the vegetation indices one wants to create.
-You can either list the desired indices in a vector, or simply use "all" to 
-generate all available indices. For more detailed information use *?calc.indices*
+for our models. Therefore `vi` chooses the vegetation indices one wants to create.
+You can either list the desired indices in a *vector*, or simply use `all` to 
+generate all available indices. For more detailed information use `?calc.indices`
 in the console.
 
 ```{r calc indices}
@@ -190,14 +218,18 @@ calc.indices(vi = "all",
 
 Now, that we have spatial points as well as raster data, we can extract additional
 predictor variables at the station points from the spatial raster data. Therefore 
-we use the *fin.csv* function. The functions extracts the station points from the
-spatial raster data and adds the data to our spatial points.
+we use the `fin.csv` function. The function uses the positions we have added to our climate station data using `spat.csv` to extract the raster values at these positions from every layer of the spatial raster data and adds the data to each corresponding climate station. During our modeling steps this climate station csv-file will be used to generate Spatial Points which then will be used to train our models. 
+
+```
+Reminder: You can check your data at any step, just go into your Workflow-Folder of the Project directory you defined in the beginning with `envi.create` and take a look into this data. Just make sure to not alter that data, as this may cause climodr to nut run following functions correctly.
+```
 
 ```{r finalize csv}
 csv_fin <- fin.csv(method = "monthly",
                    safe_output = TRUE)
 head(csv_fin)
 ```
+
 Now the data is ready for further modelling.
 
 # Processing
@@ -208,9 +240,9 @@ If your data isn't, check out the 'Pre-Processing' chapter.
 ## Test for Autocorrelation
 
 First, one tests the data for autocorrelation. The evaluation vector contains 
-all columns with the response and predictor variables, which will be tested for 
+all columns with the sensor data and predictor variables, which will be tested for 
 autocorrelation. It creates the first outputs in the package with one tabular-file 
-per response-sensor, which contains all columns which should be excluded from 
+per sensor, which contains all columns which should be excluded from 
 the modulation because they autocorrelate. It also creates some visualization 
 for the user of the autocorrelation, if *plot.corrplot* is set to *TRUE*.\
 
@@ -232,32 +264,34 @@ Now, that we've done all necessary previous steps, one can start modelling. This
 is by far the function with the most variables. Here we give a quick overview, 
 what these arguments do:
 
-timespan = Vector with last two digits of years to build models from (in this 
-example 2017 )\
-climresp = Vector of rows to create models for. (In this example Ta_200)\
-classifier = Vector of all model variants to be used. In this case random 
-forest = "rf", partial-least-squares = "pls", neural networks = "nnet" and 
-linear regression = "lm"\ 
- \ 
-seed = Number to "pick randomness". With the seed one can reproduce random 
-pulls.\ 
-p = Fraction of random taken training data from full data.\ 
-folds = Character or vector. Method to Create spacetime folds. "all" ,"LLO", 
-"LTO" or "LLTO".\ 
-mnote = Character. "Model Note". 6 digits, Marks the different model runs in a
-project.\ 
-predrows = Vector with the row numbers used as predictors.\ 
-tc_method = Train control method. Default is cross validation "cv".\ 
-metric = Summary Metric to select optimal model. Default: Root Mean Square 
-Error "RMSE".\ 
-autocorrelation = Logical Parameter. TRUE, if the results of the autocorrelation 
-should be considered.\ 
-doParallel = Logical Parameter. When set True, the Model-Process will 
+`timespan` = Vector with last two digits of years to build models from (in this 
+example 2017)\
+`climresp` = Vector of rows to create models for. (In this example Ta_200)\
+`classifier` = Vector of all model variants to be used. In this case:\
+\    - random forest = "rf"  
+\    - partial-least-squares = "pls"  
+\    - neural networks = "nnet"  
+\    - linear regression = "lm"  
+ \
+`seed` = Number to "pick randomness". With the seed one can reproduce random 
+pulls.\
+`p` = Fraction of random taken training data from full data.\
+`folds` = Character or vector. Method to Create spacetime folds. "all" ,"LLO", 
+"LTO" or "LLTO".\
+`mnote` = Character. "Model Note". 6 digits, Marks the different model runs in a
+project.\
+`predrows` = Vector with the row numbers used as predictors.\
+`tc_method` = Train control method. Default is cross validation "cv".\
+`metric` = Summary Metric to select optimal model. Default: Root Mean Square 
+Error "RMSE".\
+`autocorrelation` = Logical Parameter. TRUE, if the results of the autocorrelation 
+should be considered.\
+`doParallel` = Logical Parameter. When set True, the Model-Process will 
 parallelize on all cores except two, so your PC will slow down a lot. Only 
 recommended for PCs with at least 8 Cores. Warning: Your PC wont be able to 
 process other stuff efficiently during parallelization.\
 
-Once all parameters are set, one can run the modelworkflow `calc.model` like this:
+Once all parameters are set, one can run the model workflow `calc.model` like this:
 ```{r model, eval = FALSE, warning = FALSE}
 calc.model(
   method = "monthly",
@@ -304,6 +338,8 @@ Lets show the list of predictions:
 predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
 head(predlist)
 ```
+
+## Plotting
 
 The `climplot` function finally plots your predictions and saves them in the
 output folder. It uses the plotting functions from the `terra`-package. These 
