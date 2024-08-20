@@ -39,7 +39,25 @@
 #' @export calc.model
 #'
 #' @examples
-#'
+#' \dontrun{
+#' # Create 48 different models (12 months x 4 classifiers) for every month in 2017
+#' calc.model(method = "monthly",
+#'            timespan = c(2017),
+#'            climresp = 5,
+#'            classifier = c("rf",
+#'                           "pls",
+#'                           "nnet",
+#'                           "lm"),
+#'            seed = 707,
+#'            p = 0.8,
+#'            folds = "LLO",
+#'            mnote = "vignette",
+#'            predrows = c(8:24),
+#'            tc_method = "cv",
+#'            metric = "RMSE",
+#'            autocorrelation = TRUE,
+#'            doParallel = FALSE)
+#' }
 calc.model <- function(
     method = "monthly",
     timespan,

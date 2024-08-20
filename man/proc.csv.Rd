@@ -7,16 +7,27 @@
 proc.csv(method = "monthly", rbind = TRUE, safe_output = TRUE, ...)
 }
 \arguments{
-\item{method}{character.}
+\item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{rbind}{logical. Create a single file with all climate stations. If FALSE, every station will be safed in a seperate file.}
 
-\item{safe_output}{logical. If data should be safed permanently in the Environment put safe_output = TRUE.
-Otherwise the output will be safed in the temporary directory. Default: FALSE.}
+\item{safe_output}{logical. If data should be saved permanently in the Environment put safe_output = TRUE.
+Otherwise the output will be saved in the temporary directory. Default: TRUE.}
 }
 \value{
 List
 }
 \description{
-Calculate necessary Data from Stationary Data
+Calculate averaged sensor values aggregated to a given time interval.
+}
+\examples{
+\dontrun{
+csv_data <- proc.csv(method = "monthly",
+                     rbind = TRUE,
+                     safe_output = TRUE)
+head(csv_data)
+}
+}
+\seealso{
+`prep.csv`, `spat.csv`, `fin.csv`
 }

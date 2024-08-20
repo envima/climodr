@@ -1,6 +1,6 @@
 #' Prediction
 #'
-#' Predictdata with the created models
+#' Predict data with the created models
 #'
 #'
 #' @return

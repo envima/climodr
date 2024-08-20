@@ -4,11 +4,34 @@
 \alias{autocorr}
 \title{Autocorrelation}
 \usage{
-autocorr(method = "monthly", pred, resp, plot.corrplot = TRUE)
+autocorr(method = "monthly", resp, pred, plot.corrplot = TRUE)
 }
 \arguments{
-\item{eval_vec}{}
+\item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
+
+\item{resp}{numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.}
+
+\item{pred}{numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.}
+
+\item{plot.corrplot}{logical. Should correlation matrices be plotted?}
+}
+\value{
+One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
 }
 \description{
-Test Data on autocorrelation to produce reliable models
+Tests the final.csv created with `fin.csv` on autocorrelation to produce
+reliable models.
+}
+\examples{
+\dontrun{
+# Test data for autocorrelation after running fin.csv
+autocorr(method = "monthly",
+         resp = 5,
+         pred = c(8:24),
+         plot.corrplot = FALSE)
+}
+
+}
+\seealso{
+`calc.model`
 }

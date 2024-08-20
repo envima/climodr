@@ -7,7 +7,7 @@
 prep.csv(method = "proc", safe_output = TRUE, ...)
 }
 \arguments{
-\item{method}{character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data in the right format. "AI" for raw-data in other formats. Default "proc"-Method.}
+\item{method}{character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.}
 
 \item{safe_output}{logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
 Otherwise the output will be safed in the temporary directory. Default: FALSE.}
@@ -16,5 +16,20 @@ Otherwise the output will be safed in the temporary directory. Default: FALSE.}
 List
 }
 \description{
-Crops input data to the extent size
+Crops input data to the extent size and removes NA-Values
+}
+\examples{
+\dontrun{
+prep.csv(method = "proc", safe_output = TRUE)
+
+#check the created csv files
+csv_files <- grep("_no_NAs.csv$",
+                  list.files(envrmt$path_tworkflow),
+                  value=TRUE)
+csv_files
+}
+
+}
+\seealso{
+`proc.csv`, `spat.csv`, `fin.csv`
 }
