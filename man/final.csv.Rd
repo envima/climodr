@@ -8,6 +8,8 @@
 fin.csv(method = "monthly", crs = NULL, safe_output = TRUE, ...)
 }
 \arguments{
+\item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
+
 \item{safe_output}{logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
 Otherwise the output will be safed in the temporary directory. Default: FALSE.}
 }
@@ -15,5 +17,19 @@ Otherwise the output will be safed in the temporary directory. Default: FALSE.}
 List
 }
 \description{
-blabla
+Extract the raster values of all raster layers from a scene at the station
+coordinates at each time stamp. The extracted data will be attached to the
+station data so there is a .csv-file with coordinates, sensor data (response values)
+and extracted raster data (predictor values). The data is ready to be used for modelling.
+}
+\examples{
+\dontrun{
+csv_fin <- fin.csv(method = "monthly",
+                   safe_output = TRUE)
+head(csv_fin)
+}
+
+}
+\seealso{
+`prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
 }

@@ -2,19 +2,28 @@
 #_____________________________________________________________________________#
 #' Preparing CSV-Data
 #'
-#' Crops input data to the extent size
+#' Crops input data to the extent size and removes NA-Values
 #'
-#' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data in the right format. "AI" for raw-data in other formats. Default "proc"-Method.
+#' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.
 #' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
 #' @return List
-#' @seealso
+#' @seealso `proc.csv`, `spat.csv`, `fin.csv`
 #'
 #' @name prep.csv
 #' @export prep.csv
 #'
 #' @examples
+#' \dontrun{
+#' prep.csv(method = "proc", safe_output = TRUE)
+#'
+#' #check the created csv files
+#' csv_files <- grep("_no_NAs.csv$",
+#'                   list.files(envrmt$path_tworkflow),
+#'                   value=TRUE)
+#' csv_files
+#' }
 #'
 prep.csv <- function(method = "proc",
                      safe_output = TRUE,
@@ -112,21 +121,26 @@ prep.csv <- function(method = "proc",
 #_____________________________________________________________________________#
 #' Processing CSV-Data
 #'
-#' Calculate necessary Data from Stationary Data
+#' Calculate averaged sensor values aggregated to a given time interval.
 #'
-#' @param method character.
+#' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be safed in a seperate file.
-#' @param safe_output logical. If data should be safed permanently in the Environment put safe_output = TRUE.
-#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#' @param safe_output logical. If data should be saved permanently in the Environment put safe_output = TRUE.
+#' Otherwise the output will be saved in the temporary directory. Default: TRUE.
 #'
 #' @return List
-#' @seealso
+#' @seealso `prep.csv`, `spat.csv`, `fin.csv`
 #'
 #' @name proc.csv
 #' @export proc.csv
 #'
 #' @examples
-#'
+#' \dontrun{
+#' csv_data <- proc.csv(method = "monthly",
+#'                      rbind = TRUE,
+#'                      safe_output = TRUE)
+#' head(csv_data)
+#' }
 proc.csv <- function(method = "monthly",
                      rbind = TRUE,
                      safe_output = TRUE,
@@ -326,19 +340,27 @@ proc.csv <- function(method = "monthly",
 #_____________________________________________________________________________#
 #' Spatial aggregation for CSV-Data
 #'
-#' blabla
+#' Extract station coordinates from meta-data and reproject the coordinates to the
+#' project coordinate reference system.
 #'
-#' @param
-#' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
-#'
-#' @return List
-#' @seealso
+#' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
+#' @param des_file character. The filename and data type of the meta-data. (Only reads .csv)
+#' @param crs character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.
+#' @param safe_output logical. If cleaned data should be saved permanently in the Environment put safe_output = TRUE.
+#' Otherwise the output will be saved in the temporary directory. Default: TRUE
+#' @return Data Frame
+#' @seealso `prep.csv`, `proc.csv`, `fin.csv`
 #'
 #' @name spat.csv
 #' @export spat.csv
 #'
 #' @examples
+#' \dontrun{
+#' csv_spat <- spat.csv(method = "monthly",
+#'                      des_file = "plot_description.csv",
+#'                      safe_output = TRUE)
+#' head(csv_spat)
+#' }
 #'
 spat.csv <- function(method = "monthly",
                      des_file,
@@ -568,20 +590,29 @@ spat.csv <- function(method = "monthly",
 # ___________________________________________________________________________ #
 #' Final aggregation for CSV-Data
 #'
-#' blabla
+#' Extract the raster values of all raster layers from a scene at the station
+#' coordinates at each time stamp. The extracted data will be attached to the
+#' station data so there is a .csv-file with coordinates, sensor data (response values)
+#' and extracted raster data (predictor values). The data is ready to be used for modelling.
 #'
-#' @param
+#' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
 #' Otherwise the output will be safed in the temporary directory. Default: FALSE.
 #'
 #' @return List
-#' @seealso
+#' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
 #'
 #' @name final.csv
 #' @export final.csv
 #'
 #' @examples
+#' \dontrun{
+#' csv_fin <- fin.csv(method = "monthly",
+#'                    safe_output = TRUE)
+#' head(csv_fin)
+#' }
 #'
+
 fin.csv <- function(method = "monthly",
                     crs = NULL,
                     safe_output = TRUE,

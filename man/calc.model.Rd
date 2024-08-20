@@ -23,48 +23,74 @@ calc.model(
 )
 }
 \arguments{
-\item{timespan}{vector or integer. Should contain all years to be modeled.
-The years have to be the same format as in the tabular data.}
+\item{timespan}{numeric. Vector or single input. Should contain all years to
+be modeled. The years have to be the same format as in the
+tabular data.}
 
-\item{climresp}{vector or integer. Should contain all response column's in
-the tabular data.}
+\item{climresp}{numeric. Vector or single input. Should contain all column's
+in the tabular data that contain response variables.}
 
 \item{classifier}{vector or character. Model variants to be used. Supported
 models: Random Forest = "rf", Partial-Least-Squares = "pls",
 Neural Networks = "nnet", Linear Regression = "lm" or
 generalized boosted regression = "gbm".}
 
-\item{seed}{integer. Seed to reproduce the same model over and over. e.g.
-"seed = 707"}
+\item{seed}{integer. Seed to reproduce the same model over and over.}
 
-\item{predrows}{vector or integer. Should contain the rows where all the
-predictor values are stored in.}
+\item{folds}{character. Vector or single input. Either folding over location
+only "LLO", over time only "LTO", or over both "LLTO". Use
+"all" to use all possibilitys.}
+
+\item{predrows}{numeric. Vector or single input. Should contain the rows where
+all the predictor values are stored in.}
 
 \item{mnote}{character. Model note for special modifications used.
 Default: "normal"}
 
 \item{k}{integer. When 'fold' = "LLO" or "LTO". Set k to the number
-of unique spatial or temporal units.}
+of unique spatial or temporal units.  Leave out to use preset
+values.}
 
 \item{tc_method}{character. Method for train control function from caret
 package. Default = "cv".}
 
-\item{metric}{character. See "train".}
+\item{metric}{character. See `train`.}
 
 \item{doParallel}{logical. Parallelization accelerates the modelling
 process. Warning: Your PC will slow down drastically. Make
 sure to not run any other heavy processes during this.}
 
-\item{fold}{character. Saving Algorithm. Either folding over location
-only "LLO", over time only "LTO", or over both "LLTO".}
-
-\item{safe_output}{logical. If cleaned data should be safed permanently in
-the Environment put safe_output = TRUE. Otherwise the output
-will be safed in the temporary directory. Default: FALSE.}
+\item{autocorrelation}{logical. Should autocorrelating data in the predictor
+variables be excluded from the model run? Only works if
+`autocorr` has been executed beforehand.}
 }
 \value{
 data frame.
 }
 \description{
 Creates Models for each climate value
+}
+\examples{
+\dontrun{
+# Create 48 different models (12 months x 4 classifiers) for every month in 2017
+calc.model(method = "monthly",
+           timespan = c(2017),
+           climresp = 5,
+           classifier = c("rf",
+                          "pls",
+                          "nnet",
+                          "lm"),
+           seed = 707,
+           p = 0.8,
+           folds = "LLO",
+           mnote = "vignette",
+           predrows = c(8:24),
+           tc_method = "cv",
+           metric = "RMSE",
+           autocorrelation = TRUE,
+           doParallel = FALSE)
+}
+}
+\seealso{
+`autocorr`
 }

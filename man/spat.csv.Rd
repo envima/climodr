@@ -7,12 +7,31 @@
 spat.csv(method = "monthly", des_file, crs = NULL, safe_output = TRUE, ...)
 }
 \arguments{
-\item{safe_output}{logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-Otherwise the output will be safed in the temporary directory. Default: FALSE.}
+\item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
+
+\item{des_file}{character. The filename and data type of the meta-data. (Only reads .csv)}
+
+\item{crs}{character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.}
+
+\item{safe_output}{logical. If cleaned data should be saved permanently in the Environment put safe_output = TRUE.
+Otherwise the output will be saved in the temporary directory. Default: TRUE}
 }
 \value{
-List
+Data Frame
 }
 \description{
-blabla
+Extract station coordinates from meta-data and reproject the coordinates to the
+project coordinate reference system.
+}
+\examples{
+\dontrun{
+csv_spat <- spat.csv(method = "monthly",
+                     des_file = "plot_description.csv",
+                     safe_output = TRUE)
+head(csv_spat)
+}
+
+}
+\seealso{
+`prep.csv`, `proc.csv`, `fin.csv`
 }

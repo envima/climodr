@@ -7,5 +7,5 @@
 climpred(method = "monthly", mnote, AOA = TRUE)
 }
 \description{
-Predictdata with the created models
+Predict data with the created models
 }

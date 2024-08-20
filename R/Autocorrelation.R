@@ -16,11 +16,13 @@
 #'
 #' @examples
 #' \dontrun{
-#' #Test data for autocorrelation after running fin.csv
-#' autocorr(method = "monthly,
+#' # Test data for autocorrelation after running fin.csv
+#' autocorr(method = "monthly",
 #'          resp = 5,
 #'          pred = c(8:24),
-#'          plot.corrplot = FALSE)}
+#'          plot.corrplot = FALSE)
+#' }
+#'
 
 autocorr <- function(
     method = "monthly",

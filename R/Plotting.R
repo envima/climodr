@@ -1,17 +1,31 @@
-#' Plotting
+#' Create Maps using the `terra` package graphic parameters
 #'
-#' Plot results of climodr into maps
+#' Plot results of climodr into maps. Right now maps are created using the terra package.
+#' The maps created are very basic. Will be updated to run with tidyterra in future.
 #'
-#' @param
+#' @param mnote character. The modelnote you want to create maps of.
+#' @param sensor character. The sensor you want to create maps for.
+#' @param aoa logical. Do you want the area of applicability to be added to your map?
+#' @param mapcolors The color pallete you want to use for the map. Default is `rev(grDevices::terrain.colors(50))`
+#' @param scale_position character. Graphical parameter. The relative positiion of the Scale for the map. See `terra::plot` for more details.
+#' @param north_position character. Graphical parameter. The relative positiion of the Scale for the map. See `terra::plot` for more details.
 #'
-#' @return
-#' @seealso
+#' @return Maps in PNG-Format to your harddrive.
+#' @seealso `terra::plot`
 #'
 #' @name climplot
 #' @export climplot
 #'
 #' @examples
-#'
+#' \dontrun{
+#' # Create a Temperature Map from the vignette model
+#' climplot(mnote = "vignette",
+#'          sensor = "Ta_200",
+#'          aoa = FALSE,
+#'          mapcolors = rev(heat.colors(50)),
+#'          scale_position = "bottomleft",
+#'          north_position = "topright")
+#' }
 
 climplot <- function(
     mnote,
