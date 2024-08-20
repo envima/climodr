@@ -1,22 +1,31 @@
 #' Autocorrelation
 #'
-#' Test Data on autocorrelation to produce reliable models
+#' Tests the final.csv created with `fin.csv` on autocorrelation to produce
+#' reliable models.
 #'
-#' @param eval_vec
+#' @param method character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".
+#' @param resp numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.
+#' @param pred numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.
+#' @param plot.corrplot logical. Should correlation matrices be plotted?
 #'
-#' @return
-#' @seealso
+#' @return One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
+#' @seealso `calc.model`
 #'
 #' @name autocorr
 #' @export autocorr
 #'
 #' @examples
-#'
+#' \dontrun{
+#' #Test data for autocorrelation after running fin.csv
+#' autocorr(method = "monthly,
+#'          resp = 5,
+#'          pred = c(8:24),
+#'          plot.corrplot = FALSE)}
 
 autocorr <- function(
     method = "monthly",
-    pred,
     resp,
+    pred,
     plot.corrplot = TRUE)
   {
   #get data from PreProcessing
@@ -32,7 +41,7 @@ autocorr <- function(
     )
 
   #subset data
-  data <- data_o[ ,c(pred, resp)]
+  data <- data_o[ ,c(resp, pred)]
 
   #duplicated data
   #data_d <- data[duplicated(data),];
@@ -107,12 +116,12 @@ autocorr <- function(
 
 # Now with a variable for sensor
   corlist <- list()
-  sensor_names <- names(data)[c(1:length(pred))]
+  sensor_names <- names(data)[c(1:length(resp))]
 
 # thanks to lares maintainer Bernardo Lares <laresbernardo@gmail.com>
 # for supporting this part on StackOverflow
 
-  if(length(pred) == 1){
+  if(length(resp) == 1){
     var_name <- sensor_names[1]
     var_sym <- rlang::sym(var_name)  # Construct symbol from string
     corlist[[1]] <- lares::corr_var(
@@ -121,14 +130,14 @@ autocorr <- function(
       max_pvalue = 0.05,
       top = 50)
   } else {
-    for (i in 1:length(pred)){
+    for (i in 1:length(resp)){
       var_name <- sensor_names[i]
       var_sym <- rlang::sym(var_name)  # Construct symbol from string
       corlist[[i]] <- lares::corr_var(
         df = data,
         var = !!var_sym,
         max_pvalue = 0.05,
-        ignore = names(data)[c(1:length(pred)[-i])],
+        ignore = names(data)[c(1:length(resp)[-i])],
         top = 50
       )
     }

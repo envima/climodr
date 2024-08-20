@@ -15,7 +15,7 @@ Version 0.0.0.9000
 
 # Introduction to climodr
 
-Welcome to climate modeller in R, short climodr. 
+Welcome to climate modeler in R, short climodr. 
 This package uses point data from climate stations, spectral imagery and 
 elevation models to automatically create ready-to-use climate maps.\ 
 
@@ -72,11 +72,10 @@ following commands.
 
 ```{r install dev, eval = FALSE}
 #install climodr
-#devtools::install_github(
-#  "https://github.com/envima/climodr.git", 
-#  auth_token = "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"
-#  )
-# devtools::load_all() # Solange Github-Repo noch privat
+devtools::install_github(
+  "https://github.com/envima/climodr.git", 
+  auth_token = "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"
+  )
 ```
 
 Nice to add:
@@ -232,6 +231,7 @@ head(csv_fin)
 
 Now the data is ready for further modelling.
 
+![Pre-processed data created by climodr](Preprocessing.png)
 # Processing
 
 In this step the spatial raster data and the climate station data is ready to use. 
@@ -244,7 +244,7 @@ all columns with the sensor data and predictor variables, which will be tested f
 autocorrelation. It creates the first outputs in the package with one tabular-file 
 per sensor, which contains all columns which should be excluded from 
 the modulation because they autocorrelate. It also creates some visualization 
-for the user of the autocorrelation, if *plot.corrplot* is set to *TRUE*.\
+for the user of the autocorrelation, if `plot.corrplot` is set to *TRUE*.\
 
 Note': The visualization is quite messy, when there are a lot of predictors. 
 Maybe make it prettier in future.
@@ -252,17 +252,20 @@ Maybe make it prettier in future.
 ```{r autocorr, warning = FALSE}
 autocorr(
   method = "monthly",
-  pred = 5, 
-  resp = c(8:24),
+  resp = 5, 
+  pred = c(8:24),
   plot.corrplot = FALSE
   )
 ```
 
-## Create climate models 
+## Create climate models from spatial station data
+
+![Processing steps during model workflow](Processing.png)
 
 Now, that we've done all necessary previous steps, one can start modelling. This
 is by far the function with the most variables. Here we give a quick overview, 
-what these arguments do:
+what these arguments do. For more detailed information take a look into the 
+associated paper for this package at [**(to be published)**](Link). 
 
 `timespan` = Vector with last two digits of years to build models from (in this 
 example 2017)\
@@ -314,16 +317,19 @@ calc.model(
   doParallel = FALSE)
 ```
 
-Congratulations, you have created your first models using climodr.
-Climodr also creates an evaluation data frame, which is safed in the statistics
+Congratulations, you have created your first models using climodr!\
+\
+Climodr also creates an evaluation data frame, which is saved in the statistics
 folder. These performance information are later used to predict the best models 
 from this model run. 
 
 ## Predictions
 
-Further we can predict the scenes using the models with the `climpred` function. `climpred` also calculates the area of applicability, if the `AOA` argument is
-set to *TRUE*. Keep in mind to use the same `mnote` as in your model run, so
-climodr predicts with the models you created in this modelrun.\ 
+Further we can predict the scenes from our example with the climate models from
+our spatial station data using the `climpred` function. `climpred` also calculates 
+the area of applicability, if the `AOA` argument is set to *TRUE*. Keep in mind 
+to use the same `mnote` as in your model run, so climodr predicts with the models 
+you created in this modelrun.\ 
 
 ```{r predict, eval = FALSE}
 climpred(
@@ -339,14 +345,19 @@ predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
 head(predlist)
 ```
 
-## Plotting
+For easier navigation and search the names of the predictions, as well as all other
+names created by using climodr, follow a pattern. They always consist of:
+The *Mnote* - the *Sensor Name* - the *Date* of the Scene - the *Folds* used during 
+the model run - the *model classifier* - and the word *prediction*. 
+
+# Plotting
 
 The `climplot` function finally plots your predictions and saves them in the
 output folder. It uses the plotting functions from the `terra`-package. These 
 plots are very simple, but they consist of all important information you'll 
 need in a map. 
 
-You can plot your predictions like this:
+You can create plots of your predictions like this:
 ```{r plot predictions}
 climplot(
   mnote = "vignette",
@@ -358,4 +369,5 @@ climplot(
 )
 ```
 
-- tidyterra package ?\
+So in the end you receive a map like the one we saw in the beginning. 
+![Temperature Map produced with climodr](map_vignette.png)
