@@ -74,8 +74,9 @@ following commands.
 #install climodr
 devtools::install_github(
   "https://github.com/envima/climodr.git", 
-  auth_token = "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"
-  )
+  auth_token = "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", 
+  dependencies = TRUE,
+  build_vignettes = TRUE)
 ```
 
 Nice to add:
@@ -93,7 +94,7 @@ By default this number is pretty low, so this way the process can be sped up.
 library(climodr)
 
 # setting up the environment for climodr
-envi.create("E:/climodr/vignette",
+envi.create(tempdir(),
             memfrac = 0.8)
 
 # load in all the climodr example data for this vignette
