@@ -115,3 +115,75 @@ envi.create <- function(proj_path,
     )
 }
 
+#' Load in Example Data
+#'
+#' Climodr comes with a full set of example data. But since this package runs primarily with data,
+#' that is not linked to the global environment, but saved in local folders build via `envi.create`,
+#' one can't just load example data. This function will load all the example data used in the vignette
+#' into your climodr environment. This way you can run all the code from the vignette.
+#'
+#' @return Multiple files used by the climodr vignette
+#'
+#' @name clim.sample
+#' @export clim.sample
+#'
+#' @examples
+#' \dontrun{
+#' # Load the climodr example data into the current climodr environment
+#' clim.sample(overwrite = TRUE)
+#' }
+#'
+clim.sample <- function(overwrite){
+  print("Loading example data for the climodr example..")
+# Input dep folder
+  data("res_area")
+  data("plot_description")
+  res_area <- terra::unwrap(res_area)
+
+  terra::writeRaster(res_area, file.path(envrmt$path_dep, "res_area.tif"), overwrite = TRUE)
+  write.csv(plot_description, file.path(envrmt$path_dep, "plot_description.csv"))
+
+  print(paste0("Saved climodr example dependency files to {", envrmt$path_dep, "}."))
+  rm(list = setdiff(ls(), "envrmt"))
+  gc()
+
+# Input raster folder
+  data("sch_201707")
+  data("sch_dgm")
+  sch_201707 <- terra::unwrap(sch_201707)
+  sch_dgm <- terra::unwrap(sch_dgm)
+
+  terra::writeRaster(sch_201707, file.path(envrmt$path_raster, "sch_201707.tif"), overwrite = TRUE)
+  terra::writeRaster(sch_dgm, file.path(envrmt$path_raster, "sch_dgm.tif"), overwrite = TRUE)
+
+  print(paste0("Saved climodr example raster files to {", envrmt$path_raster, "}."))
+  rm(list = setdiff(ls(), "envrmt"))
+  gc()
+
+# Input tabular folder
+  l <- data(package = "climodr")$results[,3]
+  l <- l[grepl("SE", l)]
+
+  for (i in l){
+    eval(call("data", i))
+    eval(call("write.csv", as.name(i), file.path(envrmt$path_tabular, paste0(i, ".csv")), row.names = FALSE))
+  }
+
+  print(paste0("Saved climodr example tabular files to {", envrmt$path_tabular, "}."))
+  rm(list = setdiff(ls(), "envrmt"))
+  gc()
+
+# Input vector folder
+  data("ext_vignette")
+  ext_vignette <- terra::unwrap(ext_vignette)
+
+  terra::writeVector(ext_vignette, file.path(envrmt$path_vector, "ext_vignette.gpkg"), overwrite = TRUE)
+
+  print(paste0("Saved climodr example vector files to {", envrmt$path_vector, "}."))
+  rm(list = setdiff(ls(), "envrmt"))
+  gc()
+
+# Talk to the User
+  print("Done loading all the example files. You are ready to continue.")
+}
+

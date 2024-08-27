@@ -13,7 +13,7 @@ crop.all(
 )
 }
 \arguments{
-\item{method}{charackter.}
+\item{method}{character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.}
 
 \item{crs}{Coordinate reference system Used to crop all images in folder_path. If crs
 it will automatically reprojected into this one. Default: crs of smallest Extent.}
@@ -21,8 +21,18 @@ it will automatically reprojected into this one. Default: crs of smallest Extent
 \item{ext}{SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.}
 }
 \value{
-SpatRaster-Stack
+SpatRaster-Stack. Also saved to /workflow/rworkflow
 }
 \description{
-Crops input data to the extent size
+Crops input data to the extent size and reprojects them into project Coordinate reference system.
+}
+\examples{
+\dontrun{
+crop.all(method = "MB_Timeseries",
+         overwrite = TRUE)
+}
+
+}
+\seealso{
+`fin.csv`, `calc.indices`
 }

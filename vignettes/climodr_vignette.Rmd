@@ -56,7 +56,7 @@ from CRAN.
 
 ```{r install, eval = FALSE}
 #install climodr
-install.packages("climodr")
+install.packages("climodr") 
 ```
 
 It may asks you to install all packages climodr needs to execute all its 
@@ -92,9 +92,12 @@ By default this number is pretty low, so this way the process can be sped up.
 ```{r setup env}
 library(climodr)
 
-#setting up the environment for climodr
+# setting up the environment for climodr
 envi.create("E:/climodr/vignette",
             memfrac = 0.8)
+
+# load in all the climodr example data for this vignette
+clim.sample(overwrite = TRUE)
 ```
 
 Climodr then creates an environment with three main folders:\
@@ -295,7 +298,7 @@ recommended for PCs with at least 8 Cores. Warning: Your PC wont be able to
 process other stuff efficiently during parallelization.\
 
 Once all parameters are set, one can run the model workflow `calc.model` like this:
-```{r model, eval = FALSE, warning = FALSE}
+```{r model, warning = FALSE}
 calc.model(
   method = "monthly",
   timespan = c(2017),
@@ -303,9 +306,7 @@ calc.model(
   classifier = c(
     "rf", 
     "pls", 
-    "nnet", 
-    "lm"
-    ),
+    "lm"),
   seed = 707,
   p = 0.8,
   folds = "LLO",
@@ -331,7 +332,7 @@ the area of applicability, if the `AOA` argument is set to *TRUE*. Keep in mind
 to use the same `mnote` as in your model run, so climodr predicts with the models 
 you created in this modelrun.\ 
 
-```{r predict, eval = FALSE}
+```{r predict}
 climpred(
   method = "monthly",
   mnote = "vignette", 

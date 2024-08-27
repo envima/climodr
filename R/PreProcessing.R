@@ -602,8 +602,8 @@ spat.csv <- function(method = "monthly",
 #' @return List
 #' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
 #'
-#' @name final.csv
-#' @export final.csv
+#' @name fin.csv
+#' @export fin.csv
 #'
 #' @examples
 #' \dontrun{

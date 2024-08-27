@@ -2,10 +2,35 @@
 % Please edit documentation in R/Prediction.R
 \name{climpred}
 \alias{climpred}
-\title{Prediction}
+\title{Predict sensor data area wide}
 \usage{
 climpred(method = "monthly", mnote, AOA = TRUE)
 }
+\arguments{
+\item{method}{Character. Either "daily", monthly" or "annual". Also depends on the available data.}
+
+\item{mnote}{Character. Model note to filter models for the fitting model run.}
+
+\item{AOA}{Logical. Should the Area of Applicability be calculated additional to the models?}
+}
+\value{
+Multiple models.rds stored in the /workflow/models folder.
+}
 \description{
-Predict data with the created models
+Use the models created using `calc.model` to predict the modeled data onto a
+full spatial raster scene.
+}
+\examples{
+\dontrun{
+climpred(method = "monthly",
+         mnote = "normal",
+         AOA = TRUE)
+predlist <- list.files(envrmt$path_predictions,
+                       pattern = ".tif")
+head(predlist)
+}
+
+}
+\seealso{
+`autocorr`, `predict`
 }
