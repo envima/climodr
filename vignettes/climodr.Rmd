@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-Version 0.0.0.9000
+Version 0.0.0.9002
 
 # Introduction to climodr
 
@@ -99,6 +99,7 @@ envi.create(tempdir(),
 
 # load in all the climodr example data for this vignette
 clim.sample(overwrite = TRUE)
+rm(list = setdiff(ls(), "envrmt"))
 ```
 
 Climodr then creates an environment with three main folders:\

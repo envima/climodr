@@ -135,6 +135,7 @@ envi.create <- function(proj_path,
 #'
 clim.sample <- function(overwrite){
   print("Loading example data for the climodr example..")
+  print(environment())
 # Input dep folder
   data("res_area")
   data("plot_description")

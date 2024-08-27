@@ -661,7 +661,7 @@ fin.csv <- function(method = "monthly",
             "\\1",
             sat_paths[i]
             ),
-          1, 2)
+          5, 6)
         )
       tiff <- terra::rast(
         file.path(
