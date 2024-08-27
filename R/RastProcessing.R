@@ -1,19 +1,23 @@
 #' Cropping tiff data
 #'
-#' Crops input data to the extent size
+#' Crops input data to the extent size and reprojects them into project Coordinate reference system.
 #'
-#' @param method charackter.
+#' @param method character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.
 #' @param crs Coordinate reference system Used to crop all images in folder_path. If crs
 #' it will automatically reprojected into this one. Default: crs of smallest Extent.
 #' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
 #'
-#' @return SpatRaster-Stack
-#' @seealso
+#' @return SpatRaster-Stack. Also saved to /workflow/rworkflow
+#' @seealso `fin.csv`, `calc.indices`
 #'
 #' @name crop.all
 #' @export crop.all
 #'
 #' @examples
+#' \dontrun{
+#' crop.all(method = "MB_Timeseries",
+#'          overwrite = TRUE)
+#' }
 #'
 crop.all <- function(method = "MB_Timeseries",
                      crs = NULL,
@@ -30,9 +34,12 @@ crop.all <- function(method = "MB_Timeseries",
 
     print("Cropping raster...")
     if (is.null(ext)){
-      tif <- terra::project(tif, terra::rast(file.path(envrmt$path_dep, "res_area.tif")), mask = TRUE)
+      res_area <- terra::rast(file.path(envrmt$path_dep, "res_area.tif"))
+      tif <- terra::project(tif, res_area)
+      tif <- terra::mask(tif, res_area)
     } else {
-      tif <- terra::project(tif, ext, mask = TRUE)
+      tif <- terra::project(tif, ext)
+      try(tif <- terra::mask(tif, ext), silent = TRUE)
     }
 
     if (method == "Singlebands"){
@@ -97,18 +104,28 @@ crop.all <- function(method = "MB_Timeseries",
 
 #' Calculate spectral indices
 #'
-#' Calculates a set of spectral indices
+#' Calculates a set of spectral indices to have more predictor variables available when further modeling.
 #'
-#' @param method character.
-#' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
+#' @param vi Character. Either "all" or vector containing the preferred spectral indices. See 'Details' for more information.
+#' @param bands Character. Vector with lenght(bands) = 10. Contains the names of the bands in the Raster Stack.
+#' If bands from the *Usage* example vector dont exist, use "NA" in their position. See 'Details' for more information.
+#' @param overwrite logical. Argument passed down from `terra`-package. Overwrite existing files?
 #'
 #' @return SpatRaster-Stack
-#' @seealso
+#' @seealso `crop.all`, `fin.csv`
 #'
 #' @name calc.indices
 #' @export calc.indices
 #'
 #' @examples
+#' \dontrun{
+#' calc.indices(vi = "all",
+#'              bands = c("blue", "green", "red",
+#'                        "nir", "nirb",
+#'                        "re1", "re2", "re3",
+#'                        "swir1", "swir2"),
+#'              overwrite = TRUE)
+#' }
 #'
 
 calc.indices <- function(vi = "all",
@@ -191,78 +208,3 @@ calc.indices <- function(vi = "all",
     gc()
   } # end n-loop
 } # end function
-
-#' Aggregate Rasters
-#'
-#' Aggregate spatial raster files for desired timespan (eg. daily, monthly, annual..)
-#'
-#' @param method character.
-#'
-#' @return SpatRaster-Stack
-#' @seealso
-#'
-#' @name aggregate.rast
-#' @export aggregate.rast
-#'
-#' @examples
-#'
-
-aggregate.rast <- function(){
-  all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T); #reads all data in Workflow Raster Folder
-  dates <- as.Date(stringr::str_sub(all_files, 5, 12), format = "%Y%m%d")
-  months <- strftime(dates, format = "%m")
-
-  for (i in unique(months)){
-    print(paste0("Calculating means for ",
-                 unique(strftime(dates, format = "%B"))[as.integer(i)],
-                 "..  ",
-                 i, "/", length(unique(months))))
-    month_rasters <- all_files[which(months == i)]
-    rstack <- terra::rast()
-    rmean <- terra::rast()
-
-    print(paste0("Reading ", length(month_rasters), " files for this month..  "))
-
-    for (j in 1:length(month_rasters)){
-      x <- terra::rast(file.path(envrmt$path_rfinal, month_rasters[j]))
-      terra::add(rstack) <- x
-    } # end j-loop
-
-    n <- terra::nlyr(rstack)
-    l <- length(terra::sources(rstack))
-    vsort <- names(rstack)[1:(n/l)]
-    rstack <- rstack[[sort(names(rstack))]]
-
-    print("Calculate monthly means for each layer.. ")
-    for (k in seq(1, n, l)){
-      print("  ...  ")
-      a <- rstack[[k:(k+l-1)]]
-      b <- terra::app(a, fun = "mean", na.rm = TRUE)
-      names(b) <- names(a)[1]
-      terra::add(rmean) <- b
-    } # end k-loop
-
-    print("Writing raster..")
-    terra::writeRaster(rmean,
-                       file.path(envrmt$path_rfinal,
-                                 paste0("hai_2020",
-                                        unique(months)[as.integer(i)],
-                                        "_mean.tif")
-                       )
-    )
-    remove(rstack, rmean, j, n, l, vsort, k, a, b)
-    gc()
-  } # end i-loop
-
-  data_order <- names(terra::rast(file.path(envrmt$path_rworkflow, "hai_20200104_ind.tif")))
-  all_files <- list.files(path = file.path(envrmt$path_rfinal), recursive = T)
-
-  for (i in 1:12){
-    data <- terra::rast(file.path(envrmt$path_rfinal, all_files[i]))
-    data <- data[[data_order]]
-    data$EVI <- NULL
-    data$EVI2 <- NULL
-    print(i)
-    terra::writeRaster(data, file.path(envrmt$path_rfinal, "new", all_files[i]))
-  }
-}

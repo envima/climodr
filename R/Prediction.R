@@ -1,15 +1,27 @@
-#' Prediction
+#' Predict sensor data area wide
 #'
-#' Predict data with the created models
+#' Use the models created using `calc.model` to predict the modeled data onto a
+#' full spatial raster scene.
 #'
+#' @param method Character. Either "daily", monthly" or "annual". Also depends on the available data.
+#' @param mnote Character. Model note to filter models for the fitting model run.
+#' @param AOA Logical. Should the Area of Applicability be calculated additional to the models?
 #'
-#' @return
-#' @seealso
+#' @return Multiple models.rds stored in the /workflow/models folder.
+#' @seealso `autocorr`, `predict`
 #'
 #' @name climpred
 #' @export climpred
 #'
 #' @examples
+#' \dontrun{
+#' climpred(method = "monthly",
+#'          mnote = "normal",
+#'          AOA = TRUE)
+#' predlist <- list.files(envrmt$path_predictions,
+#'                        pattern = ".tif")
+#' head(predlist)
+#' }
 #'
 
 climpred <- function(

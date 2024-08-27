@@ -11,13 +11,30 @@ calc.indices(
 )
 }
 \arguments{
-\item{method}{character.}
+\item{vi}{Character. Either "all" or vector containing the preferred spectral indices. See 'Details' for more information.}
 
-\item{ext}{SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.}
+\item{bands}{Character. Vector with lenght(bands) = 10. Contains the names of the bands in the Raster Stack.
+If bands from the *Usage* example vector dont exist, use "NA" in their position. See 'Details' for more information.}
+
+\item{overwrite}{logical. Argument passed down from `terra`-package. Overwrite existing files?}
 }
 \value{
 SpatRaster-Stack
 }
 \description{
-Calculates a set of spectral indices
+Calculates a set of spectral indices to have more predictor variables available when further modeling.
+}
+\examples{
+\dontrun{
+calc.indices(vi = "all",
+             bands = c("blue", "green", "red",
+                       "nir", "nirb",
+                       "re1", "re2", "re3",
+                       "swir1", "swir2"),
+             overwrite = TRUE)
+}
+
+}
+\seealso{
+`crop.all`, `fin.csv`
 }
