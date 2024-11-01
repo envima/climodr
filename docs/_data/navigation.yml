@@ -1,0 +1,27 @@
+# main links
+main:
+  - title: "Units"
+    url: /units.html
+  - title: "FAQ"
+    url: /faq.html
+  - title: "Courses"
+    url: https://geomoer.github.io/moer-info-page/ 
+  - title: "Lab Home"
+    url: https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics
+  - title: "About"
+    url: /about.html
+  - title: "Sitemap"
+    url: /sitemap.html
+    
+    
+docs:
+  - title: Ways out
+    children:
+      - title: "Units"
+        url: /units.html
+      - title: "FAQ"
+        url: /faq.html
+      - title: "Courses"
+        url: https://geomoer.github.io/moer-info-page/         
+      - title: "Lab Home"
+        url: https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics

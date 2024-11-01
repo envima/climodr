@@ -1,0 +1,513 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.1 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>The very basics | climodr</title>
+<meta name="description" content="Start learning (or recap) the essentials for working with R and RStudio to create species distribution models.  ">
+
+
+  <meta name="author" content="Lisa Bald">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="climodr">
+<meta property="og:title" content="The very basics">
+<meta property="og:url" content="http://localhost:4000/unit01/unit01-02_the_very_basics.html">
+
+
+  <meta property="og:description" content="Start learning (or recap) the essentials for working with R and RStudio to create species distribution models.  ">
+
+
+
+  <meta property="og:image" content="http://localhost:4000/assets/images/teaserimages/felder.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2024-11-01T14:32:01+01:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/unit01/unit01-02_the_very_basics.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Lab of Environmental Informatics",
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="climodr Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <link rel="shortcut icon" type="image/png" href="/assets/images/favicon/favicon.png">
+
+  </head>
+
+  <body class="layout--single">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    <div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+    	<a class="site-title" href="http://localhost:4000/" style="padding:0px"><img src="http://localhost:4000/assets/images/logos/logo_umr4.png" style="padding-right:15px">climodr</a>
+        <ul class="visible-links">
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/units.html" >Units</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/faq.html" >FAQ</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="https://geomoer.github.io/moer-info-page/" >Courses</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics" >Lab Home</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/about.html" >About</a>
+            </li>
+          
+            
+            <li class="masthead__menu-item">
+              <a href="http://localhost:4000/sitemap.html" >Sitemap</a>
+            </li>
+          
+        </ul>
+        
+        <button class="search__toggle" type="button">
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+
+    <div class="initial-content">
+      
+  
+
+
+
+
+
+
+
+<div class="page__hero"
+  style=" background-image: url('');"
+>
+  
+    <img src="/assets/images/teaserimages/felder.png" alt="The very basics" class="page__hero-image">
+  
+  
+    <span class="page__hero-caption"><a href="https://ccnull.de/foto/drohnenaufnahme-von-landwirtschaftlichen-feldern-mit-geometrischen-mustern/1105470">Marco Verch via ccnull.de</a>. <a href="https://creativecommons.org/licenses/by/2.0/de/">CC-BY 2.0</a>. Image cropped.
+</span>
+  
+</div>
+
+
+
+
+
+<div id="main" role="main">
+  
+
+  <div class="sidebar sticky">
+  
+
+  
+    
+      
+      
+      
+    
+    
+	      
+            <nav class="nav__list">
+
+  
+
+  <input id="ac-toc" name="accordion-toc" type="checkbox" />
+  <label for="ac-toc">Toggle Menu</label>
+
+  <ul class="nav__items">
+
+  <li>
+      <span class="nav__sub-title">
+          <a href="/units.html" class="">Back to course units</a>
+    </span>
+      </li>
+
+  
+      
+      
+  
+      
+      
+          
+          
+
+	    
+  
+      
+      
+          
+          
+          <li>
+              <span class="nav__sub-title">
+		              <a href="/unit01/unit01-02_the_very_basics.html" class="">01 SDM Basics</a>
+		          </span>
+          <ul>
+          
+              
+			        
+			            <li><a href="/unit01/unit01-02_the_very_basics.html" class="active">The very basics</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-03_sdm_basics.html" class="">SDM basics</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-04_assignment_sdm_background.html" class="">Assignment: SDM background knowledge</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-05_sdm_methods.html" class="">SDM methods</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-06_exemplary_sdm_workflow.html" class="">Exemplary SDM workflow</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-07_assignment.html" class="">Assignment: Train and evaluate SDM</a></li>
+			        
+          
+              
+			        
+			            <li><a href="/unit01/unit01-01_overview.html" class="">Overview</a></li>
+			        
+          
+          </ul>
+          </li>
+          
+
+	    
+  
+      
+      
+  
+      
+      
+  
+      
+      
+  
+      
+      
+  
+      
+      
+  
+      
+      
+  
+      
+      
+  
+
+  </ul>
+</nav>
+
+        
+    
+  
+  </div>
+
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="The very basics">
+    <meta itemprop="description" content="Start learning (or recap) the essentials for working with R and RStudio to create species distribution models.">
+    <meta itemprop="datePublished" content="2024-11-01T14:32:01+01:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">The very basics
+</h1>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Start learning (or recap) the essentials for working with R and RStudio to create species distribution models.</p>
+
+<!--more-->
+
+<p>To create species distribution models in R, first ensure that R and RStudio are installed on your computer. Additionally, R Markdown will be needed for creating your assignments. Please follow the linked learning resources below according to your level of expertise.</p>
+<h2 id="first-steps-in-r-and-rstudio">First steps in R and RStudio</h2>
+
+<p>The online resources for this unit can be found <a href="https://geomoer.github.io/moer-base-r/unit01/unit01-01_Intro.html" target="_blank">here</a>.</p>
+
+<h2 id="example-r-markdown-with-html-output">Example: R Markdown with html output</h2>
+
+<p>The online resources for this unit can be found <a href="https://geomoer.github.io/moer-bsc-project-seminar-SDM/unit01/unit01-03_Rmd_html.html" target="_blank">here</a>.</p>
+
+<h2 id="working-with-spatial-data-in-r">Working with spatial data in R</h2>
+<p>To work effectively with spatial data, particularly raster and vector data, it’s essential to become familiar with the <a href="https://cran.r-project.org/package=terra"><strong>terra</strong></a> and <a href="https://r-spatial.github.io/sf/"><strong>sf</strong></a> packages in R. These packages will be central to handling and analyzing spatial data throughout the course. Take some time to explore their basic functions and documentation.</p>
+
+<p>The online resources for working with <strong>vector data</strong> can be found <a href="https://geomoer.github.io/moer-bsc-project-seminar-SDM/unit03/unit03-02_vector_data.html" target="_blank">here</a>.</p>
+
+<p>The online resources for working with <strong>raster data</strong> can be found <a href="https://geomoer.github.io/moer-bsc-project-seminar-SDM/unit03/unit03-03_raster_data.html" target="_blank">here</a>.</p>
+
+<p>Also work through the <strong>example workflow</strong>, which can be found <a href="https://geomoer.github.io/moer-bsc-project-seminar-SDM/unit03/unit03-05_example_SpatialDataProcessing.html" target="_blank">here</a>.</p>
+
+<h2 id="already-a-spatial-data-expert-in-r">Already a spatial data expert in R?</h2>
+<p>Fantastic! Since you’re already familiar with the basics of spatial data in R, please consider assisting your peers with questions or code debugging as they work through the foundational exercises. If you still have time, explore advanced data visualization. There are many ways and many packages to do this here we will use the <a href="https://dieghernan.github.io/tidyterra/"><strong>tidyterra</strong> package</a>.</p>
+<h2 id="advanced-visualization-optional">Advanced visualization (optional)</h2>
+<p>his section offers a practical exercise for those with a solid foundation in spatial data analysis. You will develop an advanced map in R using the <a href="https://dieghernan.github.io/tidyterra/"><strong>tidyterra</strong></a> and <a href="https://ggplot2.tidyverse.org/"><strong>ggplot2</strong></a> packages to visualize tick bite distribution across Switzerland. This exercise will guide you through adding visual elements to communicate spatial data insights effectively.</p>
+
+<p>Use this time to experiment with advanced plotting in R by creating a map using the <a href="https://dieghernan.github.io/tidyterra/"><strong>tidyterra</strong> package</a>.</p>
+
+<p>To begin, download the tick bite distribution dataset and verify it by creating a basic plot. Use the provided URL to download the tick bite distribution map, then save it to your chosen local directory.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">terra</span><span class="p">)</span><span class="w">
+</span><span class="n">url</span><span class="o">=</span><span class="s2">"https://data.geo.admin.ch/ch.bag.zeckenstichmodell/zeckenstichmodell/zeckenstichmodell_2056.tif.zip"</span><span class="w">
+</span><span class="n">file_path</span><span class="o">=</span><span class="s2">"C:/DATA/Lehre/moer-msc-advanced-SDM/data/"</span><span class="w">
+</span><span class="n">file_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"zeckenstichmodell_2056.tif.zip"</span><span class="w">
+
+</span><span class="c1"># Call the download.file() function, passing in the URL and file name/location as arguments</span><span class="w">
+</span><span class="n">download.file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">,</span><span class="w"> </span><span class="n">sep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">""</span><span class="p">),</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"wb"</span><span class="p">)</span><span class="w">
+</span><span class="c1"># unzip the file</span><span class="w">
+</span><span class="n">unzip</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="n">file_name</span><span class="p">),</span><span class="w"> </span><span class="n">exdir</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p>Load the unzipped file into R and create an initial plot using the <strong>terra</strong> package to ensure the data has loaded correctly. This plot serves as a baseline.</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># load file into r with the terra package and plot</span><span class="w">
+</span><span class="n">r</span><span class="o">=</span><span class="n">terra</span><span class="o">::</span><span class="n">rast</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span><span class="w"> </span><span class="s2">"ch.bag.zeckenstichmodell_2056.tif"</span><span class="p">))</span><span class="w">
+</span><span class="n">terra</span><span class="o">::</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="../assets/images/unit01/sw_r_plot.png" alt="image" /></p>
+
+<p>Now that the data is loaded and verified, move to** tidyterra** and <strong>ggplot2</strong> to generate a more flexible and customizable plot. Begin by using geom_spatraster() from the <strong>tidyterra</strong> package to map the spatial raster data. If your dataset has multiple layers, you could also use facet_wrap() to separate them.</p>
+
+<p>To give you some ideas for the start here is a basic map with tidyterra:</p>
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">library</span><span class="p">(</span><span class="n">tidyterra</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span><span class="w">
+
+</span><span class="n">ggplot</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">geom_spatraster</span><span class="p">(</span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w">
+  </span><span class="n">facet_wrap</span><span class="p">(</span><span class="o">~</span><span class="n">lyr</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<p><img src="../assets/images/unit01/tidyterra.png" alt="image" /></p>
+
+<h2 id="exercise">Exercise:</h2>
+<p>Now, create a map with the following features:</p>
+
+<ul>
+  <li><strong>North Arrow</strong>: Add a north arrow to orient viewers.</li>
+  <li><strong>Scale Bar</strong>: Include a scale bar to indicate spatial resolution.</li>
+  <li><strong>Spectral Color Scheme</strong>: Apply a blue-to-red gradient (blue for low, red for high probability of species occurrence).</li>
+  <li><strong>Rename Raster</strong>: Add a clear header to the raster layer</li>
+</ul>
+
+<p class="notice--info"><strong>Help and Resources</strong>: Have a look at the vignette of <a href="https://dieghernan.github.io/tidyterra/"><strong>tidyterra</strong></a> and also use funcrtionalities of <a href="https://ggplot2.tidyverse.org/"><strong>ggplot2</strong></a>. And in doubt always ask stack overflow.</p>
+
+<h3 id="expected-output">Expected output</h3>
+<p>Your map should look somewhat similar to this:</p>
+
+<p><img src="../assets/images/unit01/final_tidyterra_plot.png" alt="image" /></p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2024-11-01T14:32:01+01:00">November 1, 2024</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/unit01/unit01-01_overview.html" class="pagination--pager" title="Overview
+">Previous</a>
+    
+    
+      <a href="/unit01/unit01-03_sdm_basics.html" class="pagination--pager" title="SDM basics
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+    
+    
+    
+      <li><a href="https://github.com/GeoMOER"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+    
+    
+    
+    <li><a href="http://localhost:4000/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright"> <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a> &copy; 2024 Lab of Environmental Informatics
+. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a>, <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a> &amp; <a href="https://www.uni-marburg.de/fb19" rel="nofollow">Geography@Marburg University</a>.</div>
+
+
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

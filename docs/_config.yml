@@ -1,0 +1,256 @@
+# Marburg Open Educational Resources
+#
+# This config file is meant for settings that affect the whole course space.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server
+# process.
+
+# Site settings 
+# These are used to personalize your new site. If you look in the HTML files,
+# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
+# You can create any custom variable you would like, and they will be accessible
+# in the templates via {{ site.myvariable }}.
+
+# Adjust title etc. Depending on serving the site on GitHub or OER, different
+# url and baseurl settings have to be used.
+
+
+##### URL #####################################################################
+# Serve on Ilias Uni Marburg OER
+# url: "https://ilias.uni-marburg.de"
+# baseurl: "/data/UNIMR/lm_data/lm_xxx"
+
+# Serve on GitHub
+url: https://geomoer.github.io
+baseurl: ""
+
+
+##### Title ###################################################################
+title: climodr
+name: &name "Lab of Environmental Informatics" # &name is a YAML anchor which can be *referenced later
+email: lisa.bald@uni-marburg.de
+description: >- # this means to ignore newlines until next item
+  course course-materials geography remote-sensing marburg-open-educational-resource 
+  physical-geography environmental-science nature-conservation r SDM
+
+##### Social Sharing ##########################################################
+#twitter:
+  #username         : &twitter "EnvIn_UMR"
+
+##### Lecturer settings #######################################################
+author:
+  name             : "Dirk Zeuss"
+  avatar           : "/assets/images/instructors/zeuss.jpg"
+  bio              : "University of Marburg"
+  location         : "Marburg, DE"
+  email            : "dirk.zeuss@uni-marburg.de"
+  uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
+  home             : "https://www.researchgate.net/profile/Dirk_Zeuss"
+  researchgate     : "https://www.researchgate.net/profile/Dirk_Zeuss/stats" # to be included some day
+  #flickr           : "https://www.flickr.com/environmentalinformatics-marburg/"
+  github           : "GeoMOER"
+  #twitter          : "https://twitter.com/geographie_umr"
+  #youtube          : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
+  
+  ##### Lecturer settings #######################################################
+author:
+  name             : "Lisa Bald"
+  avatar           : "/assets/images/instructors/zeuss.jpg"
+  bio              : "University of Marburg"
+  location         : "Marburg, DE"
+  email            : "dirk.zeuss@uni-marburg.de"
+  uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
+  home             : "https://www.researchgate.net/profile/Dirk_Zeuss"
+  researchgate     : "https://www.researchgate.net/profile/Dirk_Zeuss/stats" # to be included some day
+  #flickr           : "https://www.flickr.com/environmentalinformatics-marburg/"
+  github           : "GeoMOER"
+  #twitter          : "https://twitter.com/geographie_umr"
+  #youtube          : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
+
+
+##### Site configuration ######################################################
+title_separator: "|"
+excerpt_separator: <!--more-->
+
+search: true
+
+# Build settings
+markdown: kramdown
+# theme: minima
+remote_theme: "GeoMOER/moer-jekyll-theme"
+minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+auto_ids: true
+
+# Default Settings
+collections_dir: units
+
+# Includes
+include:
+  - _pages
+
+# Collections
+collections:
+  unit00:
+    output: true
+    permalink: /:collection/:title.html
+  unit01:
+    output: true
+    permalink: /:collection/:title.html
+  unit02:
+    output: true
+    permalink: /:collection/:title.html
+  unit03:
+    output: true
+    permalink: /:collection/:title.html
+  unit04:
+    output: true
+    permalink: /:collection/:title.html
+  unit05:
+    output: true
+    permalink: /:collection/:title.html
+  unit06:
+    output: true
+    permalink: /:collection/:title.html
+#  unit07:
+#    output: true
+#    permalink: /:collection/:title.html
+  unit99:
+    output: true
+    permalink: /:collection/:title.html
+#  unit11:
+#    output: true
+#    permalink: /:collection/:title.html
+  worksheets:
+    output: true
+    permalink: /:collection/:title.html
+
+# Default settings
+defaults:
+  # unit00
+  - scope:
+      path: ""
+      type: unit00
+    values:
+      category: "How-to-Advanced-SDM"
+      tags: "Unit 00"
+      layout: single
+      sidebar:
+        nav: "course_unit" 
+  # unit01
+  - scope:
+      path: ""
+      type: unit01
+    values:
+      category: "01 SDM Basics"
+      tags: "Unit 01"
+      layout: single
+      sidebar:
+        nav: "course_unit" 
+  # unit02
+  - scope:
+      path: ""
+      type: unit02
+    values:
+      category: "02 Virtual species"
+      tags: "Unit 02"
+      layout: single
+      sidebar:
+        nav: "course_unit" 
+  # unit03
+  - scope:
+      path: ""
+      type: unit03
+    values:
+      category: "03 From idea to insight: Your personal research project"
+      tags: "Unit 03"
+      layout: single
+      sidebar:
+        nav: "course_unit" 
+  # unit04
+ # - scope:
+ #     path: ""
+ #     type: unit04
+ #   values:
+ #     category: "04 SDM basics"
+ #     tags: "Unit 04"
+ #     layout: single
+ #     sidebar:
+ #       nav: "course_unit" 
+  # unit05
+#  - scope:
+#      path: ""
+#      type: unit05
+#    values:
+#      category: "05 SDM workflow "
+#      tags: "Unit 05"
+#      layout: single
+#      sidebar:
+#        nav: "course_unit" 
+#  # unit06
+#  - scope:
+#      path: ""
+#      type: unit06
+#    values:
+#      category: "06 Create your own student tutorial"
+#      tags: "Unit 06"
+#      layout: single
+#      sidebar:
+#        nav: "course_unit" 
+#  # unit07
+#  - scope:
+#      path: ""
+#      type: unit07
+#    values:
+#      category: "07 Digitizing distribution records III"
+#      tags: "Unit 07"
+#      layout: single
+#      sidebar:
+#        nav: "course_unit" 
+  # student_tutorials
+#  - scope:
+#      path: ""
+#      type: unit99
+#    values:
+#      category: "Student tutorials"
+#      tags: "Student tutorials"
+#      layout: single
+#      sidebar:
+#        nav: "course_unit"            
+  # pages
+  - scope:
+      path: "_pages"
+      type: pages
+    values:
+      layout: single
+      sidebar:
+        nav: "docs"         
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-admin
+  - jekyll-paginate
+  - jekyll-gist
+  - jemoji
+  - jekyll-include-cache
+  - jekyll-algolia
+
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
+
+github: [metadata]
+
+
+
