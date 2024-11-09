@@ -11,7 +11,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-Version 0.0.0.9002
+Version 0.0.0.9003
 
 # Introduction to climodr
 
@@ -66,12 +66,12 @@ workflow.
 
 You can also install the latest development version from the
 Environmental Informatics Lab (envima) @ Marburg University from Github. 
-To do so, you need [devtools](https://www.r-project.org/nosvn/pandoc/devtools.html)
+To do so, you need [devtools](https://devtools.r-lib.org/)
 installed to your R. Once devtools is installed, you can simply add climodr by 
 following commands.  
 
 ```{r install dev, eval = FALSE}
-#install climodr
+#install climodr (last a bit, but shouldn't take longer than 5-10 Minutes)
 devtools::install_github(
   "https://github.com/envima/climodr.git", 
   auth_token = "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", 
@@ -85,6 +85,10 @@ Link to the help-pages on CRAN, once package is published
 ## How to setup climodr
 
 Setting up climodr just requires one step, before you can get started.  
+Activating the package will cause some conflicts originating from tydiverse. 
+This is completely fine, as these functions won't be tackled. You can still use
+the old functions by addressing the package, e.g. like `stats::filter()`.\
+\
 With the *envi.create()* function, one points out a path where the package 
 should store all its data. There is also the *memfrac* argument. This argument 
 allows you to change the fraction of your RAM the terra-package is allowed to use.
@@ -99,6 +103,8 @@ envi.create(tempdir(),
 
 # load in all the climodr example data for this vignette
 clim.sample(overwrite = TRUE)
+
+# remove everything in the global environment except of our environment path list
 rm(list = setdiff(ls(), "envrmt"))
 ```
 
@@ -156,7 +162,7 @@ First, we have to prepare the raw tabular data for further uses. The prep.csv
 function cleans up the data and removes all NA values from the data.
 
 ```{r prep csv}
-prep.csv(method = "proc", safe_output = TRUE)
+prep.csv(method = "proc", save_output = TRUE)
 
 #check the created csv files
 csv_files <- grep("_no_NAs.csv$", 
@@ -177,7 +183,7 @@ aggregation and is easier to be processed further this way.
 ```{r proc csv}
 csv_data <- proc.csv(method = "monthly",
                               rbind = TRUE,
-                              safe_output = TRUE)
+                              save_output = TRUE)
 head(csv_data)
 ```
 
@@ -189,7 +195,7 @@ step is crucial to process the data in a modelation use case.\
 ```{r spat csv}
 csv_spat <- spat.csv(method = "monthly",
                      des_file = "plot_description.csv",
-                     safe_output = TRUE)
+                     save_output = TRUE)
 head(csv_spat)
 ```
 
@@ -202,7 +208,15 @@ stacks with different time stamps (YYYYMMDD...) *in the file names* per scene. T
 ```{r crop all}
 crop.all(method = "MB_Timeseries", overwrite = TRUE)
 ```
-
+One important step in climate modelling is to have good predictor variables, which 
+we extract from our spatial raster imagery. In this case we have the 10 spectral 
+bands from the spectral raster stack and one additional elevation layer. This 
+data is already okay to predict with, but may not be sufficient. We can enhance 
+our predictors by creating even more spatial raster layers. This way we can gain 
+more information from these layers by calculating spectral indices, which derive 
+from different spectral layers. For example, we can calculate the NDVI, which 
+indicates the presence or absence of chlorophyll and thus of vegetation. These 
+layers can also be fed in our model as new predictor variables.\
 Next, we calculate some basic indices, so we can create more predictor variables
 for our models. Therefore `vi` chooses the vegetation indices one wants to create.
 You can either list the desired indices in a *vector*, or simply use `all` to 
@@ -230,7 +244,7 @@ Reminder: You can check your data at any step, just go into your Workflow-Folder
 
 ```{r finalize csv}
 csv_fin <- fin.csv(method = "monthly",
-                   safe_output = TRUE)
+                   save_output = TRUE)
 head(csv_fin)
 ```
 
@@ -258,8 +272,9 @@ Maybe make it prettier in future.
 autocorr(
   method = "monthly",
   resp = 5, 
-  pred = c(8:24),
-  plot.corrplot = FALSE
+  pred = c(8:23),
+  plot.corrplot = TRUE,
+  corrplot = "coef"
   )
 ```
 
@@ -313,7 +328,7 @@ calc.model(
   p = 0.8,
   folds = "LLO",
   mnote = "vignette",
-  predrows = c(8:24),
+  predrows = c(8:23),
   tc_method = "cv",
   metric = "RMSE",
   autocorrelation = TRUE,
@@ -330,21 +345,23 @@ from this model run.
 
 Further we can predict the scenes from our example with the climate models from
 our spatial station data using the `climpred` function. `climpred` also calculates 
-the area of applicability, if the `AOA` argument is set to *TRUE*. Keep in mind 
-to use the same `mnote` as in your model run, so climodr predicts with the models 
-you created in this modelrun.\ 
+the area of applicability, if the `AOA` argument is set to *TRUE*. In this example
+the AOA will create a lot of dissimilaritys, because the sample data is dummy data 
+and far away from the reality of the new data. Keep in mind to use the same `mnote` 
+as in your model run, so climodr predicts with the models you created in this 
+modelrun.\
 
 ```{r predict}
 climpred(
   method = "monthly",
   mnote = "vignette", 
-  AOA = FALSE)
+  AOA = TRUE) 
 ```
 
 
 Lets show the list of predictions:
 ```{r list predictions}
-predlist <- list.files(envrmt$path_predictions, pattern = ".tif")
+predlist <- list.files(envrmt$path_predictions, pattern = ".tif", recursive = TRUE)
 head(predlist)
 ```
 
@@ -365,7 +382,7 @@ You can create plots of your predictions like this:
 climplot(
   mnote = "vignette",
   sensor = "Ta_200",
-  aoa = FALSE,
+  aoa = TRUE,
   mapcolors = rev(heat.colors(50)),
   scale_position = "bottomleft",
   north_position = "topright"
@@ -373,4 +390,4 @@ climplot(
 ```
 
 So in the end you receive a map like the one we saw in the beginning. 
-![Temperature Map produced with climodr](map_vignette.png)
+![Temperature Map produced with climodr](map_vignette_2.png)

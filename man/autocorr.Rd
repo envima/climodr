@@ -4,7 +4,13 @@
 \alias{autocorr}
 \title{Autocorrelation}
 \usage{
-autocorr(method = "monthly", resp, pred, plot.corrplot = TRUE)
+autocorr(
+  method = "monthly",
+  resp,
+  pred,
+  plot.corrplot = TRUE,
+  corrplot = "Coef"
+)
 }
 \arguments{
 \item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
@@ -14,6 +20,8 @@ autocorr(method = "monthly", resp, pred, plot.corrplot = TRUE)
 \item{pred}{numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.}
 
 \item{plot.corrplot}{logical. Should correlation matrices be plotted?}
+
+\item{corrplot}{character. Vector or single input. If plot.corrplot is true, you can choose the design of the correlation plot. You can choose from "coef", "crossout", "blank". Default is "coef".}
 }
 \value{
 One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.

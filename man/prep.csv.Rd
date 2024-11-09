@@ -4,13 +4,13 @@
 \alias{prep.csv}
 \title{Preparing CSV-Data}
 \usage{
-prep.csv(method = "proc", safe_output = TRUE, ...)
+prep.csv(method = "proc", save_output = TRUE, ...)
 }
 \arguments{
 \item{method}{character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.}
 
-\item{safe_output}{logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-Otherwise the output will be safed in the temporary directory. Default: FALSE.}
+\item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
+Otherwise the output will be saved in the temporary directory. Default: FALSE.}
 }
 \value{
 List
@@ -20,7 +20,7 @@ Crops input data to the extent size and removes NA-Values
 }
 \examples{
 \dontrun{
-prep.csv(method = "proc", safe_output = TRUE)
+prep.csv(method = "proc", save_output = TRUE)
 
 #check the created csv files
 csv_files <- grep("_no_NAs.csv$",

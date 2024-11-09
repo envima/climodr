@@ -77,13 +77,13 @@ crop.all <- function(method = "MB_Timeseries",
         } # end crs loop
 
       if(grepl("dgm", gsub(".{4}$", "", tiff_paths[i]), fixed = TRUE)){
-        print("Saving DGM to rfinal.")
+        print(paste0("Saving DGM to rfinal [", envrmt$path_rfinal, "]."))
         terra::writeRaster(tif, file.path(envrmt$path_rfinal,
                                           paste0(gsub(".{4}$", "", tiff_paths[i]),
                                                  "_crop.tif")),
                            overwrite = overwrite)
       } else {
-        print("Saving raster to rworkflow.")
+        print(paste0("Saving raster to rworkflow [", envrmt$path_rworkflow, "]."))
         terra::writeRaster(tif, file.path(envrmt$path_rworkflow,
                                           paste0(gsub(".{4}$", "", tiff_paths[i]),
                                                  "_crop.tif")),
@@ -96,7 +96,7 @@ crop.all <- function(method = "MB_Timeseries",
 
   if (method == "Singleband"){
     return(tiff_stack);
-    print("Saving rasterstack to rworkflow.")
+    print(paste0("Saving rasterstack to rworkflow [", envrmt$path_rworkflow, "]."))
     terra::writeRaster(tiff_stack, file.path(envrmt$path_rworkflow, "tiff_stack.tif"), overwrite = overwrite)
 
   }; # end 2nd Singleband Loop
@@ -135,72 +135,71 @@ calc.indices <- function(vi = "all",
   tiff_paths <- grep("_crop.tif$", all_files_in_distribution, value = TRUE); # Select tiff-files
   number_of_tiffs <- length(tiff_paths);
 
+  if ("all" %in% vi){
+    vi <- c("NDVI", "NDWI", "NDBI", "NDBSI", "MSAVI")
+  }
   print(paste0("Number of Scenes to calculate Indices for: ", number_of_tiffs))
 
   for (n in 1:number_of_tiffs){
     name <- gsub(".{9}$", "", tiff_paths[n])
     rstack <- terra::rast(file.path(envrmt$path_rworkflow, tiff_paths[n]))
 
-    NDVI <- try(
-      (rstack[[bands[4]]] - rstack[[bands[3]]]) / (rstack[[bands[4]]] + rstack[[bands[3]]])
-      )
+    if ("NDVI" %in% vi){
+      NDVI <- try(
+        (rstack[[bands[4]]] - rstack[[bands[3]]]) / (rstack[[bands[4]]] + rstack[[bands[3]]])
+        )
       NDVI[NDVI < -1] <- -1
       NDVI[NDVI > 1] <- 1
       names(NDVI) <- "NDVI"
       try(terra::add(rstack) <- NDVI)
-    # end NDVI
+    }# end NDVI
 
-    NDWI <- try(
-      (rstack[[bands[2]]] - rstack[[bands[4]]]) / (rstack[[bands[2]]] + rstack[[bands[4]]])
-      )
-      NDWI[NDWI < -1] <- -1
-      NDWI[NDWI > 1] <- 1
-      names(NDWI) <- "NDWI"
-      try(terra::add(rstack) <- NDWI)
-    # end NDWI
+    if ("NDWI" %in% vi){
+      NDWI <- try(
+        (rstack[[bands[2]]] - rstack[[bands[4]]]) / (rstack[[bands[2]]] + rstack[[bands[4]]])
+        )
+        NDWI[NDWI < -1] <- -1
+        NDWI[NDWI > 1] <- 1
+        names(NDWI) <- "NDWI"
+        try(terra::add(rstack) <- NDWI)
+    }# end NDWI
 
-    NDBI <- try(
-      (rstack[[bands[9]]] - rstack[[bands[4]]]) / (rstack[[bands[9]]] + rstack[[bands[4]]])
-      )
-      NDBI[NDBI < -1] <- -1
-      NDBI[NDBI > 1] <- 1
-      names(NDBI) <- "NDBI"
-      try(terra::add(rstack) <- NDBI)
-    # end NDBI
+    if ("NDBI" %in% vi){
+      NDBI <- try(
+        (rstack[[bands[9]]] - rstack[[bands[4]]]) / (rstack[[bands[9]]] + rstack[[bands[4]]])
+        )
+        NDBI[NDBI < -1] <- -1
+        NDBI[NDBI > 1] <- 1
+        names(NDBI) <- "NDBI"
+        try(terra::add(rstack) <- NDBI)
+    }# end NDBI
 
-    NDBSI <- try(
-      ((rstack[[bands[3]]] + rstack[[bands[9]]]) - (rstack[[bands[4]]] + rstack[[bands[1]]])) /
-        ((rstack[[bands[3]]] + rstack[[bands[9]]]) + (rstack[[bands[4]]] + rstack[[bands[1]]]))
-      )
-      NDBSI[NDBSI < -1] <- -1
-      NDBSI[NDBSI > 1] <- 1
-      names(NDBSI) <- "NDBSI"
-      try(terra::add(rstack) <- NDBSI)
-    # end NDBSI
+    if ("NDBSI" %in% vi){
+      NDBSI <- try(
+        ((rstack[[bands[3]]] + rstack[[bands[9]]]) - (rstack[[bands[4]]] + rstack[[bands[1]]])) /
+          ((rstack[[bands[3]]] + rstack[[bands[9]]]) + (rstack[[bands[4]]] + rstack[[bands[1]]]))
+        )
+        NDBSI[NDBSI < -1] <- -1
+        NDBSI[NDBSI > 1] <- 1
+        names(NDBSI) <- "NDBSI"
+        try(terra::add(rstack) <- NDBSI)
+    }# end NDBSI
 
-    MSAVI <- try(
-      rstack[[bands[4]]] +
-        ((1 -
-            sqrt((2 * rstack[[bands[4]]] + 1)^2 -
-                   8 * (rstack[[bands[4]]] - rstack[[bands[3]]])))
-         / 2)
-      )
-      MSAVI[MSAVI < -1] <- -1
-      MSAVI[MSAVI > 1] <- 1
-      names(MSAVI) <- "MSAVI"
-      try(terra::add(rstack) <- MSAVI)
-    # end MSAVI
+    if ("MSAVI" %in% vi){
+      MSAVI <- try(
+        rstack[[bands[4]]] +
+          ((1 -
+              sqrt((2 * rstack[[bands[4]]] + 1)^2 -
+                    8 * (rstack[[bands[4]]] - rstack[[bands[3]]])))
+          / 2)
+        )
+        MSAVI[MSAVI < -1] <- -1
+        MSAVI[MSAVI > 1] <- 1
+        names(MSAVI) <- "MSAVI"
+        try(terra::add(rstack) <- MSAVI)
+    }# end MSAVI
 
-    EVI <- try(
-      ((rstack[[bands[4]]] - rstack[[bands[3]]]) /
-         (rstack[[bands[4]]] + 6 * rstack[[bands[3]]]) - 7.5 * rstack[[bands[1]]] + 1) * 2.5
-      )
-      EVI[EVI < -1] <- -1
-      EVI[EVI > 1] <- 1
-      names(EVI) <- "EVI"
-      try(terra::add(rstack) <- EVI)
-    # end EVI
-
+    print(paste0("Saving rasterstack with indices to rfinal [", envrmt$path_rfinal, "]."))
     terra::writeRaster(rstack,
                        file.path(envrmt$path_rfinal, paste0(name, "_ind.tif")),
                        overwrite = overwrite)

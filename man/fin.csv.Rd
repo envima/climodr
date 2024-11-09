@@ -4,13 +4,13 @@
 \alias{fin.csv}
 \title{Final aggregation for CSV-Data}
 \usage{
-fin.csv(method = "monthly", crs = NULL, safe_output = TRUE, ...)
+fin.csv(method = "monthly", crs = NULL, save_output = TRUE, ...)
 }
 \arguments{
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
-\item{safe_output}{logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-Otherwise the output will be safed in the temporary directory. Default: FALSE.}
+\item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
+Otherwise the output will be saved in the temporary directory. Default: FALSE.}
 }
 \value{
 List
@@ -24,7 +24,7 @@ and extracted raster data (predictor values). The data is ready to be used for m
 \examples{
 \dontrun{
 csv_fin <- fin.csv(method = "monthly",
-                   safe_output = TRUE)
+                   save_output = TRUE)
 head(csv_fin)
 }
 

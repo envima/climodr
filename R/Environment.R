@@ -163,7 +163,7 @@ clim.sample <- function(overwrite){
 
 # Input tabular folder
   l <- data(package = "climodr")$results[,3]
-  l <- l[grepl("SE", l)]
+  l <- l[grepl("Station", l)]
 
   for (i in l){
     eval(call("data", i))

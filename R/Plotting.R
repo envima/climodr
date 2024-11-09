@@ -66,7 +66,16 @@ climplot <- function(
           background = "lightgrey",
           box = TRUE)
         if(isTRUE(aoa)){
-          terra::plot(AOA, add = TRUE)
+          ac <- data.frame(ac_code = c(0, 1),
+                           ac_class = c("applicable",
+                                        "not applicable"))
+          levels(AOA) <- ac
+          terra::plot(AOA,
+                      col = c(adjustcolor("white", alpha.f = 0),
+                              "grey"),
+                      legend = "bottomright",
+                      add = TRUE)
+
         }
         terra::sbar(
           scaleby = scale,
