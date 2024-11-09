@@ -5,8 +5,8 @@
 #' Crops input data to the extent size and removes NA-Values
 #'
 #' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.
-#' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
+#' Otherwise the output will be saved in the temporary directory. Default: FALSE.
 #'
 #' @return List
 #' @seealso `proc.csv`, `spat.csv`, `fin.csv`
@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' prep.csv(method = "proc", safe_output = TRUE)
+#' prep.csv(method = "proc", save_output = TRUE)
 #'
 #' #check the created csv files
 #' csv_files <- grep("_no_NAs.csv$",
@@ -26,7 +26,7 @@
 #' }
 #'
 prep.csv <- function(method = "proc",
-                     safe_output = TRUE,
+                     save_output = TRUE,
                      ...){
 
 # Checkup for empty columns in the data, which creates a warning.
@@ -124,8 +124,8 @@ prep.csv <- function(method = "proc",
 #' Calculate averaged sensor values aggregated to a given time interval.
 #'
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
-#' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be safed in a seperate file.
-#' @param safe_output logical. If data should be saved permanently in the Environment put safe_output = TRUE.
+#' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be saved in a seperate file.
+#' @param save_output logical. If data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: TRUE.
 #'
 #' @return List
@@ -138,12 +138,12 @@ prep.csv <- function(method = "proc",
 #' \dontrun{
 #' csv_data <- proc.csv(method = "monthly",
 #'                      rbind = TRUE,
-#'                      safe_output = TRUE)
+#'                      save_output = TRUE)
 #' head(csv_data)
 #' }
 proc.csv <- function(method = "monthly",
                      rbind = TRUE,
-                     safe_output = TRUE,
+                     save_output = TRUE,
                      ...){
 # Method == "monthly"
   if (method == "monthly"){
@@ -225,7 +225,7 @@ proc.csv <- function(method = "monthly",
     } # end i loop
     # --------------------------------------------------------------------------- #
     if (rbind == TRUE){
-      if (safe_output == TRUE){
+      if (save_output == TRUE){
         write.csv(
           dm_t,
           file.path(
@@ -234,7 +234,7 @@ proc.csv <- function(method = "monthly",
           ),
           row.names = FALSE
         )
-      } # end safe output
+      } # end save output
       return(dm_t)
     } # end if condition
   } # end monthly loop
@@ -320,7 +320,7 @@ proc.csv <- function(method = "monthly",
     } # end i loop
     # --------------------------------------------------------------------------- #
     if (rbind == TRUE){
-      if (safe_output == TRUE){
+      if (save_output == TRUE){
         write.csv(
           dm_t,
           file.path(
@@ -329,7 +329,7 @@ proc.csv <- function(method = "monthly",
           ),
           row.names = FALSE
         )
-      } # end safe output
+      } # end save output
       return(dm_t)
     } # end if condition
   } # end daily loop
@@ -346,7 +346,7 @@ proc.csv <- function(method = "monthly",
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param des_file character. The filename and data type of the meta-data. (Only reads .csv)
 #' @param crs character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.
-#' @param safe_output logical. If cleaned data should be saved permanently in the Environment put safe_output = TRUE.
+#' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: TRUE
 #' @return Data Frame
 #' @seealso `prep.csv`, `proc.csv`, `fin.csv`
@@ -358,14 +358,14 @@ proc.csv <- function(method = "monthly",
 #' \dontrun{
 #' csv_spat <- spat.csv(method = "monthly",
 #'                      des_file = "plot_description.csv",
-#'                      safe_output = TRUE)
+#'                      save_output = TRUE)
 #' head(csv_spat)
 #' }
 #'
 spat.csv <- function(method = "monthly",
                      des_file,
                      crs = NULL,
-                     safe_output = TRUE,
+                     save_output = TRUE,
                      ...){
 
   data <- read.csv(
@@ -596,8 +596,8 @@ spat.csv <- function(method = "monthly",
 #' and extracted raster data (predictor values). The data is ready to be used for modelling.
 #'
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
-#' @param safe_output logical. If cleaned data should be safed permanently in the Environment put safe_output = TRUE.
-#' Otherwise the output will be safed in the temporary directory. Default: FALSE.
+#' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
+#' Otherwise the output will be saved in the temporary directory. Default: FALSE.
 #'
 #' @return List
 #' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
@@ -608,14 +608,14 @@ spat.csv <- function(method = "monthly",
 #' @examples
 #' \dontrun{
 #' csv_fin <- fin.csv(method = "monthly",
-#'                    safe_output = TRUE)
+#'                    save_output = TRUE)
 #' head(csv_fin)
 #' }
 #'
 
 fin.csv <- function(method = "monthly",
                     crs = NULL,
-                    safe_output = TRUE,
+                    save_output = TRUE,
                     ...){
 
   if (method == "monthly"){

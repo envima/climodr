@@ -4,14 +4,14 @@
 \alias{proc.csv}
 \title{Processing CSV-Data}
 \usage{
-proc.csv(method = "monthly", rbind = TRUE, safe_output = TRUE, ...)
+proc.csv(method = "monthly", rbind = TRUE, save_output = TRUE, ...)
 }
 \arguments{
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
-\item{rbind}{logical. Create a single file with all climate stations. If FALSE, every station will be safed in a seperate file.}
+\item{rbind}{logical. Create a single file with all climate stations. If FALSE, every station will be saved in a seperate file.}
 
-\item{safe_output}{logical. If data should be saved permanently in the Environment put safe_output = TRUE.
+\item{save_output}{logical. If data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: TRUE.}
 }
 \value{
@@ -24,7 +24,7 @@ Calculate averaged sensor values aggregated to a given time interval.
 \dontrun{
 csv_data <- proc.csv(method = "monthly",
                      rbind = TRUE,
-                     safe_output = TRUE)
+                     save_output = TRUE)
 head(csv_data)
 }
 }

@@ -132,12 +132,15 @@ climpred <- function(
     )
 
     if (isTRUE(AOA)) try({
+      oldw <- getOption("warn") # old settings
+      options(warn = -1) # turn off warnings
+
       aoa <- CAST::aoa(
-        raster,
-        mod)
-      names(aoa) <- paste0(modname, "_aoa")
+        newdata = raster,
+        model = mod)
+      names(aoa$AOA) <- paste0(modname, "_aoa")
       terra::writeRaster(
-        aoa,
+        aoa$AOA,
         file.path(
           envrmt$path_aoa,
           paste0(
@@ -147,6 +150,8 @@ climpred <- function(
         ),
         overwrite = TRUE
       )
+
+      options(warn = oldw) # return old warning settings
     })
   } # end i loop
 

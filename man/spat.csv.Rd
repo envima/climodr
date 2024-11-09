@@ -4,7 +4,7 @@
 \alias{spat.csv}
 \title{Spatial aggregation for CSV-Data}
 \usage{
-spat.csv(method = "monthly", des_file, crs = NULL, safe_output = TRUE, ...)
+spat.csv(method = "monthly", des_file, crs = NULL, save_output = TRUE, ...)
 }
 \arguments{
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
@@ -13,7 +13,7 @@ spat.csv(method = "monthly", des_file, crs = NULL, safe_output = TRUE, ...)
 
 \item{crs}{character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.}
 
-\item{safe_output}{logical. If cleaned data should be saved permanently in the Environment put safe_output = TRUE.
+\item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: TRUE}
 }
 \value{
@@ -27,7 +27,7 @@ project coordinate reference system.
 \dontrun{
 csv_spat <- spat.csv(method = "monthly",
                      des_file = "plot_description.csv",
-                     safe_output = TRUE)
+                     save_output = TRUE)
 head(csv_spat)
 }
 

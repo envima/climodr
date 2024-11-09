@@ -4,7 +4,7 @@
 \alias{clim.sample}
 \title{Load in Example Data}
 \usage{
-clim.sample(overwrite = FALSE)
+clim.sample(overwrite)
 }
 \value{
 Multiple files used by the climodr vignette

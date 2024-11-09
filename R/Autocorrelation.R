@@ -7,6 +7,7 @@
 #' @param resp numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.
 #' @param pred numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.
 #' @param plot.corrplot logical. Should correlation matrices be plotted?
+#' @param corrplot character. Vector or single input. If plot.corrplot is true, you can choose the design of the correlation plot. You can choose from "coef", "crossout", "blank". Default is "coef".
 #'
 #' @return One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
 #' @seealso `calc.model`
@@ -28,7 +29,8 @@ autocorr <- function(
     method = "monthly",
     resp,
     pred,
-    plot.corrplot = TRUE)
+    plot.corrplot = TRUE,
+    corrplot = "coef")
   {
   #get data from PreProcessing
   data_o <- read.csv(
@@ -68,52 +70,48 @@ autocorr <- function(
   };
 
   # matrix of the p-value of the correlation
-  p.mat <- cor.mtest(data);
-  head(p.mat[, 1:5]);
+  p.mat <- cor.mtest(data)
+  round(head(p.mat[, 1:5]), 6)
 
   if (plot.corrplot == TRUE){
-    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"));
-    corrplot::corrplot(c,
-                       method="color",
-                       col=col(200),
-                       type="upper",
-                       order="hclust",
-                       addCoef.col = "black", # Add coefficient of correlation
-                       tl.col="black",
-                       tl.srt=45, #Text label color and rotation
+    col <- colorRampPalette(c("#BB4444", "#EE9988", "#fff0db", "#77AADD", "#4477AA"));
 
-                       # Combine with significance
-                       p.mat = p.mat, sig.level = 0.01, insig = "blank",
+    if ("coef" %in% corrplot){
+      corrplot::corrplot(c,
+                         method = "color",
+                         col = col(200),
+                         type = "upper",
+                         order = "hclust",
+                         addCoef.col = "black", # Add coefficient of correlation
+                         tl.col = "black",
+                         tl.srt = 45, #Text label color and rotation
+                         # Combine with significance
+                         p.mat = p.mat,
+                         sig.level = 0.01,
+                         insig = "blank",
+                         # hide correlation coefficient on the principal diagonal
+                         diag = FALSE
+      )
+    }
 
-                       # hide correlation coefficient on the principal diagonal
-                       diag=FALSE
-    );
+    if ("crossout" %in% corrplot){
+      #with significance
+      corrplot::corrplot(c,
+                         type="upper",
+                         order="hclust",
+                         p.mat = p.mat,
+                         sig.level = 0.01)
+    }
 
-    #with significance
-    corrplot::corrplot(c,
-                       type="upper",
-                       order="hclust",
-                       p.mat = p.mat,
-                       sig.level = 0.01);
-
-    # Leave blank on no significant coefficient
-    corrplot::corrplot(c,
-                       type="upper",
-                       order="hclust",
-                       p.mat = p.mat,
-                       sig.level = 0.01,
-                       insig = "blank");
-
-    corrplot::corrplot(c,
-                       method="number",
-                       type = "lower");
-
-    corrplot::corrplot(c,
-                       type  = "lower",
-                       method="color",
-                       addCoef.col="black",
-                       order = "AOE",
-                       number.cex=0.75);
+    if ("blank" %in% corrplot){
+      # Leave blank on no significant coefficient
+      corrplot::corrplot(c,
+                         type="upper",
+                         order="hclust",
+                         p.mat = p.mat,
+                         sig.level = 0.01,
+                         insig = "blank")
+    }
   }
 
 # Now with a variable for sensor
