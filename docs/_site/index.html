@@ -9,31 +9,31 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>Advanced Species Distribution Modeling | climodr</title>
-<meta name="description" content="Create virtual species, dive deep into the world of SDM and work on experimental research questions. ">
+<!-- begin _includes/seo.html --><title>climodr | climodr</title>
+<meta name="description" content="Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels. ">
 
 
-  <meta name="author" content="Lisa Bald">
+  <meta name="author" content="Alexander Klug">
 
 
 <meta property="og:type" content="article">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="climodr">
-<meta property="og:title" content="Advanced Species Distribution Modeling">
+<meta property="og:title" content="climodr">
 <meta property="og:url" content="http://localhost:4000/">
 
 
-  <meta property="og:description" content="Create virtual species, dive deep into the world of SDM and work on experimental research questions. ">
+  <meta property="og:description" content="Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels. ">
 
 
 
-  <meta property="og:image" content="http://localhost:4000/assets/images/titleimage/birds.png">
+  <meta property="og:image" content="http://localhost:4000/assets/images/titleimage/titleimage.png">
 
 
 
 
 
-  <meta property="article:published_time" content="2024-02-15T13:00:00+01:00">
+  <meta property="article:published_time" content="2024-11-09T13:00:00+01:00">
 
 
 
@@ -120,7 +120,7 @@
           
             
             <li class="masthead__menu-item">
-              <a href="http://localhost:4000/units.html" >Units</a>
+              <a href="http://localhost:4000/units.html" >Documentation</a>
             </li>
           
             
@@ -130,7 +130,7 @@
           
             
             <li class="masthead__menu-item">
-              <a href="https://geomoer.github.io/moer-info-page/" >Courses</a>
+              <a href="http://localhost:4000/example.html" >Example</a>
             </li>
           
             
@@ -179,29 +179,29 @@
 
 
 <div class="page__hero--overlay"
-  style="background-color: #000; background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/assets/images/titleimage/birds.png');"
+  style="background-color: #000; background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/assets/images/titleimage/titleimage.png');"
 >
   
     <div class="wrapper">
       <h1 id="page-title" class="page__title" itemprop="headline">
         
-          Advanced Species Distribution Modeling
+          climodr
 
         
       </h1>
       
-        <p class="page__lead">Create virtual species, dive deep into the world of SDM and work on experimental research questions.
+        <p class="page__lead">Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels.
 </p>
       
       
       
-        <p><a href="/units.html" class="btn btn--light-outline btn--large">Go to course units</a></p>
+        <p><a href="/units/getting_started.html" class="btn btn--light-outline btn--large">Install now</a></p>
       
       
     </div>
   
   
-    <span class="page__hero-caption">Image: <a href="https://www.flickr.com/photos/ai_universe/53440008559/">Kostenlose Bilder mit KI via flickr</a>; <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0 DEED</a>; image cropped
+    <span class="page__hero-caption">Image: Environmental Informatics Marburg
 </span>
   
 </div>
@@ -210,9 +210,9 @@
 
 <div id="main" role="main">
   <article class="splash" itemscope itemtype="https://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Advanced Species Distribution Modeling">
-    <meta itemprop="description" content="Create virtual species, dive deep into the world of SDM and work on experimental research questions.">
-    <meta itemprop="datePublished" content="2024-02-15T13:00:00+01:00">
+    <meta itemprop="headline" content="climodr">
+    <meta itemprop="description" content="Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels.">
+    <meta itemprop="datePublished" content="2024-11-09T13:00:00+01:00">
     
 
     <section class="page__content" itemprop="text">
@@ -229,7 +229,7 @@
 
           
             <div class="archive__item-excerpt">
-              <p>Course of the Department of <a href="https://www.uni-marburg.de/en/fb19/disciplines/physisch" target="_blank">Physical Geography</a> at <a href="https://www.uni-marburg.de/en" target="_blank">Marburg University</a></p>
+              <p>climodr is free and open source under a GPL 3.0 license. It’s brought to you by the Department of <a href="https://www.uni-marburg.de/en/fb19/disciplines/physisch" target="_blank">Physical Geography</a> at <a href="https://www.uni-marburg.de/en" target="_blank">Marburg University</a></p>
 
             </div>
           
@@ -242,34 +242,33 @@
 
 </div>
 
-<p>Species distribution modelling (SDM) is a key competence for ecogeographical research and applied nature conservation. 
-It allows researchers to estimate current distributions of species and to also predict their future distributions under climate change scenarios. However, SDM is a dynamic field characterized by rapid advancements and many uncertainties.</p>
+<p>Welcome to climate modeler in R, short climodr. 
+This package uses point data from climate stations, spectral imagery and 
+elevation models to automatically create ready-to-use climate maps.</p>
 
-<p>This course will go beyond the basic SDM knowledge and will delve into all the small and very specific challenges it presents. Participants will gain ability in generating virtual species, critically evaluating the selection of environmental predictors, identifying knowledge gaps in the field, and independently constructing and fine-tune SDMs. The main focus of the course will be on generating an experimental research setup in which we will tackle some of the uncertainties.</p>
+<p>First of all, the idea of climodr is to deliver an easy to use method for 
+creating high quality climate maps. Like the one we create in this vignette:</p>
 
-<h1 id="intended-learning-outcomes">Intended learning outcomes</h1>
-<p>At the end of this course you should</p>
+<h1 id="package-deliverables">Package deliverables</h1>
+
+<p>This Package delivers</p>
 
 <ul>
-  <li>be familiar with virtual species and gained the ability to generate them.</li>
-  <li>have explored the impact of selecting environmental predictors on SDM.</li>
-  <li>be able to identified gaps in current knowledge within a specific field of research.</li>
-  <li>be able to independently constructed your own SDMs.</li>
-  <li>engage with various modeling strategies including tuning, variable selection, training, testing, and validation techniques.</li>
-  <li>have designed, executed, and analyzed your own scientific experiments.</li>
-  <li>have developed awareness regarding the capabilities and limitations of SDMs.</li>
+  <li>a tight and easy to use workflow to create resilient climate models and maps</li>
+  <li>wrapper functions that make your life in R easier</li>
+  <li>a fast alternative to months of coding and bugfixing</li>
 </ul>
 
-<h1 id="course-features">Course features</h1>
+<h1 id="package-features">Package Features</h1>
 
-<p>This course is intended as a blended learning module in our study program although the provided introductions, explanations and examples might be useful for self-study, too.</p>
+<p>Climodr is mainly split into four steps:</p>
 
-<p class="notice--info">This course will take place in the classroom (<strong>building | room</strong>). The first session will take place <strong>on weekday DD.MM.YYYY at HH:MM am</strong>.
-Course material will be provided in the <a href="https://ilias.uni-marburg.de/goto.php?target=crs_3203176" target="_blank">Ilias course environment</a> (only accessible for members of the course who are logged-in into Ilias).</p>
-
-<h1 id="course-times">Course times</h1>
-
-<p>Weekday hh:mm - hh:mm.</p>
+<ul>
+  <li><em>Environment</em> Management for Easy Use, Reproducability and Shareability</li>
+  <li><em>Pre-Processing</em> of climate station data as well as spatial raster data, generation of spectral indices</li>
+  <li><em>Processing</em> of Pre-Processed data into climate models and predictions</li>
+  <li><em>Plotting</em> of climate maps</li>
+</ul>
 
 <h1 id="syllabus">Syllabus</h1>
 
@@ -400,16 +399,12 @@ Course material will be provided in the <a href="https://ilias.uni-marburg.de/go
   </tbody>
 </table>
 
-<h1 id="deliverables">Deliverables</h1>
-
-<p>The course grading will be based on on your final SDM project.</p>
-
 <h1 id="preparation-and-prerequisites">Preparation and prerequisites</h1>
 
-<p>Knowledge of R and of handling spatial data is beneficial. Initial experience with species distribution modeling is helpful, for example from our basic <a href="https://geomoer.github.io/moer-bsc-project-seminar-SDM/">species distribution modeling course</a>.
-All software needed for this course is free and open source.</p>
+<p>A basic understanding of R and of handling spatial data is beneficial. Initial experience with climate modeling is helpful. 
+All software needed to run climodr is free and open source.</p>
 
-<p class="notice--success">If you have no experience with R we highly recommend the base R course, 
+<p class="notice--success">If you have absolutely no experience with R we highly recommend our base R course, 
 which can be found <a href="https://geomoer.github.io/moer-base-r/" target="_blank">here</a>.</p>
 
 <h1 id="team">Team</h1>
@@ -526,8 +521,8 @@ which can be found <a href="https://geomoer.github.io/moer-base-r/" target="_bla
   
     <div class="author__avatar">
       
-        <a href="https://www.uni-marburg.de/de/fb19/disciplines/physisch/umweltinformatik">
-          <img src="/assets/images/authors/bald.jpg" alt="Lisa Bald" itemprop="image" />
+        <a href="https://www.researchgate.net/profile/Alexander-Klug-3">
+          <img src="/assets/images/authors/klug.jpg" alt="Alexander Klug" itemprop="image" />
         </a>
       
     </div>
@@ -535,7 +530,7 @@ which can be found <a href="https://geomoer.github.io/moer-base-r/" target="_bla
 
   <div class="author__content">
     
-      <a href=""><h3 class="author__name" itemprop="name">Lisa Bald</h3></a>
+      <a href=""><h3 class="author__name" itemprop="name">Alexander Klug</h3></a>
     
     
       <div class="author__bio" itemprop="description">
@@ -566,8 +561,8 @@ which can be found <a href="https://geomoer.github.io/moer-base-r/" target="_bla
 
       
         <li>
-          <a href="mailto:lisa.bald@geo.uni-marburg.de">
-            <meta itemprop="email" content="lisa.bald@geo.uni-marburg.de" />
+          <a href="mailto:kluga@students.uni-marburg.de">
+            <meta itemprop="email" content="kluga@students.uni-marburg.de" />
             <i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email
           </a>
         </li>

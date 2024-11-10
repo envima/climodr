@@ -10,11 +10,11 @@
   location         : "Marburg, DE"
   home             : "https://www.uni-marburg.de/de/fb19/fachbereich/staff/dirk-zeuss"
   uri              : "https://www.uni-marburg.de/de/fb19/disciplines/physisch/umweltinformatik"
-- bald:
-  name             : "Lisa Bald"
-  avatar           : "/assets/images/authors/bald.jpg"
-  email            : "lisa.bald@geo.uni-marburg.de"
-  home             : "https://www.uni-marburg.de/de/fb19/disciplines/physisch/umweltinformatik"
+- klug:
+  name             : "Alexander Klug"
+  avatar           : "/assets/images/authors/klug.jpg"
+  email            : "kluga@students.uni-marburg.de"
+  home		   : "https://www.researchgate.net/profile/Alexander-Klug-3"
   bio              : "Philipps-Universität Marburg"
   location         : "Marburg, DE"
   uri              : "https://www.uni-marburg.de/de/fb19/disciplines/physisch/umweltinformatik"

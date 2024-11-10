@@ -1,57 +1,52 @@
 ---
-title: Advanced Species Distribution Modeling
+title: climodr
 layout: splash
-date: '2024-02-15 13:00:00 +0100'
+date: '2024-11-09 13:00:00 +0100'
 header:
   overlay_color: "#000"
   overlay_filter: 0.6
-  overlay_image: "/assets/images/titleimage/birds.png"
-  caption: 'Image: [Kostenlose Bilder mit KI via flickr](https://www.flickr.com/photos/ai_universe/53440008559/); [CC BY 2.0 DEED](https://creativecommons.org/licenses/by/2.0/); image cropped'
-  cta_label: Go to course units
-  cta_url: "/units.html"
-excerpt: Create virtual species, dive deep into the world of SDM and work on experimental research questions.
+  overlay_image: "/assets/images/titleimage/titleimage.png"
+  caption: 'Image: Environmental Informatics Marburg'
+  cta_label: Install now
+  cta_url: "/units/getting_started.html"
+excerpt: Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels. 
 feature_row_intro:
-- excerpt: Course of the Department of [Physical Geography](https://www.uni-marburg.de/en/fb19/disciplines/physisch){:target="_blank"} at [Marburg University](https://www.uni-marburg.de/en){:target="_blank"}
+- excerpt: climodr is free and open source under a GPL 3.0 license. It's brought to you by the Department of [Physical Geography](https://www.uni-marburg.de/en/fb19/disciplines/physisch){:target="_blank"} at [Marburg University](https://www.uni-marburg.de/en){:target="_blank"}
 feature_row_ilos:
 - image_path: "/assets/images/envobs_ilos.jpg"
   alt: PC monitor laying in the garden of the institute.
-  title: Intended learning outcomes
+  title: Pacakge deliverables
   excerpt: "Template..."
 ---
 
  
 {% include feature_row id="feature_row_intro" type="center" %}
 
-Species distribution modelling (SDM) is a key competence for ecogeographical research and applied nature conservation. 
-It allows researchers to estimate current distributions of species and to also predict their future distributions under climate change scenarios. However, SDM is a dynamic field characterized by rapid advancements and many uncertainties.
+Welcome to climate modeler in R, short climodr. 
+This package uses point data from climate stations, spectral imagery and 
+elevation models to automatically create ready-to-use climate maps. 
 
-This course will go beyond the basic SDM knowledge and will delve into all the small and very specific challenges it presents. Participants will gain ability in generating virtual species, critically evaluating the selection of environmental predictors, identifying knowledge gaps in the field, and independently constructing and fine-tune SDMs. The main focus of the course will be on generating an experimental research setup in which we will tackle some of the uncertainties. 
-
-
-# Intended learning outcomes
-At the end of this course you should
-
-* be familiar with virtual species and gained the ability to generate them.
-* have explored the impact of selecting environmental predictors on SDM.
-* be able to identified gaps in current knowledge within a specific field of research.
-* be able to independently constructed your own SDMs.
-* engage with various modeling strategies including tuning, variable selection, training, testing, and validation techniques.
-* have designed, executed, and analyzed your own scientific experiments.
-* have developed awareness regarding the capabilities and limitations of SDMs.
+First of all, the idea of climodr is to deliver an easy to use method for 
+creating high quality climate maps. Like the one we create in this vignette:
 
 
-# Course features
+# Package deliverables
 
-This course is intended as a blended learning module in our study program although the provided introductions, explanations and examples might be useful for self-study, too.
+This Package delivers
 
-This course will take place in the classroom (**building | room**). The first session will take place **on weekday DD.MM.YYYY at HH:MM am**.
-Course material will be provided in the [Ilias course environment](https://ilias.uni-marburg.de/goto.php?target=crs_3203176){:target="_blank"} (only accessible for members of the course who are logged-in into Ilias). 
-{: .notice--info}
+* a tight and easy to use workflow to create resilient climate models and maps
+* wrapper functions that make your life in R easier
+* a fast alternative to months of coding and bugfixing
 
 
-# Course times
+# Package Features
 
-Weekday hh:mm - hh:mm.
+Climodr is mainly split into four steps:
+
+* *Environment* Management for Easy Use, Reproducability and Shareability
+* *Pre-Processing* of climate station data as well as spatial raster data, generation of spectral indices
+* *Processing* of Pre-Processed data into climate models and predictions 
+* *Plotting* of climate maps
 
 
 # Syllabus
@@ -82,19 +77,12 @@ Weekday hh:mm - hh:mm.
 
 
 
-# Deliverables
-
-The course grading will be based on on your final SDM project.
-
-
-
-
 # Preparation and prerequisites
 
-Knowledge of R and of handling spatial data is beneficial. Initial experience with species distribution modeling is helpful, for example from our basic [species distribution modeling course](https://geomoer.github.io/moer-bsc-project-seminar-SDM/).
-All software needed for this course is free and open source.
+A basic understanding of R and of handling spatial data is beneficial. Initial experience with climate modeling is helpful. 
+All software needed to run climodr is free and open source.
 
-If you have no experience with R we highly recommend the base R course, 
+If you have absolutely no experience with R we highly recommend our base R course, 
 which can be found [here](https://geomoer.github.io/moer-base-r/){:target="_blank"}.
 {: .notice--success}
 

@@ -29,7 +29,7 @@ baseurl: ""
 ##### Title ###################################################################
 title: climodr
 name: &name "Lab of Environmental Informatics" # &name is a YAML anchor which can be *referenced later
-email: lisa.bald@uni-marburg.de
+email: kluga@students.uni-marburg.de
 description: >- # this means to ignore newlines until next item
   course course-materials geography remote-sensing marburg-open-educational-resource 
   physical-geography environmental-science nature-conservation r SDM
@@ -48,25 +48,21 @@ author:
   uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
   home             : "https://www.researchgate.net/profile/Dirk_Zeuss"
   researchgate     : "https://www.researchgate.net/profile/Dirk_Zeuss/stats" # to be included some day
-  #flickr           : "https://www.flickr.com/environmentalinformatics-marburg/"
+  #flickr          : "https://www.flickr.com/environmentalinformatics-marburg/"
   github           : "GeoMOER"
-  #twitter          : "https://twitter.com/geographie_umr"
-  #youtube          : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
+  #twitter         : "https://twitter.com/geographie_umr"
+  #youtube         : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
   
   ##### Lecturer settings #######################################################
 author:
-  name             : "Lisa Bald"
-  avatar           : "/assets/images/instructors/zeuss.jpg"
+  name             : "Alexander Klug"
+  avatar           : "/assets/images/instructors/klug.jpg"
   bio              : "University of Marburg"
   location         : "Marburg, DE"
-  email            : "dirk.zeuss@uni-marburg.de"
+  email            : "kluga@students.uni-marburg.de"
   uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
-  home             : "https://www.researchgate.net/profile/Dirk_Zeuss"
-  researchgate     : "https://www.researchgate.net/profile/Dirk_Zeuss/stats" # to be included some day
-  #flickr           : "https://www.flickr.com/environmentalinformatics-marburg/"
+  researchgate     : "https://www.researchgate.net/profile/Alexander-Klug-3"
   github           : "GeoMOER"
-  #twitter          : "https://twitter.com/geographie_umr"
-  #youtube          : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
 
 
 ##### Site configuration ######################################################
@@ -132,7 +128,7 @@ defaults:
       path: ""
       type: unit00
     values:
-      category: "How-to-Advanced-SDM"
+      category: "General Information"
       tags: "Unit 00"
       layout: single
       sidebar:
@@ -142,7 +138,7 @@ defaults:
       path: ""
       type: unit01
     values:
-      category: "01 SDM Basics"
+      category: "Environment"
       tags: "Unit 01"
       layout: single
       sidebar:
@@ -152,7 +148,7 @@ defaults:
       path: ""
       type: unit02
     values:
-      category: "02 Virtual species"
+      category: "Pre-Processing"
       tags: "Unit 02"
       layout: single
       sidebar:
@@ -162,21 +158,21 @@ defaults:
       path: ""
       type: unit03
     values:
-      category: "03 From idea to insight: Your personal research project"
+      category: "Processing"
       tags: "Unit 03"
       layout: single
       sidebar:
         nav: "course_unit" 
   # unit04
- # - scope:
- #     path: ""
- #     type: unit04
- #   values:
- #     category: "04 SDM basics"
- #     tags: "Unit 04"
- #     layout: single
- #     sidebar:
- #       nav: "course_unit" 
+  - scope:
+      path: ""
+      type: unit04
+    values:
+      category: "Plotting"
+      tags: "Unit 04"
+      layout: single
+      sidebar:
+        nav: "course_unit" 
   # unit05
 #  - scope:
 #      path: ""
