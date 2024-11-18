@@ -23,6 +23,8 @@ calc.model(
 )
 }
 \arguments{
+\item{method}{character. Time period of your desired model. Default: "monthly"}
+
 \item{timespan}{numeric. Vector or single input. Should contain all years to
 be modeled. The years have to be the same format as in the
 tabular data.}
@@ -36,6 +38,9 @@ Neural Networks = "nnet", Linear Regression = "lm" or
 generalized boosted regression = "gbm".}
 
 \item{seed}{integer. Seed to reproduce the same model over and over.}
+
+\item{p}{numeric. Between 0 and 1. Percentage of data used for cross
+validation. Default = 0.8}
 
 \item{folds}{character. Vector or single input. Either folding over location
 only "LLO", over time only "LTO", or over both "LLTO". Use
@@ -63,6 +68,8 @@ sure to not run any other heavy processes during this.}
 \item{autocorrelation}{logical. Should autocorrelating data in the predictor
 variables be excluded from the model run? Only works if
 `autocorr` has been executed beforehand.}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 data frame.

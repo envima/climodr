@@ -132,7 +132,7 @@ defaults:
       tags: "Unit 00"
       layout: single
       sidebar:
-        nav: "course_unit" 
+        nav: "Documentation" 
   # unit01
   - scope:
       path: ""
@@ -142,7 +142,7 @@ defaults:
       tags: "Unit 01"
       layout: single
       sidebar:
-        nav: "course_unit" 
+        nav: "Documentation" 
   # unit02
   - scope:
       path: ""
@@ -152,7 +152,7 @@ defaults:
       tags: "Unit 02"
       layout: single
       sidebar:
-        nav: "course_unit" 
+        nav: "Documentation" 
   # unit03
   - scope:
       path: ""
@@ -162,7 +162,7 @@ defaults:
       tags: "Unit 03"
       layout: single
       sidebar:
-        nav: "course_unit" 
+        nav: "Documentation" 
   # unit04
   - scope:
       path: ""
@@ -172,48 +172,8 @@ defaults:
       tags: "Unit 04"
       layout: single
       sidebar:
-        nav: "course_unit" 
-  # unit05
-#  - scope:
-#      path: ""
-#      type: unit05
-#    values:
-#      category: "05 SDM workflow "
-#      tags: "Unit 05"
-#      layout: single
-#      sidebar:
-#        nav: "course_unit" 
-#  # unit06
-#  - scope:
-#      path: ""
-#      type: unit06
-#    values:
-#      category: "06 Create your own student tutorial"
-#      tags: "Unit 06"
-#      layout: single
-#      sidebar:
-#        nav: "course_unit" 
-#  # unit07
-#  - scope:
-#      path: ""
-#      type: unit07
-#    values:
-#      category: "07 Digitizing distribution records III"
-#      tags: "Unit 07"
-#      layout: single
-#      sidebar:
-#        nav: "course_unit" 
-  # student_tutorials
-#  - scope:
-#      path: ""
-#      type: unit99
-#    values:
-#      category: "Student tutorials"
-#      tags: "Student tutorials"
-#      layout: single
-#      sidebar:
-#        nav: "course_unit"            
-  # pages
+        nav: "Documentation" 
+      
   - scope:
       path: "_pages"
       type: pages

@@ -3,9 +3,12 @@
 #' Crops input data to the extent size and reprojects them into project Coordinate reference system.
 #'
 #' @param method character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.
-#' @param crs Coordinate reference system Used to crop all images in folder_path. If crs
-#' it will automatically reprojected into this one. Default: crs of smallest Extent.
-#' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
+#' @param crs    Coordinate reference system Used to crop all images in folder_path. If crs
+#'               it will automatically reprojected into this one. Default: crs of smallest Extent.
+#' @param ext    SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
+#' @param overwrite logical. Should existing files with the same filename be
+#'               overwritten? Default = FALSE
+#' @param ...    arguments passed down from other functions.
 #'
 #' @return SpatRaster-Stack. Also saved to /workflow/rworkflow
 #' @seealso `fin.csv`, `calc.indices`

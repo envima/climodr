@@ -49,34 +49,6 @@ Climodr is mainly split into four steps:
 * *Plotting* of climate maps
 
 
-# Syllabus
-
-| Session |  Date | Topic                        | Content                                                                          |
-|---------|-------|------------------------------|----------------------------------------------------------------------------------|
-||| **SDM Basics** ||
-| 01 | DD.MM.YYYY | The very basics     | Course introduction, expectations, organisational matters, R, R Studio, R Markdown, GitHub     |
-| 02 | DD.MM.YYYY | SDM Basics                   | What is SDM, how does it works and why do we need it?                  |
-| 03 | DD.MM.YYYY | SDM methods     | Common methods, software and R packages used for SDM |
-| 04 | DD.MM.YYYY | Exemplary SDM workflow                           |  |
-| 05 | DD.MM.YYYY |   ??                |                           |
-||| **Virtual species**                   |        |
-| 06 | DD.MM.YYYY | Artificial landscapes | Create neutral landscape models           |
-| 06 | DD.MM.YYYY | Virtual species | Generate virtual species with different ecological niches          |
-| 07 | DD.MM.YYYY | ...                 | Model fitting, assessment, and predictions                                 |
-||| **From idea to insight: Your personal research project**           ||
-| 08 | DD.MM.YYYY | Research gaps in SDM         |                                         |
-| 09 | DD.MM.YYYY | Create your own experimental setup   | What do you want to research and why? How to set up an experimental design to test your hypothesis|
-| 10 | DD.MM.YYYY | Your SDM project             | You can use the time of this session to work on your project and ask questions    |
-| 11 | DD.MM.YYYY | Your SDM project II          | You can use the time of this session to work on your project and ask questions    |
-| 12 | DD.MM.YYYY | **Present your project outline**  |                         |
-| 13 | DD.MM.YYYY | Your SDM project III          |  You can use the time of this session to work on your project and ask questions   |
-||| **Synthesis**                                ||
-| 14 | DD.MM.YYYY | Wrap up                      | Get and give feedback from your peers and instructors, tell us how you self-assess your skills, and happy holidays |
-
-
-
-
-
 # Preparation and prerequisites
 
 A basic understanding of R and of handling spatial data is beneficial. Initial experience with climate modeling is helpful. 
@@ -94,7 +66,7 @@ which can be found [here](https://geomoer.github.io/moer-base-r/){:target="_blan
 
 
 <!--
-[Go to course units]({{ site.baseurl }}{% link _pages/units.md %}){: .btn .btn--success .btn--large .align-center}
+[Go to Documentations]({{ site.baseurl }}{% link _pages/units.md %}){: .btn .btn--success .btn--large .align-center}
 -->
 
 

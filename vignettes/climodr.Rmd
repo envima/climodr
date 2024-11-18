@@ -102,7 +102,7 @@ envi.create(tempdir(),
             memfrac = 0.8)
 
 # load in all the climodr example data for this vignette
-clim.sample(overwrite = TRUE)
+clim.sample()
 
 # remove everything in the global environment except of our environment path list
 rm(list = setdiff(ls(), "envrmt"))

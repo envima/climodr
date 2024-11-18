@@ -4,7 +4,9 @@ library(usethis)
 library(terra)
 
 # Input vector folder
-ext_vignette <- wrap(vect(file.path(envrmt$path_vector, "ext_vignette.gpkg")))
+ext_vignette <- vect(file.path(envrmt$path_vector, "ext_vignette.gpkg"))
+crs(ext_vignette) <- crs(stringi::stri_enc_toascii(crs(ext_vignette)))
+ext_vignette <- wrap(ext_vignette)
 usethis::use_data(ext_vignette, overwrite = TRUE)
 rm(ext_vignette)
 

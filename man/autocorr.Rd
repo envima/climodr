@@ -9,7 +9,7 @@ autocorr(
   resp,
   pred,
   plot.corrplot = TRUE,
-  corrplot = "Coef"
+  corrplot = "coef"
 )
 }
 \arguments{

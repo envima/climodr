@@ -10,6 +10,8 @@ envi.create(proj_path, memfrac = NULL, ...)
 \item{proj_path}{character. Path to project directory. Climodr will work exclusively in this folder and create all project folders in here.}
 
 \item{memfrac}{numeric. Value between 0 and 0.9. The fraction of RAM that may be used by the terra package}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 list. Contains all paths to each folder in the project directory. Necessary for climodr to operate its functions.

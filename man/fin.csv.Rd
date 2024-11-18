@@ -9,8 +9,13 @@ fin.csv(method = "monthly", crs = NULL, save_output = TRUE, ...)
 \arguments{
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
+\item{crs}{character. If null, coordinate reference system from project files will be taken. Otherwise
+data will be reprojected into this crs.}
+
 \item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: FALSE.}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 List

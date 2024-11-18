@@ -4,7 +4,7 @@
 \alias{clim.sample}
 \title{Load in Example Data}
 \usage{
-clim.sample(overwrite)
+clim.sample()
 }
 \value{
 Multiple files used by the climodr vignette
@@ -18,7 +18,7 @@ into your climodr environment. This way you can run all the code from the vignet
 \examples{
 \dontrun{
 # Load the climodr example data into the current climodr environment
-clim.sample(overwrite = TRUE)
+clim.sample()
 }
 
 }

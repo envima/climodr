@@ -7,6 +7,7 @@
 #' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: FALSE.
+#' @param ...      arguments passed down from other functions.
 #'
 #' @return List
 #' @seealso `proc.csv`, `spat.csv`, `fin.csv`
@@ -127,6 +128,7 @@ prep.csv <- function(method = "proc",
 #' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be saved in a seperate file.
 #' @param save_output logical. If data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: TRUE.
+#' @param ...      arguments passed down from other functions.
 #'
 #' @return List
 #' @seealso `prep.csv`, `spat.csv`, `fin.csv`
@@ -348,6 +350,8 @@ proc.csv <- function(method = "monthly",
 #' @param crs character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: TRUE
+#' @param ...      arguments passed down from other functions.
+#'
 #' @return Data Frame
 #' @seealso `prep.csv`, `proc.csv`, `fin.csv`
 #'
@@ -598,6 +602,9 @@ spat.csv <- function(method = "monthly",
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: FALSE.
+#' @param crs character. If null, coordinate reference system from project files will be taken. Otherwise
+#'            data will be reprojected into this crs.
+#' @param ...      arguments passed down from other functions.
 #'
 #' @return List
 #' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
