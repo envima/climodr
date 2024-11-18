@@ -13,6 +13,8 @@ proc.csv(method = "monthly", rbind = TRUE, save_output = TRUE, ...)
 
 \item{save_output}{logical. If data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: TRUE.}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 List

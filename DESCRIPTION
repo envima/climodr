@@ -1,7 +1,7 @@
 Package: climodr
 Type: Package
 Title: Climate modeling with point data from climate stations
-Version: 0.0.0.9003
+Version: 0.0.0.9005
 Authors@R: 
     c(person("Alexander", "Klug",
              email = "kluga@students-uni-marburg.de",
@@ -26,24 +26,23 @@ Imports:
     caret,
     CAST,
     corrplot,
-    data.table,
     doParallel,
     dplyr,
     lares,
-    lattice,
     parallel,
-    pls,
-    randomForest,
-    sp,
+    rlang,
     stringr,
-    terra
+    terra,
+    tidyr
 Depends: 
-    R (>= 2.10),
-    tidyverse
+    R (>= 2.10)
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    pls,
+    randomForest,
+    sp
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3

@@ -19,6 +19,11 @@ crop.all(
 it will automatically reprojected into this one. Default: crs of smallest Extent.}
 
 \item{ext}{SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.}
+
+\item{overwrite}{logical. Should existing files with the same filename be
+overwritten? Default = FALSE}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 SpatRaster-Stack. Also saved to /workflow/rworkflow

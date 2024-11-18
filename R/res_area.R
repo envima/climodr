@@ -1,0 +1,19 @@
+#' Resolution and Area
+#'
+#' This raster contains the area of interest as well as the desired model
+#' resolution (100 m * 100 m) and the project extent.
+#'
+#' @format ## `res_area`
+#' A binary Raster of pixels with value 1 in extent that belong to example area
+#' \describe{
+#'  \item{class}{SpatRaster}
+#'  \item{dimensions}{57, 71, 1  (nrow, ncol, nlyr)}
+#'  \item{resolution}{100, 100  (x, y)}
+#'  \item{extent}{805732, 812832, 5890310, 5896010  (xmin, xmax, ymin, ymax)}
+#'  \item{coord. ref.}{WGS 84 / UTM zone 32N (EPSG:32632)}
+#'  \item{name}{res_area}
+#'  \item{min/max}{0/1}
+#' }
+#'
+#' @source Randomly created binary Spat Raster file with the project resolution of 100 m per pixel. Created in (QGIS)[https://www.qgis.org/download/thank-you/].
+"res_area"

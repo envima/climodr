@@ -340,7 +340,7 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/units.html" rel="permalink">Course Units</a>
+        <a href="/units.html" rel="permalink">Documentation</a>
       
     </h2>
     
@@ -448,14 +448,12 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit00/unit00-01_learning_environment.html" rel="permalink">Learning Environment
+        <a href="/unit00/unit00-01_learning_environment.html" rel="permalink">Environment
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">This course is intended as a blended learning module, although the provided introductions, explanations and examples might be useful for self-study only, too.
-
-</p>
+    <p class="archive__item-excerpt" itemprop="description">This website is intended to provide additional information for the climodr package, although the provided introductions, explanations and examples might be u...</p>
   </article>
 </div>
 
@@ -464,13 +462,15 @@
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit00/unit00-02_deliverables.html" rel="permalink">Deliverables
+        <a href="/unit00/unit00-02_recommendations.html" rel="permalink">Recommendations
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">You need to deliver unmarked assignments (“Studienleistung”) during the course 
-and at the end a marked student HTML tutorial work as part of your overall co...</p>
+    <p class="archive__item-excerpt" itemprop="description">To run climodr, you need a PC with a running version of R.
+Using an Interface like R-Studio is also strongly recomended.
+
+</p>
   </article>
 </div>
 
@@ -484,10 +484,8 @@ and at the end a marked student HTML tutorial work as part of your overall co...
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">Git and GitHub
-
-Where can I find the url to my personal GitHub classroom repository?
-Follow the link to the GitHub classroom provided by the instructor and y...</p>
+    <p class="archive__item-excerpt" itemprop="description">No Frequently Asked Questions yet.
+</p>
   </article>
 </div>
 
@@ -503,7 +501,7 @@ Follow the link to the GitHub classroom provided by the instructor and y...</p>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">Go through a brute force introduction into R, R Markdown, the RStudio IDE, version management with Git and GitHub’s classroom functionality to get ready for ...</p>
+    <p class="archive__item-excerpt" itemprop="description">The Environment in climodr serves as a method to setup the same workspace for every usecase of climodr. The idea of this is to make climodr easy to share and...</p>
   </article>
 </div>
 
@@ -527,29 +525,15 @@ allows...</p>
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit01/unit01-03_climsample.html" rel="permalink">SDM basics
+        <a href="/unit01/unit01-03_climsample.html" rel="permalink">clim.sample
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Load example data
 
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Description
+Climodr comes with a full set of example data. But since this package runs primarily with data, that is not linked to the glob...</p>
   </article>
 </div>
 
@@ -565,7 +549,9 @@ Why is it problematic?
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">Go through a brute force introduction into R, R Markdown, the RStudio IDE, version management with Git and GitHub’s classroom functionality to get ready for ...</p>
+    <p class="archive__item-excerpt" itemprop="description">The Pre-Processing phase cleans up your data, creates additional information like spectral indices and makes the data ready for spatial modelling.
+
+You can b...</p>
   </article>
 </div>
 
@@ -574,13 +560,55 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit02/unit02-02_prepcsv.html" rel="permalink">The very basics
+        <a href="/unit02/unit02-02_prepcsv.html" rel="permalink">prep.csv
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">Start learning (or recap) the essentials for working with R and RStudio to create species distribution models.
+    <p class="archive__item-excerpt" itemprop="description">Preparing CSV-Data
 
+Description
+Crops input data to the extent size and removes NA-Values
+
+Usage
+prep.csv(method = "proc", save_output = TRUE, ...)
+
+
+Argumen...</p>
+  </article>
+</div>
+
+<div class="list__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/unit02/unit02-03_proccsv.html" rel="permalink">proc.csv
+</a>
+      
+    </h2>
+    
+    <p class="archive__item-excerpt" itemprop="description">Processing CSV-Data
+
+Description
+Calculate averaged sensor values aggregated to a given time interval.
+
+Usage
+proc.csv(method = "monthly", rbind = TRUE, save...</p>
+  </article>
+</div>
+
+<div class="list__item">
+  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/unit02/unit02-04_spatcsv.html" rel="permalink">
+</a>
+      
+    </h2>
+    
+    <p class="archive__item-excerpt" itemprop="description">
 </p>
   </article>
 </div>
@@ -590,29 +618,19 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit02/unit02-03_proccsv.html" rel="permalink">SDM basics
+        <a href="/unit02/unit02-05_cropall.html" rel="permalink">crop.all
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Cropping tiff data
 
+Description
+Crops input data to the extent size and reprojects them into project Coordinate reference system.
 
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Usage
+crop.all(
+  method =...</p>
   </article>
 </div>
 
@@ -621,29 +639,18 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit02/unit02-04_spatcsv.html" rel="permalink">SDM basics
+        <a href="/unit02/unit02-06_calcindices.html" rel="permalink">calc.indices
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Calculate spectral indices
 
+Description
+Calculates a set of spectral indices to have more predictor variables available when further modeling.
 
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Usage
+calc.in...</p>
   </article>
 </div>
 
@@ -652,91 +659,16 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit02/unit02-05_cropall.html" rel="permalink">SDM basics
+        <a href="/unit02/unit02-07_fincsv.html" rel="permalink">fin.csv
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Final aggregation for CSV-Data
 
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
-  </article>
-</div>
-
-<div class="list__item">
-  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/unit02/unit02-06_calcindices.html" rel="permalink">SDM basics
-</a>
-      
-    </h2>
-    
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
-
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
-  </article>
-</div>
-
-<div class="list__item">
-  <article class="archive__item" itemscope="" itemtype="https://schema.org/CreativeWork">
-    
-    <h2 class="archive__item-title" itemprop="headline">
-      
-        <a href="/unit02/unit02-07_fincsv.html" rel="permalink">SDM basics
-</a>
-      
-    </h2>
-    
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
-
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Description
+Extract the raster values of all raster layers from a scene at the station coordinates at each time stamp. 
+The e...</p>
   </article>
 </div>
 
@@ -747,28 +679,12 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit03/unit03-01_overview.html" rel="permalink">SDM basics
+        <a href="/unit03/unit03-01_overview.html" rel="permalink">Overview
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
-
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
+    <p class="archive__item-excerpt" itemprop="description">
 </p>
   </article>
 </div>
@@ -778,29 +694,19 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit03/unit03-02_autocorr.html" rel="permalink">SDM basics
+        <a href="/unit03/unit03-02_autocorr.html" rel="permalink">autocorr
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Test for Autocorrelation
 
+Description
+Tests the final.csv created with ‘fin.csv’ on autocorrelation to produce reliable models.
 
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Usage
+autocorr(
+  method = "...</p>
   </article>
 </div>
 
@@ -809,29 +715,22 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit03/unit03-03_calcmodel.html" rel="permalink">SDM basics
+        <a href="/unit03/unit03-03_calcmodel.html" rel="permalink">calc.model
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Modelling
 
+Description
+Creates Models for each climate value
 
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Usage
+calc.model(
+  method = "monthly",
+  timespan,
+  climresp,
+  classifier = c("rf", "pls", "...</p>
   </article>
 </div>
 
@@ -840,29 +739,18 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit03/unit03-04_climpred.html" rel="permalink">SDM basics
+        <a href="/unit03/unit03-04_climpred.html" rel="permalink">climpred
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Predict sensor data area wide
 
+Description
+Use the models created using ‘calc.model’ to predict the modeled data onto a full spatial raster scene.
 
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Usage
+cli...</p>
   </article>
 </div>
 
@@ -873,28 +761,12 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit04/unit04-01_overview.html" rel="permalink">SDM basics
+        <a href="/unit04/unit04-01_overview.html" rel="permalink">Overview
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
-
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
+    <p class="archive__item-excerpt" itemprop="description">
 </p>
   </article>
 </div>
@@ -904,29 +776,15 @@ Why is it problematic?
     
     <h2 class="archive__item-title" itemprop="headline">
       
-        <a href="/unit04/unit04-02_climplot.html" rel="permalink">SDM basics
+        <a href="/unit04/unit04-02_climplot.html" rel="permalink">climplot
 </a>
       
     </h2>
     
-    <p class="archive__item-excerpt" itemprop="description">What is species distribution mdoelign?
+    <p class="archive__item-excerpt" itemprop="description">Create Maps using the ‘terra’ package graphic parameters
 
-
-  different names for sdms
-
-
-Why do we need it?
-
-
-  paper lesen lasssen?
-
-
-Why is it problematic?
-
-
-  jetzt paper
-
-</p>
+Description
+Plot results of climodr into maps. Right now maps are created using the terra package. ...</p>
   </article>
 </div>
 

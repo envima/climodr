@@ -6,7 +6,8 @@
 #'
 #'
 #' @param proj_path character. Path to project directory. Climodr will work exclusively in this folder and create all project folders in here.
-#' @param memfrac numeric. Value between 0 and 0.9. The fraction of RAM that may be used by the terra package
+#' @param memfrac   numeric. Value between 0 and 0.9. The fraction of RAM that may be used by the terra package
+#' @param ...       arguments passed down from other functions.
 #'
 #' @return list. Contains all paths to each folder in the project directory. Necessary for climodr to operate its functions.
 #'
@@ -130,10 +131,10 @@ envi.create <- function(proj_path,
 #' @examples
 #' \dontrun{
 #' # Load the climodr example data into the current climodr environment
-#' clim.sample(overwrite = TRUE)
+#' clim.sample()
 #' }
 #'
-clim.sample <- function(overwrite){
+clim.sample <- function(){
   print("Loading example data for the climodr example..")
   print(environment())
 # Input dep folder

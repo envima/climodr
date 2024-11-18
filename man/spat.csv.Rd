@@ -15,6 +15,8 @@ spat.csv(method = "monthly", des_file, crs = NULL, save_output = TRUE, ...)
 
 \item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: TRUE}
+
+\item{...}{arguments passed down from other functions.}
 }
 \value{
 Data Frame
