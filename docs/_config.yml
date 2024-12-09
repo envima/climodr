@@ -22,9 +22,9 @@
 # baseurl: "/data/UNIMR/lm_data/lm_xxx"
 
 # Serve on GitHub
-# url: https://geomoer.github.io
-url: 
-baseurl: "climodr/docs"
+url: https://envima.github.io
+baseurl: "/climodr"
+github_username: envima
 
 
 ##### Title ###################################################################
