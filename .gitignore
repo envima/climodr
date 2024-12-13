@@ -3,4 +3,8 @@
 .RData
 .Ruserdata
 inst/doc
-# docs
+docs/_site
+docs/.sass-cache
+docs/.jekyll-metadata
+docs/.bundle
+docs/Gemfile.lock
