@@ -26,10 +26,11 @@ url: https://envima.github.io
 baseurl: "/climodr"
 github_username: envima
 
-
+search: true
+search_full_content: true
 ##### Title ###################################################################
 title: climodr
-name: &name "Lab of Environmental Informatics" # &name is a YAML anchor which can be *referenced later
+name: &name "climodr" # &name is a YAML anchor which can be *referenced later
 email: kluga@students.uni-marburg.de
 description: >- # this means to ignore newlines until next item
   course course-materials geography remote-sensing marburg-open-educational-resource 
@@ -40,37 +41,13 @@ description: >- # this means to ignore newlines until next item
   #username         : &twitter "EnvIn_UMR"
 
 ##### Lecturer settings #######################################################
-author:
-  name             : "Dirk Zeuss"
-  avatar           : "/assets/images/instructors/zeuss.jpg"
-  bio              : "University of Marburg"
-  location         : "Marburg, DE"
-  email            : "dirk.zeuss@uni-marburg.de"
-  uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
-  home             : "https://www.researchgate.net/profile/Dirk_Zeuss"
-  researchgate     : "https://www.researchgate.net/profile/Dirk_Zeuss/stats" # to be included some day
-  #flickr          : "https://www.flickr.com/environmentalinformatics-marburg/"
-  github           : "GeoMOER"
-  #twitter         : "https://twitter.com/geographie_umr"
-  #youtube         : "https://www.youtube.com/channel/UCGiwSv5KYjsNXl6-nZq0SDA"
-  
-  ##### Lecturer settings #######################################################
-author:
-  name             : "Alexander Klug"
-  avatar           : "/assets/images/instructors/klug.jpg"
-  bio              : "University of Marburg"
-  location         : "Marburg, DE"
-  email            : "kluga@students.uni-marburg.de"
-  uri              : "https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics"
-  researchgate     : "https://www.researchgate.net/profile/Alexander-Klug-3"
-  github           : "GeoMOER"
-
+# see _data/authors.yml
 
 ##### Site configuration ######################################################
 title_separator: "|"
 excerpt_separator: <!--more-->
-
-search: true
+locale: "en-EN"
+repository: "envima"
 
 # Build settings
 markdown: kramdown
@@ -78,6 +55,14 @@ markdown: kramdown
 remote_theme: "GeoMOER/moer-jekyll-theme"
 minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
 auto_ids: true
+
+# Footer 
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/envima/climodr" # change to paper later
+ 
 
 # Default Settings
 collections_dir: units
@@ -103,21 +88,6 @@ collections:
   unit04:
     output: true
     permalink: /:collection/:title.html
-  unit05:
-    output: true
-    permalink: /:collection/:title.html
-  unit06:
-    output: true
-    permalink: /:collection/:title.html
-#  unit07:
-#    output: true
-#    permalink: /:collection/:title.html
-  unit99:
-    output: true
-    permalink: /:collection/:title.html
-#  unit11:
-#    output: true
-#    permalink: /:collection/:title.html
   worksheets:
     output: true
     permalink: /:collection/:title.html
@@ -130,7 +100,7 @@ defaults:
       type: unit00
     values:
       category: "General Information"
-      tags: "Unit 00"
+      tags: "Unit00"
       layout: single
       sidebar:
         nav: "Documentation" 
@@ -140,7 +110,7 @@ defaults:
       type: unit01
     values:
       category: "Environment"
-      tags: "Unit 01"
+      tags: "Unit01"
       layout: single
       sidebar:
         nav: "Documentation" 
@@ -150,7 +120,7 @@ defaults:
       type: unit02
     values:
       category: "Pre-Processing"
-      tags: "Unit 02"
+      tags: "Unit02"
       layout: single
       sidebar:
         nav: "Documentation" 
@@ -160,7 +130,7 @@ defaults:
       type: unit03
     values:
       category: "Processing"
-      tags: "Unit 03"
+      tags: "Unit03"
       layout: single
       sidebar:
         nav: "Documentation" 
@@ -170,7 +140,7 @@ defaults:
       type: unit04
     values:
       category: "Plotting"
-      tags: "Unit 04"
+      tags: "Unit04"
       layout: single
       sidebar:
         nav: "Documentation" 
@@ -194,20 +164,11 @@ plugins:
   - jekyll-include-cache
   - jekyll-algolia
 
-
-# Exclude from processing.
-# The following items will not be processed, by default. Create a custom list
-# to override the default setting.
-# exclude:
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+# Handling Reading 
+encoding: UTF-8
 
 github: [metadata]
+
 
 
 

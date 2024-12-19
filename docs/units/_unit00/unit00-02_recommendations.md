@@ -14,7 +14,7 @@ Using an Interface like [R-Studio](https://posit.co/download/rstudio-desktop/) i
 In theory you can run climodr on every PC setup. Practically we recommend:
 * at least 8GB of RAM
 * a powerfull CPU for computing models
-<!--more-->
+
 
 Depending on the resolution and size of your project Spatial Climate Modelling can be a very intense task for your machine. Running with low-end hardware can slow down your tasks significantly. 
 
