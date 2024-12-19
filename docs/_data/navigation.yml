@@ -6,8 +6,8 @@ main:
 #    url: 
   - title: "FAQ"
     url: /faq.html
-  - title: "Example"
-    url: /example.html
+#  - title: "Example"
+#    url: /example.html
   - title: "Lab Home"
     url: https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics
   - title: "About"

@@ -8,7 +8,7 @@ header:
   overlay_image: "/assets/images/titleimage/titleimage.png"
   caption: 'Image: Environmental Informatics Marburg'
   cta_label: Install now
-  cta_url: "/units/getting_started.html"
+  cta_url: "/unit00/unit00-01_getting_started.html"
 excerpt: Create good quality climate models in an easy to use workflow. Newbie or Expert in climate modelling? This package suits all skill levels. 
 feature_row_intro:
 - excerpt: climodr is free and open source under a GPL 3.0 license. It's brought to you by the Department of [Physical Geography](https://www.uni-marburg.de/en/fb19/disciplines/physisch){:target="_blank"} at [Marburg University](https://www.uni-marburg.de/en){:target="_blank"}
