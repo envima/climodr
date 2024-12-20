@@ -24,18 +24,13 @@ The goal of climodr is to use point data from climate stations, spectral imagery
 
 You can install the development version of climodr from [GitHub](https://github.com/) with:
 
-``` r
-# install.packages("pak")
+```{r installation, eval = FALSE}
+install.packages("pak")
 pak::pak("envima/climodr")
 ```
 
 ## Example
 
-There is an example workflow provided in the vignette of climodr, which you cann acces via following command:
-
-```{r example}
-library(climodr)
-vignette("climodr")
-```
+There is an example workflow provided in the vignette of climodr, which you can access via the command `vignette("climodr")`.
 
 For more information about the package, visit [our website](https://envima.github.io/climodr/). 
