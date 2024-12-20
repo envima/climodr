@@ -1,7 +1,7 @@
 Package: climodr
 Type: Package
 Title: Climate modeling with point data from climate stations
-Version: 0.0.0.9005
+Version: 1.0.0
 Authors@R: 
     c(person("Alexander", "Klug",
              email = "kluga@students.uni-marburg.de",
