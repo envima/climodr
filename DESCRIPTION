@@ -5,7 +5,7 @@ Version: 0.0.0.9005
 Authors@R: 
     c(person("Alexander", "Klug",
              email = "kluga@students-uni-marburg.de",
-             role = c("aut", "cre")),
+             role = c("aut", "cre", "cph")),
       person("Luise", "Wraase",
              email = "luise.wraase@geo.uni-marburg.de",
              role = c("aut")),
@@ -13,7 +13,7 @@ Authors@R:
              email = "seda.bekar@students.uni-marburg.de",
              role = c("ctb")),
       person("Dirk", "Zeuss",
-             email = "dirk.zeuss@uni-marburg.de,
+             email = "dirk.zeuss@uni-marburg.de",
              role = c("aut"))
              )
 Author: Alexander Klug [aut, cre],
