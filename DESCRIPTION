@@ -11,14 +11,17 @@ Authors@R:
              role = c("aut")),
       person("Seda", "Bekar",
              email = "seda.bekar@students.uni-marburg.de",
-             role = c("ctb"))
+             role = c("ctb")),
+      person("Dirk", "Zeuss",
+             email = "dirk.zeuss@uni-marburg.de,
+             role = c("aut"))
              )
 Author: Alexander Klug [aut, cre],
   Luise Wraase [aut],
   Seda Bekar [ctb]
+  Dirk Zeuss [aut]
 Maintainer: Alexander Klug <kluga@students.uni-marburg.de>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Climate Modelling package providing an automated climate modelling workflow.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

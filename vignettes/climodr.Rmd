@@ -121,7 +121,7 @@ The Input-Directory is the place, where all data, which shall be used for modell
 - tabular (Tabular data, containing climate data from the climate stations)\
 - vector (Vector data, like the study area or climate station point data)\
 
-See [list of possible inputs](link) for further details, what kind of input-data can be used.\
+See [list of possible inputs](https://envima.github.io/climodr/unit02/unit02-02_prepcsv.html) for further details, what kind of input-data can be used.\
 The Output-Folder is the place, where all final data, which is created by the package, is stored in. It consists of three different folders:\
 - maps (basic ready-to-use maps)\
 - predictions (plain prediction imagery)\
