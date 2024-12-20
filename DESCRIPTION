@@ -4,7 +4,7 @@ Title: Climate modeling with point data from climate stations
 Version: 0.0.0.9005
 Authors@R: 
     c(person("Alexander", "Klug",
-             email = "kluga@students-uni-marburg.de",
+             email = "kluga@students.uni-marburg.de",
              role = c("aut", "cre", "cph")),
       person("Luise", "Wraase",
              email = "luise.wraase@geo.uni-marburg.de",
