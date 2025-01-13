@@ -4,9 +4,17 @@
 \alias{proc.csv}
 \title{Processing CSV-Data}
 \usage{
-proc.csv(method = "monthly", rbind = TRUE, save_output = TRUE, ...)
+proc.csv(
+  envrmt = .GlobalEnv$envrmt,
+  method = "monthly",
+  rbind = TRUE,
+  save_output = TRUE,
+  ...
+)
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{rbind}{logical. Create a single file with all climate stations. If FALSE, every station will be saved in a seperate file.}

@@ -3,6 +3,7 @@
 #' Plot results of climodr into maps. Right now maps are created using the terra package.
 #' The maps created are very basic. Will be updated to run with tidyterra in future.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param mnote character. The modelnote you want to create maps of.
 #' @param sensor character. The sensor you want to create maps for.
 #' @param aoa logical. Do you want the area of applicability to be added to your map?
@@ -16,6 +17,8 @@
 #' @name climplot
 #' @export climplot
 #'
+#' @importFrom grDevices adjustcolor colorRampPalette dev.off png
+#'
 #' @examples
 #' \dontrun{
 #' # Create a Temperature Map from the vignette model
@@ -28,6 +31,7 @@
 #' }
 
 climplot <- function(
+    envrmt = .GlobalEnv$envrmt,
     mnote,
     sensor,
     aoa = FALSE,

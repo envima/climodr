@@ -2,6 +2,7 @@
 #'
 #' Creates Models for each climate value
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Time period of your desired model. Default: "monthly"
 #' @param timespan numeric. Vector or single input. Should contain all years to
 #'                 be modeled. The years have to be the same format as in the
@@ -40,6 +41,7 @@
 #' @seealso `autocorr`
 #'
 #' @name calc.model
+#' @import magrittr
 #' @export calc.model
 #'
 #' @examples
@@ -63,6 +65,7 @@
 #'            doParallel = FALSE)
 #' }
 calc.model <- function(
+    envrmt = .GlobalEnv$envrmt,
     method = "monthly",
     timespan,
     climresp,
@@ -79,7 +82,7 @@ calc.model <- function(
     autocorrelation = FALSE,
     ...)
 {
-  data_o <- read.csv(
+  data_o <- utils::read.csv(
     file.path(
       envrmt$path_tfinal,
       paste0(
@@ -115,7 +118,7 @@ calc.model <- function(
   for (y in timespan) try  ({
 
     data_y <- data_o[c(which(data_o$year == y)), ]
-    data_y <- data_y[complete.cases(data_y), ]
+    data_y <- data_y[stats::complete.cases(data_y), ]
     months <- unique(data_y$month)
 
     # talk to the user
@@ -144,9 +147,9 @@ calc.model <- function(
         if(autocorrelation == "TRUE"){
           # talk to the user
           print("Use autocorellation data for filtering..")
-          data <- data_m[complete.cases(data_m), ]
+          data <- data_m[stats::complete.cases(data_m), ]
           delect <-
-            read.csv(
+            utils::read.csv(
               file.path(
                 envrmt$path_statistics,
                 paste0(
@@ -162,7 +165,7 @@ calc.model <- function(
           }
         } else {
           data <- data_m[
-            complete.cases(data_m), ]
+            stats::complete.cases(data_m), ]
         } # end autocorrelation loop
 
 # Create Training and Test Data --------------------------------------------- #
@@ -225,9 +228,9 @@ calc.model <- function(
             savePredictions = TRUE
             )
           if (autocorrelation == TRUE){
-            preds <- trainingDat[, head(predrows,
-                                        -length(delect$variables)
-                                        )
+            preds <- trainingDat[, utils::head(predrows,
+                                               -length(delect$variables)
+                                               )
                                  ]
           } else {
             preds <- trainingDat[, predrows]

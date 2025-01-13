@@ -4,6 +4,7 @@
 #'
 #' Crops input data to the extent size and removes NA-Values
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: FALSE.
@@ -26,7 +27,8 @@
 #' csv_files
 #' }
 #'
-prep.csv <- function(method = "proc",
+prep.csv <- function(envrmt = .GlobalEnv$envrmt,
+                     method = "proc",
                      save_output = TRUE,
                      ...){
 
@@ -49,7 +51,7 @@ prep.csv <- function(method = "proc",
     number_of_csvs <- length(csv_paths)
 
     for (i in 1:number_of_csvs){
-      csv_data <- read.csv(
+      csv_data <- utils::read.csv(
         file.path(
           envrmt$path_tabular,
           paste0(csv_paths[[i]])),
@@ -79,9 +81,9 @@ prep.csv <- function(method = "proc",
       for (j in 7:number_of_cn){
         csv_data <- transform(
           csv_data,
-          temp_col = ave(
+          temp_col = stats::ave(
             csv_data[, j],
-            daymonth,
+            "daymonth",
             FUN = function(x) mean(x, na.rm = TRUE)
           )
         )
@@ -96,7 +98,7 @@ prep.csv <- function(method = "proc",
       csv_data <- tidyr::drop_na(csv_data)
       csv_data$daymonth <- NULL
 
-      write.csv(
+      utils::write.csv(
         csv_data,
         file.path(
           envrmt$path_tworkflow,
@@ -124,6 +126,7 @@ prep.csv <- function(method = "proc",
 #'
 #' Calculate averaged sensor values aggregated to a given time interval.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param rbind logical. Create a single file with all climate stations. If FALSE, every station will be saved in a seperate file.
 #' @param save_output logical. If data should be saved permanently in the Environment put save_output = TRUE.
@@ -143,7 +146,8 @@ prep.csv <- function(method = "proc",
 #'                      save_output = TRUE)
 #' head(csv_data)
 #' }
-proc.csv <- function(method = "monthly",
+proc.csv <- function(envrmt = .GlobalEnv$envrmt,
+                     method = "monthly",
                      rbind = TRUE,
                      save_output = TRUE,
                      ...){
@@ -163,7 +167,7 @@ proc.csv <- function(method = "monthly",
     number_of_csvs <- length(csv_paths)
 
     for (i in 1:number_of_csvs){
-      x <- read.csv(
+      x <- utils::read.csv(
         file.path(
           envrmt$path_tworkflow,
           csv_paths[i]
@@ -174,10 +178,10 @@ proc.csv <- function(method = "monthly",
       number_of_cn <- length(cn_x)
 
       for (j in 6:number_of_cn){
-        fo <- as.formula(
+        fo <- stats::as.formula(
           paste(cn_x[j], " ~ month + year")
         )
-        y <- aggregate(fo, x, mean)
+        y <- stats::aggregate(fo, x, mean)
         colnames(y) <- c(
           "month",
           "year",
@@ -209,7 +213,7 @@ proc.csv <- function(method = "monthly",
       } # end j loop
 
       if (rbind == FALSE){
-        write.csv(
+        utils::write.csv(
           dm,
           file.path(
             envrmt$path_tworkflow,
@@ -228,7 +232,7 @@ proc.csv <- function(method = "monthly",
     # --------------------------------------------------------------------------- #
     if (rbind == TRUE){
       if (save_output == TRUE){
-        write.csv(
+        utils::write.csv(
           dm_t,
           file.path(
             envrmt$path_tworkflow,
@@ -257,7 +261,7 @@ proc.csv <- function(method = "monthly",
     number_of_csvs <- length(csv_paths)
 
     for (i in 1:number_of_csvs){
-      x <- read.csv(
+      x <- utils::read.csv(
         file.path(
           envrmt$path_tworkflow,
           csv_paths[i]
@@ -267,10 +271,10 @@ proc.csv <- function(method = "monthly",
       number_of_cn <- length(cn_x)
 
       for (j in 6:number_of_cn){
-        fo <- as.formula(
+        fo <- stats::as.formula(
           paste(cn_x[j], " ~ day + month + year")
         )
-        y <- aggregate(fo, x, mean)
+        y <- stats::aggregate(fo, x, mean)
         colnames(y) <- c(
           "day",
           "month",
@@ -304,7 +308,7 @@ proc.csv <- function(method = "monthly",
       } # end j loop
 
       if (rbind == FALSE){
-        write.csv(
+        utils::write.csv(
           dm,
           file.path(
             envrmt$path_tworkflow,
@@ -323,7 +327,7 @@ proc.csv <- function(method = "monthly",
     # --------------------------------------------------------------------------- #
     if (rbind == TRUE){
       if (save_output == TRUE){
-        write.csv(
+        utils::write.csv(
           dm_t,
           file.path(
             envrmt$path_tworkflow,
@@ -345,6 +349,7 @@ proc.csv <- function(method = "monthly",
 #' Extract station coordinates from meta-data and reproject the coordinates to the
 #' project coordinate reference system.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param des_file character. The filename and data type of the meta-data. (Only reads .csv)
 #' @param crs character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.
@@ -366,13 +371,14 @@ proc.csv <- function(method = "monthly",
 #' head(csv_spat)
 #' }
 #'
-spat.csv <- function(method = "monthly",
+spat.csv <- function(envrmt = .GlobalEnv$envrmt,
+                     method = "monthly",
                      des_file,
                      crs = NULL,
                      save_output = TRUE,
                      ...){
 
-  data <- read.csv(
+  data <- utils::read.csv(
     file.path(
       envrmt$path_tworkflow,
       paste0(
@@ -394,7 +400,7 @@ spat.csv <- function(method = "monthly",
   number_of_stations <- length(names_of_stations)
 
 # read plot description file
-  des <- read.csv(
+  des <- utils::read.csv(
     file.path(
       envrmt$path_dep,
       des_file
@@ -469,7 +475,7 @@ spat.csv <- function(method = "monthly",
     points <- terra::project(points, crs)
     data <- terra::as.data.frame(points, geom = "XY")
 
-    write.csv(
+    utils::write.csv(
       data,
       file.path(
         envrmt$path_tworkflow,
@@ -525,7 +531,7 @@ spat.csv <- function(method = "monthly",
     points <- terra::project(points, crs)
     data <- terra::as.data.frame(points, geom = "XY")
 
-    write.csv(
+    utils::write.csv(
       data,
       file.path(
         envrmt$path_tworkflow,
@@ -578,7 +584,7 @@ spat.csv <- function(method = "monthly",
     points <- terra::project(points, crs)
     data <- terra::as.data.frame(points, geom = "XY")
 
-    write.csv(
+    utils::write.csv(
       data,
       file.path(
         envrmt$path_tworkflow,
@@ -599,6 +605,7 @@ spat.csv <- function(method = "monthly",
 #' station data so there is a .csv-file with coordinates, sensor data (response values)
 #' and extracted raster data (predictor values). The data is ready to be used for modelling.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: FALSE.
@@ -620,13 +627,14 @@ spat.csv <- function(method = "monthly",
 #' }
 #'
 
-fin.csv <- function(method = "monthly",
+fin.csv <- function(envrmt = .GlobalEnv$envrmt,
+                    method = "monthly",
                     crs = NULL,
                     save_output = TRUE,
                     ...){
 
   if (method == "monthly"){
-    data_o <- read.csv(
+    data_o <- utils::read.csv(
       file.path(
         envrmt$path_tworkflow,
         "spat_monthly_means.csv"
@@ -708,7 +716,7 @@ fin.csv <- function(method = "monthly",
     data$ID <- NULL
     data_n <- tidyr::drop_na(data)
 
-    write.csv(
+    utils::write.csv(
       data_n,
       file.path(
         envrmt$path_tfinal,
@@ -722,7 +730,7 @@ fin.csv <- function(method = "monthly",
   if (method == "anual"){
     tiff_list <- list()
     for (i in 1:length(sat_paths)){
-      tiff_list[[i]] <- terra::rast(file.path(envrmt$path_rworkflow, tiff_paths[[i]]))
+      tiff_list[[i]] <- terra::rast(file.path(envrmt$path_rworkflow, tiff_list[[i]]))
       if (i == 1){
         tiff_stack <- tiff_list[[i]]
       } else {
@@ -740,7 +748,7 @@ fin.csv <- function(method = "monthly",
     data$datetime <- NULL;
     data_n <- tidyr::drop_na(data)
 
-    write.csv(data_n, file.path(envrmt$path_tfinal, "final_anualy.csv"), row.names = FALSE);
+    utils::write.csv(data_n, file.path(envrmt$path_tfinal, "final_anualy.csv"), row.names = FALSE);
     return(data)
   }; # end anual loop
 } # end function

@@ -3,6 +3,7 @@
 #' Tests the final.csv created with `fin.csv` on autocorrelation to produce
 #' reliable models.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".
 #' @param resp numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.
 #' @param pred numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.
@@ -26,6 +27,7 @@
 #'
 
 autocorr <- function(
+    envrmt = .GlobalEnv$envrmt,
     method = "monthly",
     resp,
     pred,
@@ -33,7 +35,7 @@ autocorr <- function(
     corrplot = "coef")
   {
   #get data from PreProcessing
-  data_o <- read.csv(
+  data_o <- utils::read.csv(
     file.path(
       envrmt$path_tfinal,
       paste0(
@@ -49,7 +51,7 @@ autocorr <- function(
 
   #duplicated data
   #data_d <- data[duplicated(data),];
-  data <- data[complete.cases(data), ]
+  data <- data[stats::complete.cases(data), ]
 
   c <- stats::cor(data)
 
@@ -61,7 +63,7 @@ autocorr <- function(
     diag(p.mat) <- 0
     for (i in 1:(n - 1)) {
       for (j in (i + 1):n) {
-        tmp <- cor.test(mat[, i], mat[, j], ...)
+        tmp <- stats::cor.test(mat[, i], mat[, j], ...)
         p.mat[i, j] <- p.mat[j, i] <- tmp$p.value
       }
     }
@@ -71,10 +73,10 @@ autocorr <- function(
 
   # matrix of the p-value of the correlation
   p.mat <- cor.mtest(data)
-  round(head(p.mat[, 1:5]), 6)
+  round(utils::head(p.mat[, 1:5]), 6)
 
   if (plot.corrplot == TRUE){
-    col <- colorRampPalette(c("#BB4444", "#EE9988", "#fff0db", "#77AADD", "#4477AA"));
+    col <- grDevices::colorRampPalette(c("#BB4444", "#EE9988", "#fff0db", "#77AADD", "#4477AA"));
 
     if ("coef" %in% corrplot){
       corrplot::corrplot(c,
@@ -146,16 +148,16 @@ autocorr <- function(
   for (i in 1:length(corlist)){
     df <- corlist[[i]]$data
     var <- df[df$corr <= 0, ]
-    write.csv(
-      var,
-      file.path(
-        envrmt$path_statistics,
-        paste0(
-          sensor_names[i],
-          "_delect.csv"
-          )
-        )
-      )
+    utils::write.csv(
+            var,
+            file.path(
+              envrmt$path_statistics,
+              paste0(
+                sensor_names[i],
+                "_delect.csv"
+                )
+              )
+            )
   } # end corlist-loop
 
 print(

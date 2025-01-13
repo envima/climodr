@@ -5,6 +5,7 @@
 \title{Autocorrelation}
 \usage{
 autocorr(
+  envrmt = .GlobalEnv$envrmt,
   method = "monthly",
   resp,
   pred,
@@ -13,6 +14,8 @@ autocorr(
 )
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
 
 \item{resp}{numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.}

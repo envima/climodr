@@ -5,6 +5,7 @@
 \title{Modelling}
 \usage{
 calc.model(
+  envrmt = .GlobalEnv$envrmt,
   method = "monthly",
   timespan,
   climresp,
@@ -23,6 +24,8 @@ calc.model(
 )
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Time period of your desired model. Default: "monthly"}
 
 \item{timespan}{numeric. Vector or single input. Should contain all years to

@@ -39,11 +39,12 @@ envi.create <- function(proj_path,
                      "workflow/tmp/",
                      "workflow/rworkflow/",
                      "workflow/vworkflow/"
-                     );
+                     )
 
-  if (exists("appendProjectDirList") && appendProjectDirList[[1]] != "") {
-    projectDirList = append(projectDirList,appendProjectDirList)
-  };
+
+#  if (exists("appendProjectDirList") && appendProjectDirList[[1]] != "") {
+#    projectDirList = append(projectDirList, appendProjectDirList)
+#  }
 
   createFolders <- function(root_folder,
                             folders,
@@ -97,9 +98,9 @@ envi.create <- function(proj_path,
     return(folders)
   }
 
-  envrmt <<- createEnv(path = proj_path,
-                       folders = projectDirList,
-                       path_prefix = "path_")
+  envrmt <- createEnv(path = proj_path,
+                      folders = projectDirList,
+                      path_prefix = "path_")
 
   if(is.null(memfrac)){
     terra::terraOptions(tempdir = envrmt$path_tmp)
@@ -114,6 +115,7 @@ envi.create <- function(proj_path,
       "."
       )
     )
+  return(envrmt)
 }
 
 #' Load in Example Data
@@ -123,10 +125,13 @@ envi.create <- function(proj_path,
 #' one can't just load example data. This function will load all the example data used in the vignette
 #' into your climodr environment. This way you can run all the code from the vignette.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @return Multiple files used by the climodr vignette
 #'
 #' @name clim.sample
 #' @export clim.sample
+#'
+#' @importFrom utils data write.csv
 #'
 #' @examples
 #' \dontrun{
@@ -134,13 +139,14 @@ envi.create <- function(proj_path,
 #' clim.sample()
 #' }
 #'
-clim.sample <- function(){
+clim.sample <- function(envrmt = .GlobalEnv$envrmt){
   print("Loading example data for the climodr example..")
   print(environment())
 # Input dep folder
-  data("res_area")
-  data("plot_description")
+  data("res_area", envir = environment())
+  data("plot_description", envir = environment())
   res_area <- terra::unwrap(res_area)
+  plot_description <- plot_description # to silence R CMD check note
 
   terra::writeRaster(res_area, file.path(envrmt$path_dep, "res_area.tif"), overwrite = TRUE)
   write.csv(plot_description, file.path(envrmt$path_dep, "plot_description.csv"))
@@ -150,8 +156,8 @@ clim.sample <- function(){
   gc()
 
 # Input raster folder
-  data("sch_201707")
-  data("sch_dgm")
+  data("sch_201707", envir = environment())
+  data("sch_dgm", envir = environment())
   sch_201707 <- terra::unwrap(sch_201707)
   sch_dgm <- terra::unwrap(sch_dgm)
 
@@ -167,7 +173,7 @@ clim.sample <- function(){
   l <- l[grepl("Station", l)]
 
   for (i in l){
-    eval(call("data", i))
+    eval(call("data", i, envir = environment()))
     eval(call("write.csv", as.name(i), file.path(envrmt$path_tabular, paste0(i, ".csv")), row.names = FALSE))
   }
 
@@ -176,7 +182,7 @@ clim.sample <- function(){
   gc()
 
 # Input vector folder
-  data("ext_vignette")
+  data("ext_vignette", envir = environment())
   ext_vignette <- terra::unwrap(ext_vignette)
 
   terra::writeVector(ext_vignette, file.path(envrmt$path_vector, "ext_vignette.gpkg"), overwrite = TRUE)

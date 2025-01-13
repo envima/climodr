@@ -5,12 +5,15 @@
 \title{Calculate spectral indices}
 \usage{
 calc.indices(
+  envrmt = .GlobalEnv$envrmt,
   vi = "all",
   bands = c("blue", "green", "red", "nir", "nirb", "re1", "re2", "re3", "swir1", "swir2"),
   overwrite = FALSE
 )
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{vi}{Character. Either "all" or vector containing the preferred spectral indices. See 'Details' for more information.}
 
 \item{bands}{Character. Vector with lenght(bands) = 10. Contains the names of the bands in the Raster Stack.

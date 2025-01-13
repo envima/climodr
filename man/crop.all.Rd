@@ -5,6 +5,7 @@
 \title{Cropping tiff data}
 \usage{
 crop.all(
+  envrmt = .GlobalEnv$envrmt,
   method = "MB_Timeseries",
   crs = NULL,
   ext = NULL,
@@ -13,6 +14,8 @@ crop.all(
 )
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.}
 
 \item{crs}{Coordinate reference system Used to crop all images in folder_path. If crs
