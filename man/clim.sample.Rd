@@ -4,7 +4,10 @@
 \alias{clim.sample}
 \title{Load in Example Data}
 \usage{
-clim.sample()
+clim.sample(envrmt = .GlobalEnv$envrmt)
+}
+\arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 }
 \value{
 Multiple files used by the climodr vignette

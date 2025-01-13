@@ -98,8 +98,8 @@ By default this number is pretty low, so this way the process can be sped up.
 library(climodr)
 
 # setting up the environment for climodr
-envi.create(tempdir(),
-            memfrac = 0.8)
+envrmt <- envi.create(tempdir(),
+                      memfrac = 0.8)
 
 # load in all the climodr example data for this vignette
 clim.sample()

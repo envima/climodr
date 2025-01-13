@@ -4,9 +4,18 @@
 \alias{spat.csv}
 \title{Spatial aggregation for CSV-Data}
 \usage{
-spat.csv(method = "monthly", des_file, crs = NULL, save_output = TRUE, ...)
+spat.csv(
+  envrmt = .GlobalEnv$envrmt,
+  method = "monthly",
+  des_file,
+  crs = NULL,
+  save_output = TRUE,
+  ...
+)
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{des_file}{character. The filename and data type of the meta-data. (Only reads .csv)}

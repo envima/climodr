@@ -4,9 +4,17 @@
 \alias{fin.csv}
 \title{Final aggregation for CSV-Data}
 \usage{
-fin.csv(method = "monthly", crs = NULL, save_output = TRUE, ...)
+fin.csv(
+  envrmt = .GlobalEnv$envrmt,
+  method = "monthly",
+  crs = NULL,
+  save_output = TRUE,
+  ...
+)
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{crs}{character. If null, coordinate reference system from project files will be taken. Otherwise

@@ -5,6 +5,7 @@
 \title{Create Maps using the `terra` package graphic parameters}
 \usage{
 climplot(
+  envrmt = .GlobalEnv$envrmt,
   mnote,
   sensor,
   aoa = FALSE,
@@ -14,6 +15,8 @@ climplot(
 )
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{mnote}{character. The modelnote you want to create maps of.}
 
 \item{sensor}{character. The sensor you want to create maps for.}

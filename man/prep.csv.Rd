@@ -4,9 +4,11 @@
 \alias{prep.csv}
 \title{Preparing CSV-Data}
 \usage{
-prep.csv(method = "proc", save_output = TRUE, ...)
+prep.csv(envrmt = .GlobalEnv$envrmt, method = "proc", save_output = TRUE, ...)
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.}
 
 \item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.

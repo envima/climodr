@@ -4,9 +4,11 @@
 \alias{climpred}
 \title{Predict sensor data area wide}
 \usage{
-climpred(method = "monthly", mnote, AOA = TRUE)
+climpred(envrmt = .GlobalEnv$envrmt, method = "monthly", mnote, AOA = TRUE)
 }
 \arguments{
+\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
 \item{method}{Character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{mnote}{Character. Model note to filter models for the fitting model run.}

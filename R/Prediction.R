@@ -3,6 +3,7 @@
 #' Use the models created using `calc.model` to predict the modeled data onto a
 #' full spatial raster scene.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method Character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param mnote Character. Model note to filter models for the fitting model run.
 #' @param AOA Logical. Should the Area of Applicability be calculated additional to the models?
@@ -25,6 +26,7 @@
 #'
 
 climpred <- function(
+    envrmt = .GlobalEnv$envrmt,
     method = "monthly",
     mnote,
     AOA = TRUE){
@@ -164,7 +166,7 @@ climpred <- function(
   mod_df <- data.frame(mod_df)
   mod_df <- apply(mod_df, 2, as.character)
 
-  write.csv(
+  utils::write.csv(
     mod_df,
     file.path(
       envrmt$path_statistics,

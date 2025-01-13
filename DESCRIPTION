@@ -1,6 +1,6 @@
 Package: climodr
 Type: Package
-Title: Climate modeling with point data from climate stations
+Title: Climate Modeling with Point Data from Climate Stations
 Version: 1.0.0
 Authors@R: 
     c(person("Alexander", "Klug",
@@ -16,7 +16,7 @@ Authors@R:
              email = "dirk.zeuss@uni-marburg.de",
              role = c("aut"))
              )
-Author: Alexander Klug [aut, cre],
+Author: Alexander Klug [aut, cre, cph],
   Luise Wraase [aut],
   Seda Bekar [ctb]
   Dirk Zeuss [aut]
@@ -31,15 +31,18 @@ Imports:
     corrplot,
     doParallel,
     dplyr,
+    grDevices,
     lares,
+    magrittr,
     parallel,
     rlang,
+    stats,
     stringr,
     terra,
-    tidyr
+    tidyr,
+    utils
 Depends: 
-    R (>= 2.10),
-    tidyverse
+    R (>= 2.10)
 Suggests: 
     knitr,
     rmarkdown,

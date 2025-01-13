@@ -2,6 +2,7 @@
 #'
 #' Crops input data to the extent size and reprojects them into project Coordinate reference system.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.
 #' @param crs    Coordinate reference system Used to crop all images in folder_path. If crs
 #'               it will automatically reprojected into this one. Default: crs of smallest Extent.
@@ -22,7 +23,8 @@
 #'          overwrite = TRUE)
 #' }
 #'
-crop.all <- function(method = "MB_Timeseries",
+crop.all <- function(envrmt = .GlobalEnv$envrmt,
+                     method = "MB_Timeseries",
                      crs = NULL,
                      ext = NULL,
                      overwrite = FALSE,
@@ -109,6 +111,7 @@ crop.all <- function(method = "MB_Timeseries",
 #'
 #' Calculates a set of spectral indices to have more predictor variables available when further modeling.
 #'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param vi Character. Either "all" or vector containing the preferred spectral indices. See 'Details' for more information.
 #' @param bands Character. Vector with lenght(bands) = 10. Contains the names of the bands in the Raster Stack.
 #' If bands from the *Usage* example vector dont exist, use "NA" in their position. See 'Details' for more information.
@@ -131,7 +134,8 @@ crop.all <- function(method = "MB_Timeseries",
 #' }
 #'
 
-calc.indices <- function(vi = "all",
+calc.indices <- function(envrmt = .GlobalEnv$envrmt,
+                         vi = "all",
                          bands = c("blue", "green", "red", "nir", "nirb", "re1", "re2", "re3", "swir1", "swir2"),
                          overwrite = FALSE){
   all_files_in_distribution <- list.files(path = envrmt$path_rworkflow, recursive = T); #reads all data in Raster Input Folder
