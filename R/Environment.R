@@ -15,13 +15,13 @@
 #' @export envi.create
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # create climodr environment and allow terra-functions to use 70% of RAM
-#' envi.create("C:/user/climodr_user/project_directory",
-#'              memfrac = 0.7)
+#' envi.create(proj_path = tempdir(),
+#'             memfrac = 0.7)
 #' }
 #'
-envi.create <- function(proj_path,
+envi.create <- function(proj_path = tempdir(),
                         memfrac = NULL,
                         ...) {
   projectDirList = c("input/dep/",
@@ -108,7 +108,7 @@ envi.create <- function(proj_path,
     terra::terraOptions(tempdir = envrmt$path_tmp,
                         memfrac = memfrac)
   }
-  print(
+  message(
     paste0(
       "Succesfully created an environment in ",
       proj_path,
@@ -140,8 +140,8 @@ envi.create <- function(proj_path,
 #' }
 #'
 clim.sample <- function(envrmt = .GlobalEnv$envrmt){
-  print("Loading example data for the climodr example..")
-  print(environment())
+  message("Loading example data for the climodr example..")
+  message(environment())
 # Input dep folder
   data("res_area", envir = environment())
   data("plot_description", envir = environment())
@@ -151,7 +151,7 @@ clim.sample <- function(envrmt = .GlobalEnv$envrmt){
   terra::writeRaster(res_area, file.path(envrmt$path_dep, "res_area.tif"), overwrite = TRUE)
   write.csv(plot_description, file.path(envrmt$path_dep, "plot_description.csv"))
 
-  print(paste0("Saved climodr example dependency files to {", envrmt$path_dep, "}."))
+  message(paste0("Saved climodr example dependency files to {", envrmt$path_dep, "}."))
   rm(list = setdiff(ls(), "envrmt"))
   gc()
 
@@ -164,7 +164,7 @@ clim.sample <- function(envrmt = .GlobalEnv$envrmt){
   terra::writeRaster(sch_201707, file.path(envrmt$path_raster, "sch_201707.tif"), overwrite = TRUE)
   terra::writeRaster(sch_dgm, file.path(envrmt$path_raster, "sch_dgm.tif"), overwrite = TRUE)
 
-  print(paste0("Saved climodr example raster files to {", envrmt$path_raster, "}."))
+  message(paste0("Saved climodr example raster files to {", envrmt$path_raster, "}."))
   rm(list = setdiff(ls(), "envrmt"))
   gc()
 
@@ -177,7 +177,7 @@ clim.sample <- function(envrmt = .GlobalEnv$envrmt){
     eval(call("write.csv", as.name(i), file.path(envrmt$path_tabular, paste0(i, ".csv")), row.names = FALSE))
   }
 
-  print(paste0("Saved climodr example tabular files to {", envrmt$path_tabular, "}."))
+  message(paste0("Saved climodr example tabular files to {", envrmt$path_tabular, "}."))
   rm(list = setdiff(ls(), "envrmt"))
   gc()
 
@@ -187,11 +187,11 @@ clim.sample <- function(envrmt = .GlobalEnv$envrmt){
 
   terra::writeVector(ext_vignette, file.path(envrmt$path_vector, "ext_vignette.gpkg"), overwrite = TRUE)
 
-  print(paste0("Saved climodr example vector files to {", envrmt$path_vector, "}."))
+  message(paste0("Saved climodr example vector files to {", envrmt$path_vector, "}."))
   rm(list = setdiff(ls(), "envrmt"))
   gc()
 
 # Talk to the User
-  print("Done loading all the example files. You are ready to continue.")
+  message("Done loading all the example files. You are ready to continue.")
 }
 

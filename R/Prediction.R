@@ -15,7 +15,7 @@
 #' @export climpred
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' climpred(method = "monthly",
 #'          mnote = "normal",
 #'          AOA = TRUE)
@@ -103,7 +103,7 @@ climpred <- function(
       )
     )
 
-    print(
+    message(
       paste0(
         "Making ",
         mod_df[i, ]$sensor,
@@ -134,12 +134,13 @@ climpred <- function(
     )
 
     if (isTRUE(AOA)) try({
-      oldw <- getOption("warn") # old settings
-      options(warn = -1) # turn off warnings
-
-      aoa <- CAST::aoa(
-        newdata = raster,
-        model = mod)
+      suppressWarnings(
+        suppressMessages(
+          aoa <- CAST::aoa(
+            newdata = raster,
+            model = mod)
+        )
+      )
       names(aoa$AOA) <- paste0(modname, "_aoa")
       terra::writeRaster(
         aoa$AOA,
@@ -152,8 +153,6 @@ climpred <- function(
         ),
         overwrite = TRUE
       )
-
-      options(warn = oldw) # return old warning settings
     })
   } # end i loop
 

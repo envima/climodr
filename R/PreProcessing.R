@@ -108,7 +108,7 @@ prep.csv <- function(envrmt = .GlobalEnv$envrmt,
         row.names = FALSE
       )
     }
-    print(
+    message(
       paste0(
         "Removed NAs from ",
         number_of_csvs,
@@ -620,7 +620,7 @@ spat.csv <- function(envrmt = .GlobalEnv$envrmt,
 #' @export fin.csv
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' csv_fin <- fin.csv(method = "monthly",
 #'                    save_output = TRUE)
 #' head(csv_fin)

@@ -17,7 +17,7 @@
 #' @export autocorr
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Test data for autocorrelation after running fin.csv
 #' autocorr(method = "monthly",
 #'          resp = 5,
@@ -160,7 +160,7 @@ autocorr <- function(
             )
   } # end corlist-loop
 
-print(
+message(
   paste0(
     "Calculated autocorrelations for these sensors [",
     sensor_names,

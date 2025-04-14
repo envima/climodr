@@ -45,7 +45,7 @@
 #' @export calc.model
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Create 48 different models (12 months x 4 classifiers) for every month in 2017
 #' calc.model(method = "monthly",
 #'            timespan = c(2017),
@@ -98,7 +98,7 @@ calc.model <- function(
   # Optional: activate for faster computing
   if (doParallel == TRUE){
     # talk to the user
-    print("Starting parallelization.")
+    message("Starting parallelization.")
 
     cr <- parallel::detectCores()
     cl <- parallel::makeCluster(cr * 0.75)
@@ -122,14 +122,14 @@ calc.model <- function(
     months <- unique(data_y$month)
 
     # talk to the user
-    print(paste0("Training models for ", y, ".  Year-Nr.: ", which(timespan == y), "/", length(timespan)))
+    message(paste0("Training models for ", y, ".  Year-Nr.: ", which(timespan == y), "/", length(timespan)))
 
 # Loop for monthly models ----------------------------------------- Month --- #
     for (m in months) try ({
       data_m <- data_y[c(which(data_y$month == m)), ]
 
       # talk to the user
-      print(paste0("Training monthly models for ", y,".  Month-Nr.: ", m))
+      message(paste0("Training monthly models for ", y,".  Month-Nr.: ", m))
 
 # Loop for the climate sensors --------------------------------- Climresp --- #
       for (s in climresp) try({
@@ -146,7 +146,7 @@ calc.model <- function(
 
         if(autocorrelation == "TRUE"){
           # talk to the user
-          print("Use autocorellation data for filtering..")
+          message("Use autocorellation data for filtering..")
           data <- data_m[stats::complete.cases(data_m), ]
           delect <-
             utils::read.csv(
@@ -188,7 +188,7 @@ calc.model <- function(
               spacevar = "plot"
               )
             # talk to the user
-            print(
+            message(
               paste0(
                 "Run with spatial folds for cross validation.  Fold-Nr.: ",
                 which(f == dofolds), "/", length(dofolds)
@@ -201,7 +201,7 @@ calc.model <- function(
               timevar = "datetime"
               )
             # talk to the user
-            print(
+            message(
               paste0(
                 "Run with temporal folds for cross validation.  Fold-Nr.: ",
                 which(f == dofolds), "/", length(dofolds)
@@ -215,7 +215,7 @@ calc.model <- function(
               spacevar = "plot"
             )
             # talk to the user
-            print(
+            message(
               paste0(
                 "Run with spatio-temporal folds for cross validation.  Fold-Nr.: ",
                 which(f == dofolds), "/", length(dofolds)
@@ -240,7 +240,7 @@ calc.model <- function(
           resps <- trainingDat[ ,s]
 
           # talk to the user
-          print(
+          message(
             paste0(
               "Calculate models for sensor: ",
               sensor_names[which(s == climresp)])
@@ -295,27 +295,27 @@ calc.model <- function(
                 savePredictions = TRUE)
               modclass <-"gbm"
               # talk to the user
-              print(paste0("Next model: Stochastic Gradient Boosting.  ", i, "/", length(classifier)))
+              message(paste0("Next model: Stochastic Gradient Boosting.  ", i, "/", length(classifier)))
             }
             if (method == "lm"){
               tuneLength <- 10
               modclass <- "lim"
               # talk to the user
-              print(paste0("Next model: Linear Regression.  ", i, "/", length(classifier)))
+              message(paste0("Next model: Linear Regression.  ", i, "/", length(classifier)))
             }
             if (method == "rf"){
               tuneLength <- 1
               tuneGrid <- expand.grid(mtry = 2)
               modclass <- "raf"
               # talk to the user
-              print(paste0("Next model: Random Forest.  ", i, "/", length(classifier)))
+              message(paste0("Next model: Random Forest.  ", i, "/", length(classifier)))
             }
             if (method == "pls"){
 #              preds <- data.frame(scale(preds))
               tuneLength <- 10
               modclass <- "pls"
               # talk to the user
-              print(paste0("Next model: Partial-Least-Squares.  ", i, "/", length(classifier)))
+              message(paste0("Next model: Partial-Least-Squares.  ", i, "/", length(classifier)))
             }
             if (method == "nnet"){
               tuneLength <- 1
@@ -324,11 +324,11 @@ calc.model <- function(
               )
               modclass <- "nnt"
               # talk to the user
-              print(paste0("Next model: Neural Networks.  ", i, "/", length(classifier)))
+              message(paste0("Next model: Neural Networks.  ", i, "/", length(classifier)))
             }
 
             # talk to the user
-            print("Computing model...")
+            message("Computing model...")
 
             # calculate model
             ffsmodel <- CAST::ffs(
@@ -405,7 +405,7 @@ calc.model <- function(
   }) # end timespan loop [y]
 
   #talk to the user
-  print("Done! Saving evaluation data frame.")
+  message("Done! Saving evaluation data frame.")
 
   # save total loop analytics for eval
   saveRDS(df_total, file.path(envrmt$path_statistics, paste0(mnote, "_mod_eval_df.rds")));
@@ -414,7 +414,7 @@ calc.model <- function(
   # stop paralellization, if it was activated
   if (doParallel == TRUE){
     #talk to the user
-    print("Ending parallelization.")
+    message("Ending parallelization.")
     parallel::stopCluster(cl)
   }
 

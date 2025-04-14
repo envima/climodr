@@ -34,10 +34,10 @@ crop.all <- function(envrmt = .GlobalEnv$envrmt,
   number_of_tiffs <- length(tiff_paths);
 
   for (i in 1:number_of_tiffs){
-    print(paste0("Reading in raster ", i, "/", number_of_tiffs, "."))
+    message(paste0("Reading in raster ", i, "/", number_of_tiffs, "."))
     tif <- terra::rast(file.path(envrmt$path_raster, tiff_paths[[i]]))
 
-    print("Cropping raster...")
+    message("Cropping raster...")
     if (is.null(ext)){
       res_area <- terra::rast(file.path(envrmt$path_dep, "res_area.tif"))
       tif <- terra::project(tif, res_area)
@@ -57,12 +57,12 @@ crop.all <- function(envrmt = .GlobalEnv$envrmt,
 
       if (!is.null(crs)){
         if (is.null(terra::crs(tiff_stack[[i]]))){
-          print("Adding coordinate reference system to raster...")
+          message("Adding coordinate reference system to raster...")
           terra::crs(tiff_stack[[i]]) <- crs
         }
         else {
           if (!terra::crs(tiff_stack[[i]]) == crs){
-            print("Reprojecting raster...")
+            message("Reprojecting raster...")
             tiff_stack[[i]] <- terra::project(tiff_stack[[i]], crs)
           }
         }
@@ -72,36 +72,34 @@ crop.all <- function(envrmt = .GlobalEnv$envrmt,
     if (method == "MB_Timeseries"){
       if (!is.null(crs)){
         if (is.null(terra::crs(tif))){
-          print("Adding coordinate reference system to raster...")
+          message("Adding coordinate reference system to raster...")
           terra::crs(tif) <- crs
         } else {
           if (!terra::crs(tif) == crs){
-            print("Reprojecting raster...")
+            message("Reprojecting raster...")
             tif <- terra::project(tif, crs)
           }}
         } # end crs loop
 
       if(grepl("dgm", gsub(".{4}$", "", tiff_paths[i]), fixed = TRUE)){
-        print(paste0("Saving DGM to rfinal [", envrmt$path_rfinal, "]."))
+        message(paste0("Saving DGM to rfinal [", envrmt$path_rfinal, "]."))
         terra::writeRaster(tif, file.path(envrmt$path_rfinal,
                                           paste0(gsub(".{4}$", "", tiff_paths[i]),
                                                  "_crop.tif")),
                            overwrite = overwrite)
       } else {
-        print(paste0("Saving raster to rworkflow [", envrmt$path_rworkflow, "]."))
+        message(paste0("Saving raster to rworkflow [", envrmt$path_rworkflow, "]."))
         terra::writeRaster(tif, file.path(envrmt$path_rworkflow,
                                           paste0(gsub(".{4}$", "", tiff_paths[i]),
                                                  "_crop.tif")),
                            overwrite = overwrite)
       }
-
-      print(tif)
     } # end MB_timeseries_loop
   };
 
   if (method == "Singleband"){
     return(tiff_stack);
-    print(paste0("Saving rasterstack to rworkflow [", envrmt$path_rworkflow, "]."))
+    message(paste0("Saving rasterstack to rworkflow [", envrmt$path_rworkflow, "]."))
     terra::writeRaster(tiff_stack, file.path(envrmt$path_rworkflow, "tiff_stack.tif"), overwrite = overwrite)
 
   }; # end 2nd Singleband Loop
@@ -124,7 +122,7 @@ crop.all <- function(envrmt = .GlobalEnv$envrmt,
 #' @export calc.indices
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' calc.indices(vi = "all",
 #'              bands = c("blue", "green", "red",
 #'                        "nir", "nirb",
@@ -145,7 +143,7 @@ calc.indices <- function(envrmt = .GlobalEnv$envrmt,
   if ("all" %in% vi){
     vi <- c("NDVI", "NDWI", "NDBI", "NDBSI", "MSAVI")
   }
-  print(paste0("Number of Scenes to calculate Indices for: ", number_of_tiffs))
+  message(paste0("Number of Scenes to calculate Indices for: ", number_of_tiffs))
 
   for (n in 1:number_of_tiffs){
     name <- gsub(".{9}$", "", tiff_paths[n])
@@ -206,7 +204,7 @@ calc.indices <- function(envrmt = .GlobalEnv$envrmt,
         try(terra::add(rstack) <- MSAVI)
     }# end MSAVI
 
-    print(paste0("Saving rasterstack with indices to rfinal [", envrmt$path_rfinal, "]."))
+    message(paste0("Saving rasterstack with indices to rfinal [", envrmt$path_rfinal, "]."))
     terra::writeRaster(rstack,
                        file.path(envrmt$path_rfinal, paste0(name, "_ind.tif")),
                        overwrite = overwrite)

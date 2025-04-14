@@ -20,7 +20,7 @@
 #' @importFrom grDevices adjustcolor colorRampPalette dev.off png
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Create a Temperature Map from the vignette model
 #' climplot(mnote = "vignette",
 #'          sensor = "Ta_200",
@@ -46,7 +46,7 @@ climplot <- function(
 
   for (s in 1:length(sensor)){
     preds <- all_preds[which(grepl(all_preds, pattern = paste0(mnote, "_", sensor[s])))]
-    print(paste0("Creating maps for sensor [", sensor[s], "]."))
+    message(paste0("Creating maps for sensor [", sensor[s], "]."))
 
     for (i in 1:length(preds)){
       filename <- gsub("_prediction.tif.*", "", preds[i])

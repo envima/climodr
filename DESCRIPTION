@@ -21,7 +21,13 @@ Author: Alexander Klug [aut, cre, cph],
   Seda Bekar [ctb]
   Dirk Zeuss [aut]
 Maintainer: Alexander Klug <kluga@students.uni-marburg.de>
-Description: Climate Modelling package providing an automated climate modelling workflow.
+Description: An automated and streamlined workflow for predictive climate 
+             mapping using climate station data. Works within an environment 
+             the user provides a destined path to (otherwise it's `tempdir()`).
+             Quick and relatively easy creation of resilient and reproduceable 
+             climate models, predictions and climate maps, shortening the
+             usually long and complicated work of predictive modelling. 
+             For more information, please find the provided URL.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -53,5 +59,5 @@ Suggests:
 VignetteBuilder: knitr
 RoxygenNote: 7.3.2
 Config/testthat/edition: 3
-URL: https://github.com/envima/climodr
+URL: https://envima.github.io/climodr/
 BugReports: https://github.com/envima/climodr/issues

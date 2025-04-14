@@ -100,20 +100,20 @@ defaults:
       type: unit00
     values:
       category: "General Information"
-      tags: "Unit00"
+      tags: "unit00"
       layout: single
       sidebar:
-        nav: "Documentation" 
+        nav: "units"
   # unit01
   - scope:
       path: ""
       type: unit01
     values:
       category: "Environment"
-      tags: "Unit01"
+      tags: "unit01"
       layout: single
       sidebar:
-        nav: "Documentation" 
+        nav: "units"
   # unit02
   - scope:
       path: ""
@@ -123,27 +123,27 @@ defaults:
       tags: "Unit02"
       layout: single
       sidebar:
-        nav: "Documentation" 
+        nav: "units" 
   # unit03
   - scope:
       path: ""
       type: unit03
     values:
       category: "Processing"
-      tags: "Unit03"
+      tags: "unit03"
       layout: single
       sidebar:
-        nav: "Documentation" 
+        nav: "units" 
   # unit04
   - scope:
       path: ""
       type: unit04
     values:
       category: "Plotting"
-      tags: "Unit04"
+      tags: "unit04"
       layout: single
       sidebar:
-        nav: "Documentation" 
+        nav: "units" 
       
   - scope:
       path: "_pages"

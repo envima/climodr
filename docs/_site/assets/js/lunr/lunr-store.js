@@ -1,37 +1,37 @@
 var store = [{
         "title": "Getting Started",
         "excerpt":"This website is intended to provide additional information for the climodr package, although the provided introductions, explanations and examples might be useful for self-study only, too.    This package was created at the Department of Environmental Informatics in Marburg.   Development version   You can find the most recent development version of the package on GitHub.  Note that these versions might include bugs. If you want the current stable version download the package via install.package(\"climodr\") in R.   Feedback   If you run into bugs or have questions you can’t find a solution for, feel free to reach out to the maintainer via mail: kluga@students.uni-marburg.de  ","categories": ["General Information"],
-        "tags": ["Unit00"],
+        "tags": ["unit00"],
         "url": "http://localhost:4000/climodr/unit00/unit00-01_getting_started.html",
         "teaser": null
       },{
         "title": "Recommendations",
         "excerpt":"To run climodr, you need a PC with a running version of R.  Using an Interface like R-Studio is also strongly recomended.     Hardware requirements  In theory you can run climodr on every PC setup. Practically we recommend:     at least 8GB of RAM   a powerfull CPU for computing models   Depending on the resolution and size of your project Spatial Climate Modelling can be a very intense task for your machine. Running with low-end hardware can slow down your tasks significantly.   Tooltip from the Author: Gaming-Setups will mostly do the job for you, as Gaming-PCs usually have nice speks for intense modelling and are well optimised.   ","categories": ["General Information"],
-        "tags": ["Unit00"],
+        "tags": ["unit00"],
         "url": "http://localhost:4000/climodr/unit00/unit00-02_recommendations.html",
         "teaser": null
       },{
         "title": "Frequently Asked Questions",
         "excerpt":"No Frequently Asked Questions yet.  ","categories": ["General Information"],
-        "tags": ["Unit00"],
-        "url": "http://localhost:4000/climodr/faq.html",
+        "tags": ["unit00"],
+        "url": "http://localhost:4000/climodr/unit00/unit00-03_faq.html",
         "teaser": null
       },{
         "title": "Overview",
         "excerpt":"The Environment in climodr serves as a method to setup the same workspace for every usecase of climodr. The idea of this is to make climodr easy to share and reproduce.  By fixing the folder structure there is only one path a user has to enter. The full project can be zipped and shared with only one line of code to be changed.    The user can also make some adjustments to system specific settings. For example set up the fraction of memory the terra-package is allowed to use when doing spatial computation.   ","categories": ["Environment"],
-        "tags": ["Unit01"],
+        "tags": ["unit01"],
         "url": "http://localhost:4000/climodr/unit01/unit01-01_overview.html",
         "teaser": null
       },{
         "title": "envi.create",
         "excerpt":"With the envi.create() function, one points out a path where the package should store all its data. There is also the memfrac argument. This argument  allows you to change the fraction of your RAM the terra-package is allowed to use. By default this number is pretty low, so this way the process can be sped up.    Create climodr environment   Description  Creates an environment climodr will use during the calculation process. A list is returned with all paths to all folders. After creating the environment, all necessary data should be stored into the depending Input sub-folders. There is also an additional temp-folder, where temporary data is stored, which can be deleted after not being used anymore.   Usage  envi.create(proj_path, memfrac = NULL, ...)   Arguments  proj_path \tcharacter. Path to project directory. Climodr will work exclusively in this folder and create all project folders in here.   memfrac\tnumeric. Value between 0 and 0.9. The fraction of RAM that may be used by the terra package   Value  list. Contains all paths to each folder in the project directory. Necessary for climodr to operate its functions.   Examples  ## Not run:  # create climodr environment and allow terra-functions to use 70% of RAM envi.create(\"C:/user/climodr_user/project_directory\",              memfrac = 0.7)  ## End(Not run)   Climodr then creates an environment with three main folders:\\     Input (for all necessary data the user must bring)\\   Output (for ready-to-use data created by climodr)\\   Workflow (for climodr to store data during the process)\\      The Input-Directory is the place, where all data, which shall be used for modelling, should be saved beforehand. It consists of four different folders:\\     dep (Dependency, like a resolution image or metadata)\\   raster (Raster data, work in progress)\\   tabular (Tabular data, containing climate data from the climate stations)\\   vector (Vector data, like the study area or climate station point data)\\   See list of possible inputs for further details, what kind of input-data can be used.  The Output-Folder is the place, where all final data, which is created by the package, is stored in. It consists of three different folders:\\     maps (basic ready-to-use maps)\\   predictions (plain prediction imagery)\\   statistics (perfomance of the predictions and other statistics)\\   The Output-Directory contains all the reade-to-use data in some basic formats, which should be publication-ready if no other needs are wanted or required.   The Workflow-Directory contains all steps in between the Input and the Output. In here there are models, test and training data, clean tabular data, and so on.       Do not delete any of these folders, since climodr requires those to run properly!   The higher you set the fraction of RAM that climodr will use, the slower the PC will become when running climodr, in case you want to do something in parallel on the PC. Using a fraction &gt; 0.8 can even make it hard to use a browser while using climodr.  ","categories": ["Environment"],
-        "tags": ["Unit01"],
+        "tags": ["unit01"],
         "url": "http://localhost:4000/climodr/unit01/unit01-02_envicreate.html",
         "teaser": null
       },{
         "title": "clim.sample",
         "excerpt":"Load example data   Description  Climodr comes with a full set of example data. But since this package runs primarily with data, that is not linked to the global environment,  but saved in local folders build via ‘envi.create’, one can’t just load example data. This function will load all the example data used in the  vignette into your climodr environment. This way you can run all the code from the vignette.   Usage  clim.sample()   Value  Multiple files used by the climodr vignette   Examples  ## Not run:  # Load the climodr example data into the current climodr environment clim.sample()  ## End(Not run)   Structure   In total 15 files will be loaded into your climodr environment.                  Name       Input-Location       Type       Content                       ext_vignette       vector       SpatVector       polygon with the areo of interest for precise masking                 plot_description       dep       dataframe       imaginary coordinates of the example stations                 res_area       dep       SpatRaster       Binary raster with the desired resolution, crs and extent                 sch_202707       raster       SpatRaster       Level 2 Sentinel-2 Szene containing the example area                 sch_dgm       raster       SpatRaster       Digital Ground Model                 Station_G06       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_G17       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_G20       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_G21       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_G25       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_G48       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_W10       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_W11       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_W19       tabular       dataframe       Imaginary climate station data from imaginary climate station                 Station_W20       tabular       dataframe       Imaginary climate station data from imaginary climate station           ","categories": ["Environment"],
-        "tags": ["Unit01"],
+        "tags": ["unit01"],
         "url": "http://localhost:4000/climodr/unit01/unit01-03_climsample.html",
         "teaser": null
       },{
@@ -79,37 +79,37 @@ var store = [{
       },{
         "title": "Overview",
         "excerpt":"This chapter contains the core function of climodr, its model function. You also find a function for finding autocorrelations in your data pre modelling and a function to use your models to predict your data.   ","categories": ["Processing"],
-        "tags": ["Unit03"],
+        "tags": ["unit03"],
         "url": "http://localhost:4000/climodr/unit03/unit03-01_overview.html",
         "teaser": null
       },{
         "title": "autocorr",
         "excerpt":"Test for Autocorrelation   Description  Tests the final.csv created with ‘fin.csv’ on autocorrelation to produce reliable models.   Usage  autocorr(   method = \"monthly\",   resp,   pred,   plot.corrplot = TRUE,   corrplot = \"Coef\" )   Arguments  method \t\t\tcharacter. Choose the time scale your data is preserved in. Either “annual”, “monthly” or “daily”.  resp \t\t\tnumerical. Vector or single input of the columns in the final.csv that contain your sensor data (“response variables”). The function will create one file per variable.  pred \t\t\tnumerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.  plot.corrplot \tlogical. Should correlation matrices be plotted?  corrplot \t\tcharacter. Vector or single input. If plot.corrplot is true, you can choose the design of the correlation plot. You can choose from “coef”, “crossout”, “blank”. Default is “coef”.   Value  One .csv file per response variable. These will later be used when ‘autocorrelation’ is set ‘TRUE’ during ‘calc.model’.   See Also  calc.model   Examples  ## Not run:  # Test data for autocorrelation after running fin.csv autocorr(method = \"monthly\",          resp = 5,          pred = c(8:24),          plot.corrplot = FALSE)  ## End(Not run)  ","categories": ["Processing"],
-        "tags": ["Unit03"],
+        "tags": ["unit03"],
         "url": "http://localhost:4000/climodr/unit03/unit03-02_autocorr.html",
         "teaser": null
       },{
         "title": "calc.model",
         "excerpt":"Modelling   Description  Creates Models for each climate value   Usage  calc.model(   method = \"monthly\",   timespan,   climresp,   classifier = c(\"rf\", \"pls\", \"lm\", \"glm\"),   seed = NULL,   p = 0.8,   folds = \"all\",   predrows,   mnote = NULL,   k = NULL,   tc_method = \"cv\",   metric = \"RMSE\",   doParallel = FALSE,   autocorrelation = FALSE,   ... )   Arguments  timespan \t\tnumeric. Vector or single input. Should contain all years to be modeled. The years have to be the same format as in the tabular data.  climresp \t\tnumeric. Vector or single input. Should contain all column’s in the tabular data that contain response variables.  classifier \t\tvector or character. Model variants to be used. Supported models: Random Forest = “rf”, Partial-Least-Squares = “pls”, Neural Networks = “nnet”, Linear Regression = “lm” or generalized boosted regression = “gbm”.  seed \t\t\tinteger. Seed to reproduce the same model over and over.  folds \t\t\tcharacter. Vector or single input. Either folding over location only “LLO”, over time only “LTO”, or over both “LLTO”. Use “all” to use all possibilitys.  predrows \t\tnumeric. Vector or single input. Should contain the rows where all the predictor values are stored in.  mnote \t\t\tcharacter. Model note for special modifications used. Default: “normal”  k\t\t\t\tinteger. When ‘fold’ = “LLO” or “LTO”. Set k to the number of unique spatial or temporal units. Leave out to use preset values.  tc_method\t\tcharacter. Method for train control function from caret package. Default = “cv”.  metric\t\t\tcharacter. See ‘train’. doParallel\t\tlogical. Parallelization accelerates the modelling process. Warning: Your PC will slow down drastically. Make sure to not run any other heavy processes during this.  autocorrelation\tlogical. Should autocorrelating data in the predictor variables be excluded from the model run? Only works if ‘autocorr’ has been executed beforehand.   Value  Data Frame (Evaluation Table) Models (Count depends on your settings, saved in “/workflow/models”   See Also  autocorr   Examples  ## Not run:  # Create 48 different models (12 months x 4 classifiers) for every month in 2017 calc.model(method = \"monthly\",            timespan = c(2017),            climresp = 5,            classifier = c(\"rf\",                           \"pls\",                           \"nnet\",                           \"lm\"),            seed = 707,            p = 0.8,            folds = \"LLO\",            mnote = \"vignette\",            predrows = c(8:24),            tc_method = \"cv\",            metric = \"RMSE\",            autocorrelation = TRUE,            doParallel = FALSE)  ## End(Not run)  ","categories": ["Processing"],
-        "tags": ["Unit03"],
+        "tags": ["unit03"],
         "url": "http://localhost:4000/climodr/unit03/unit03-03_calcmodel.html",
         "teaser": null
       },{
         "title": "climpred",
         "excerpt":"Predict sensor data area wide   Description  Use the models created using ‘calc.model’ to predict the modeled data onto a full spatial raster scene.   Usage  climpred(method = \"monthly\", mnote, AOA = TRUE)   Arguments  method \t\t\tCharacter. Either “daily”, monthly” or “annual”. Also depends on the available data. mnote \t\t\tCharacter. Model note to filter models for the fitting model run.  AOA \t\t\tLogical. Should the Area of Applicability be calculated additional to the models?   Value  SpatRaster. Multiple predictions stored in the “/output/predictions/” folder.   See Also  autocorr, predict   Examples  ## Not run:  climpred(method = \"monthly\",          mnote = \"normal\",          AOA = TRUE) predlist &lt;- list.files(envrmt$path_predictions,                        pattern = \".tif\") head(predlist)  ## End(Not run)  ","categories": ["Processing"],
-        "tags": ["Unit03"],
+        "tags": ["unit03"],
         "url": "http://localhost:4000/climodr/unit03/unit03-04_climpred.html",
         "teaser": null
       },{
         "title": "Overview",
         "excerpt":"The final chapter of climodr will show you how to create ready to use climate maps using the climodr package.   ","categories": ["Plotting"],
-        "tags": ["Unit04"],
+        "tags": ["unit04"],
         "url": "http://localhost:4000/climodr/unit04/unit04-01_overview.html",
         "teaser": null
       },{
         "title": "climplot",
         "excerpt":"Create Maps using the ‘terra’ package graphic parameters   Description  Plot results of climodr into maps. Right now maps are created using the terra package. The maps created are very basic. Will be updated to run with tidyterra in future.   Usage  climplot(   mnote,   sensor,   aoa = FALSE,   mapcolors = rev(grDevices::terrain.colors(50)),   scale_position = \"bottomleft\",   north_position = \"topright\" )   Arguments  mnote \t\t\tcharacter. The modelnote you want to create maps of.  sensor\t\t\tcharacter. The sensor you want to create maps for.  aoa\t\t\t\tlogical. Do you want the area of applicability to be added to your map?  mapcolors\t\tThe color pallete you want to use for the map. Default is rev(grDevices::terrain.colors(50))  scale_position\tcharacter. Graphical parameter. The relative positiion of the Scale for the map. See ‘terra::plot’ for more details.  north_position \tcharacter. Graphical parameter. The relative positiion of the Scale for the map. See ‘terra::plot’ for more details.   Value  Maps in PNG-Format to your harddrive at “/output/maps”   See Also  plot   Examples  ## Not run:  # Create a Temperature Map from the vignette model climplot(mnote = \"vignette\",          sensor = \"Ta_200\",          aoa = FALSE,          mapcolors = rev(heat.colors(50)),          scale_position = \"bottomleft\",          north_position = \"topright\")  ## End(Not run)  ","categories": ["Plotting"],
-        "tags": ["Unit04"],
+        "tags": ["unit04"],
         "url": "http://localhost:4000/climodr/unit04/unit04-02_climplot.html",
         "teaser": null
       },]

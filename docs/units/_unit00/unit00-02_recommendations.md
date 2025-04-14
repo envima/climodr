@@ -2,8 +2,8 @@
 title: Recommendations
 toc: true
 header:
-  image: "/assets/images/teaserimages/birds_teaser.png"
-  caption: 'Image: [Kostenlose Bilder mit KI via flickr](https://www.flickr.com/photos/ai_universe/53440008559/); [CC BY 2.0 DEED](https://creativecommons.org/licenses/by/2.0/); image cropped'
+  image: "/assets/images/titleimage/recommendations.png"
+  caption: 'Image: [Generated via OpenAI. (2023). ChatGPT-4 (June 2024 version) [Large language model]](https://chat.openai.com/chat); image cropped'
 ---
 
 To run climodr, you need a PC with a running version of [R](https://www.r-project.org).  

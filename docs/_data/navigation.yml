@@ -5,7 +5,7 @@ main:
 #  - title: "Paper"
 #    url: 
   - title: "FAQ"
-    url: /faq.html
+    url: /unit00/unit00-03_faq.html
 #  - title: "Example"
 #    url: /example.html
   - title: "Lab Home"
@@ -21,7 +21,7 @@ docs:
     children:
       - title: "Documentation"
         url: /units.html
-      - title: "Example"
-        url: /example.html        
+ #     - title: "Example"
+ #       url: /example.html        
       - title: "Lab Home"
         url: https://www.uni-marburg.de/en/fb19/disciplines/physisch/environmentalinformatics
