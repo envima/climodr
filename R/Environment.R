@@ -15,11 +15,9 @@
 #' @export envi.create
 #'
 #' @examples
-#' \donttest{
 #' # create climodr environment and allow terra-functions to use 70% of RAM
-#' envi.create(proj_path = tempdir(),
-#'             memfrac = 0.7)
-#' }
+#' envrmt <- envi.create(proj_path = tempdir(),
+#'                       memfrac = 0.7)
 #'
 envi.create <- function(proj_path = tempdir(),
                         memfrac = NULL,
@@ -134,14 +132,17 @@ envi.create <- function(proj_path = tempdir(),
 #' @importFrom utils data write.csv
 #'
 #' @examples
-#' \dontrun{
+#' #create climodr environment and allow terra-functions to use 70% of RAM
+#' envrmt <- envi.create(proj_path = tempdir(),
+#'                       memfrac = 0.7)
+#'
 #' # Load the climodr example data into the current climodr environment
-#' clim.sample()
-#' }
+#' clim.sample(envrmt = envrmt)
 #'
 clim.sample <- function(envrmt = .GlobalEnv$envrmt){
   message("Loading example data for the climodr example..")
-  message(environment())
+# message(environment())
+
 # Input dep folder
   data("res_area", envir = environment())
   data("plot_description", envir = environment())

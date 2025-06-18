@@ -28,14 +28,26 @@ SpatRaster-Stack
 Calculates a set of spectral indices to have more predictor variables available when further modeling.
 }
 \examples{
-\dontrun{
-calc.indices(vi = "all",
+#create climodr environment and allow terra-functions to use 70\% of RAM
+envrmt <- envi.create(proj_path = tempdir(),
+                      memfrac = 0.7)
+
+# Load the climodr example data into the current climodr environment
+clim.sample(envrmt = envrmt)
+
+# Crop all raster bands
+crop.all(envrmt = envrmt,
+         method = "MB_Timeseries",
+         overwrite = TRUE)
+
+# Calculate Indices from cropped raster bands
+calc.indices(envrmt = envrmt,
+             vi = "all",
              bands = c("blue", "green", "red",
                        "nir", "nirb",
                        "re1", "re2", "re3",
                        "swir1", "swir2"),
              overwrite = TRUE)
-}
 
 }
 \seealso{

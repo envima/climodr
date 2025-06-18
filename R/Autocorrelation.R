@@ -18,10 +18,55 @@
 #'
 #' @examples
 #' \donttest{
+#' #create climodr environment and allow terra-functions to use 70% of RAM
+#' envrmt <- envi.create(proj_path = tempdir(),
+#'                       memfrac = 0.7)
+#'
+#' # Load the climodr example data into the current climodr environment
+#' clim.sample(envrmt = envrmt)
+#'
+#' #prepare csv-files
+#' prep.csv(envrmt = envrmt,
+#'          method = "proc",
+#'          save_output = TRUE)
+#'
+#' #process csv-files
+#' csv_data <- proc.csv(envrmt = envrmt,
+#'                      method = "monthly",
+#'                      rbind = TRUE,
+#'                      save_output = TRUE)
+#'
+#' # Crop all raster bands
+#' crop.all(envrmt = envrmt,
+#'          method = "MB_Timeseries",
+#'          overwrite = TRUE)
+#'
+#' # Calculate Indices from cropped raster bands
+#' calc.indices(envrmt = envrmt,
+#'              vi = "all",
+#'              bands = c("blue", "green", "red",
+#'                        "nir", "nirb",
+#'                        "re1", "re2", "re3",
+#'                        "swir1", "swir2"),
+#'              overwrite = TRUE)
+#'
+#' #extract station coordinates
+#' csv_spat <- spat.csv(envrmt = envrmt,
+#'                      method = "monthly",
+#'                      des_file = "plot_description.csv",
+#'                      save_output = TRUE)
+#'
+#'
+#' #extract predictor values from raster files
+#' csv_fin <- fin.csv(envrmt = envrmt,
+#'                    method = "monthly",
+#'                    save_output = TRUE)
+#'
 #' # Test data for autocorrelation after running fin.csv
-#' autocorr(method = "monthly",
+#' autocorr(envrmt = envrmt,
+#'          method = "monthly",
 #'          resp = 5,
-#'          pred = c(8:24),
+#'          pred = c(8:23),
 #'          plot.corrplot = FALSE)
 #' }
 #'

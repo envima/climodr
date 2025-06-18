@@ -31,12 +31,25 @@ List
 Calculate averaged sensor values aggregated to a given time interval.
 }
 \examples{
-\dontrun{
-csv_data <- proc.csv(method = "monthly",
+#create climodr environment and allow terra-functions to use 70\% of RAM
+envrmt <- envi.create(proj_path = tempdir(),
+                      memfrac = 0.7)
+
+# Load the climodr example data into the current climodr environment
+clim.sample(envrmt = envrmt)
+
+#prepare csv-files
+prep.csv(envrmt = envrmt,
+         method = "proc",
+         save_output = TRUE)
+
+#process csv-files
+csv_data <- proc.csv(envrmt = envrmt,
+                     method = "monthly",
                      rbind = TRUE,
                      save_output = TRUE)
 head(csv_data)
-}
+
 }
 \seealso{
 `prep.csv`, `spat.csv`, `fin.csv`

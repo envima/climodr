@@ -35,10 +35,17 @@ SpatRaster-Stack. Also saved to /workflow/rworkflow
 Crops input data to the extent size and reprojects them into project Coordinate reference system.
 }
 \examples{
-\dontrun{
-crop.all(method = "MB_Timeseries",
+#create climodr environment and allow terra-functions to use 70\% of RAM
+envrmt <- envi.create(proj_path = tempdir(),
+                      memfrac = 0.7)
+
+# Load the climodr example data into the current climodr environment
+clim.sample(envrmt = envrmt)
+
+# Crop all raster bands
+crop.all(envrmt = envrmt,
+         method = "MB_Timeseries",
          overwrite = TRUE)
-}
 
 }
 \seealso{

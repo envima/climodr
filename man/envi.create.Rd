@@ -4,7 +4,7 @@
 \alias{envi.create}
 \title{Create climodr environment}
 \usage{
-envi.create(proj_path, memfrac = NULL, ...)
+envi.create(proj_path = tempdir(), memfrac = NULL, ...)
 }
 \arguments{
 \item{proj_path}{character. Path to project directory. Climodr will work exclusively in this folder and create all project folders in here.}
@@ -22,10 +22,8 @@ After creating the environment, all necessary data should be stored into the dep
 There is also an additional temp-folder, where temporary data is stored, which can be deleted after not being used anymore.
 }
 \examples{
-\dontrun{
 # create climodr environment and allow terra-functions to use 70\% of RAM
-envi.create("C:/user/climodr_user/project_directory",
-             memfrac = 0.7)
-}
+envrmt <- envi.create(proj_path = tempdir(),
+                      memfrac = 0.7)
 
 }

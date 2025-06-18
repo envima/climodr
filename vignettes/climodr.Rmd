@@ -102,7 +102,7 @@ envrmt <- envi.create(tempdir(),
                       memfrac = 0.8)
 
 # load in all the climodr example data for this vignette
-clim.sample()
+clim.sample(envrmt = envrmt)
 
 # remove everything in the global environment except of our environment path list
 rm(list = setdiff(ls(), "envrmt"))
@@ -162,7 +162,9 @@ First, we have to prepare the raw tabular data for further uses. The prep.csv
 function cleans up the data and removes all NA values from the data.
 
 ```{r prep csv}
-prep.csv(method = "proc", save_output = TRUE)
+prep.csv(envrmt = envrmt, 
+         method = "proc", 
+         save_output = TRUE)
 
 #check the created csv files
 csv_files <- grep("_no_NAs.csv$", 
@@ -181,9 +183,10 @@ aggregation and is easier to be processed further this way.
 
 
 ```{r proc csv}
-csv_data <- proc.csv(method = "monthly",
-                              rbind = TRUE,
-                              save_output = TRUE)
+csv_data <- proc.csv(envrmt = envrmt, 
+                     method = "monthly",
+                     rbind = TRUE,
+                     save_output = TRUE)
 head(csv_data)
 ```
 
@@ -193,7 +196,8 @@ Next, the stations have to be spatially located in a coordinate system. This
 step is crucial to process the data in a modelation use case.\
 
 ```{r spat csv}
-csv_spat <- spat.csv(method = "monthly",
+csv_spat <- spat.csv(envrmt = envrmt, 
+                     method = "monthly",
                      des_file = "plot_description.csv",
                      save_output = TRUE)
 head(csv_spat)
@@ -206,7 +210,9 @@ data. The preferred *method* here is `"MB_Timeseries"`, which stands for **multi
 stacks with different time stamps (YYYYMMDD...) *in the file names* per scene. The function sorts them by date and crops the data to our study area.
 
 ```{r crop all}
-crop.all(method = "MB_Timeseries", overwrite = TRUE)
+crop.all(envrmt = envrmt, 
+         method = "MB_Timeseries", 
+         overwrite = TRUE)
 ```
 One important step in climate modelling is to have good predictor variables, which 
 we extract from our spatial raster imagery. In this case we have the 10 spectral 
@@ -224,7 +230,8 @@ generate all available indices. For more detailed information use `?calc.indices
 in the console.
 
 ```{r calc indices}
-calc.indices(vi = "all",
+calc.indices(envrmt = envrmt, 
+             vi = "all",
              bands = c("blue", "green", "red", 
                        "nir", "nirb", 
                        "re1", "re2", "re3", 
@@ -243,7 +250,8 @@ Reminder: You can check your data at any step, just go into your Workflow-Folder
 ```
 
 ```{r finalize csv}
-csv_fin <- fin.csv(method = "monthly",
+csv_fin <- fin.csv(envrmt = envrmt, 
+                   method = "monthly",
                    save_output = TRUE)
 head(csv_fin)
 ```
@@ -270,6 +278,7 @@ Maybe make it prettier in future.
 
 ```{r autocorr, warning = FALSE}
 autocorr(
+  envrmt = envrmt, 
   method = "monthly",
   resp = 5, 
   pred = c(8:23),
@@ -285,7 +294,7 @@ autocorr(
 Now, that we've done all necessary previous steps, one can start modelling. This
 is by far the function with the most variables. Here we give a quick overview, 
 what these arguments do. For more detailed information take a look into the 
-associated paper for this package at [**(to be published)**](Link). 
+associated paper for this package at **(to be published)**. 
 
 `timespan` = Vector with last two digits of years to build models from (in this 
 example 2017)\
@@ -317,6 +326,7 @@ process other stuff efficiently during parallelization.\
 Once all parameters are set, one can run the model workflow `calc.model` like this:
 ```{r model, warning = FALSE}
 calc.model(
+  envrmt = envrmt, 
   method = "monthly",
   timespan = c(2017),
   climresp = c(5),
@@ -353,6 +363,7 @@ modelrun.\
 
 ```{r predict}
 climpred(
+  envrmt = envrmt, 
   method = "monthly",
   mnote = "vignette", 
   AOA = TRUE) 
@@ -361,7 +372,9 @@ climpred(
 
 Lets show the list of predictions:
 ```{r list predictions}
-predlist <- list.files(envrmt$path_predictions, pattern = ".tif", recursive = TRUE)
+predlist <- list.files(envrmt$path_predictions, 
+                       pattern = ".tif", 
+                       recursive = TRUE)
 head(predlist)
 ```
 
@@ -380,6 +393,7 @@ need in a map.
 You can create plots of your predictions like this:
 ```{r plot predictions}
 climplot(
+  envrmt = envrmt, 
   mnote = "vignette",
   sensor = "Ta_200",
   aoa = TRUE,
