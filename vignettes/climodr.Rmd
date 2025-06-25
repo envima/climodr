@@ -74,7 +74,6 @@ following commands.
 #install climodr (last a bit, but shouldn't take longer than 5-10 Minutes)
 devtools::install_github(
   "https://github.com/envima/climodr.git", 
-  auth_token = "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", 
   dependencies = TRUE,
   build_vignettes = TRUE)
 ```
