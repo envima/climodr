@@ -74,7 +74,6 @@ following commands.
 #install climodr (last a bit, but shouldn't take longer than 5-10 Minutes)
 devtools::install_github(
   "https://github.com/envima/climodr.git", 
-  auth_token = "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", 
   dependencies = TRUE,
   build_vignettes = TRUE)
 ```
@@ -325,7 +324,7 @@ process other stuff efficiently during parallelization.\
 
 Once all parameters are set, one can run the model workflow `calc.model` like this:
 ```{r model, warning = FALSE}
-calc.model(
+eval_df <- calc.model(
   envrmt = envrmt, 
   method = "monthly",
   timespan = c(2017),
@@ -343,6 +342,8 @@ calc.model(
   metric = "RMSE",
   autocorrelation = TRUE,
   doParallel = FALSE)
+
+eval_df
 ```
 
 Congratulations, you have created your first models using climodr!\
@@ -365,6 +366,7 @@ modelrun.\
 climpred(
   envrmt = envrmt, 
   method = "monthly",
+  metric = "accuracy",
   mnote = "vignette", 
   AOA = TRUE) 
 ```

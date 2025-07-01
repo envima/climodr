@@ -9,6 +9,7 @@
 #' @param pred numerical. Vector or single input. The columns of your predictor variables, that you want to test for autocorrelation with the response variables.
 #' @param plot.corrplot logical. Should correlation matrices be plotted?
 #' @param corrplot character. Vector or single input. If plot.corrplot is true, you can choose the design of the correlation plot. You can choose from "coef", "crossout", "blank". Default is "coef".
+#' @param max_pvalue The maximum p value for a predictor variable in the autocorellation check.
 #'
 #' @return One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
 #' @seealso `calc.model`
@@ -65,6 +66,7 @@
 #' # Test data for autocorrelation after running fin.csv
 #' autocorr(envrmt = envrmt,
 #'          method = "monthly",
+#'          max_pvalue = 0.05,
 #'          resp = 5,
 #'          pred = c(8:23),
 #'          plot.corrplot = FALSE)
@@ -74,11 +76,13 @@
 autocorr <- function(
     envrmt = .GlobalEnv$envrmt,
     method = "monthly",
+    max_pvalue = 0.05,
     resp,
     pred,
     plot.corrplot = TRUE,
     corrplot = "coef")
   {
+
   #get data from PreProcessing
   data_o <- utils::read.csv(
     file.path(
@@ -165,25 +169,18 @@ autocorr <- function(
   corlist <- list()
   sensor_names <- names(data)[c(1:length(resp))]
 
-# thanks to lares maintainer Bernardo Lares <laresbernardo@gmail.com>
-# for supporting this part on StackOverflow
-
   if(length(resp) == 1){
-    var_name <- sensor_names[1]
-    var_sym <- rlang::sym(var_name)  # Construct symbol from string
     corlist[[1]] <- lares::corr_var(
       df = data,
-      var = !!var_sym,
-      max_pvalue = 0.05,
+      var = sensor_names[1],
+      max_pvalue = max_pvalue,
       top = 50)
   } else {
     for (i in 1:length(resp)){
-      var_name <- sensor_names[i]
-      var_sym <- rlang::sym(var_name)  # Construct symbol from string
       corlist[[i]] <- lares::corr_var(
         df = data,
-        var = !!var_sym,
-        max_pvalue = 0.05,
+        var = sensor_names[i],
+        max_pvalue = max_pvalue,
         ignore = names(data)[c(1:length(resp)[-i])],
         top = 50
       )

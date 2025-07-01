@@ -5,6 +5,7 @@
 #'
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method Character. Either "daily", monthly" or "annual". Also depends on the available data.
+#' @param metric Character. Which perfomance metric should be used to determine the best model? One of "accuracy", "Nrmse" or "Rsqrd". Default = "accuracy".
 #' @param mnote Character. Model note to filter models for the fitting model run.
 #' @param AOA Logical. Should the Area of Applicability be calculated additional to the models?
 #'
@@ -88,6 +89,7 @@
 #' # Make predictions
 #' climpred(envrmt = envrmt,
 #'          method = "monthly",
+#'          metric = "accuracy",
 #'          mnote = "normal",
 #'          AOA = TRUE)
 #'
@@ -100,6 +102,7 @@
 climpred <- function(
     envrmt = .GlobalEnv$envrmt,
     method = "monthly",
+    metric = "accuracy",
     mnote,
     AOA = TRUE){
 
