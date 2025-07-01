@@ -136,15 +136,25 @@ climpred <- function(
     )
 
 # filter for best models
+  if(!metric %in%  c("accuracy", "Nrmse", "Rsqrd")){
+    stop("Your 'metric' argument has to consist of either 'accuracy', 'Nrmse' or 'Rsqrd'.\n Stopped execution, no model could be choosen with missing metric.")
+  }
+
+  expr <- c(expression(mod_date$accuracy == max(mod_date$accuracy)),
+            expression(mod_date$Nrmse == min(mod_date$Nrmse)),
+            expression(mod_date$Rsqrd == min(mod_date$Rsqrd)))[which(
+              metric == c("accuracy", "Nrmse", "Rsqrd")
+            )]
+
   dates <- unique(eval_df[, 1])
   for (i in 1:length(dates)){
     mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
     ifelse(
       i == 1,
       mod_df <- mod_date[
-        which(mod_date$Nrmse == min(mod_date$Nrmse)), ],
+        which(eval(expr)), ],
       mod_df[i, ] <- mod_date[
-        which(mod_date$Nrmse == min(mod_date$Nrmse)), ]
+        which(eval(expr)), ]
       )
 # read fitting raster
     raster <- terra::rast(

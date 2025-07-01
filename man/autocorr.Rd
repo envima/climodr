@@ -7,6 +7,7 @@
 autocorr(
   envrmt = .GlobalEnv$envrmt,
   method = "monthly",
+  max_pvalue = 0.05,
   resp,
   pred,
   plot.corrplot = TRUE,
@@ -17,6 +18,8 @@ autocorr(
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 
 \item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
+
+\item{max_pvalue}{The maximum p value for a predictor variable in the autocorellation check.}
 
 \item{resp}{numerical. Vector or single input of the columns in the final.csv that contain your sensor data ("response variables"). The function will create one file per variable.}
 
@@ -82,6 +85,7 @@ csv_fin <- fin.csv(envrmt = envrmt,
 # Test data for autocorrelation after running fin.csv
 autocorr(envrmt = envrmt,
          method = "monthly",
+         max_pvalue = 0.05,
          resp = 5,
          pred = c(8:23),
          plot.corrplot = FALSE)

@@ -4,12 +4,20 @@
 \alias{climpred}
 \title{Predict sensor data area wide}
 \usage{
-climpred(envrmt = .GlobalEnv$envrmt, method = "monthly", mnote, AOA = TRUE)
+climpred(
+  envrmt = .GlobalEnv$envrmt,
+  method = "monthly",
+  metric = "accuracy",
+  mnote,
+  AOA = TRUE
+)
 }
 \arguments{
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 
 \item{method}{Character. Either "daily", monthly" or "annual". Also depends on the available data.}
+
+\item{metric}{Character. Which perfomance metric should be used to determine the best model? One of "accuracy", "Nrmse" or "Rsqrd". Default = "accuracy".}
 
 \item{mnote}{Character. Model note to filter models for the fitting model run.}
 
@@ -96,6 +104,7 @@ calc.model(envrmt = envrmt,
 # Make predictions
 climpred(envrmt = envrmt,
          method = "monthly",
+         metric = "accuracy",
          mnote = "normal",
          AOA = TRUE)
 
