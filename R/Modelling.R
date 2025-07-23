@@ -14,6 +14,7 @@
 #'                 Neural Networks = "nnet", Linear Regression = "lm" or
 #'                 generalized boosted regression = "gbm".
 #' @param seed     integer. Seed to reproduce the same model over and over.
+#' @param test     Vector. Either vector with row numbers of stations to be split for testing or object created by `caret::createDataPartition()`.
 #' @param p        numeric. Between 0 and 1. Percentage of data used for cross
 #'                 validation. Default = 0.8
 #' @param folds    character. Vector or single input. Either folding over location
@@ -122,6 +123,7 @@ calc.model <- function(
     climresp,
     classifier = c("rf", "pls", "lm", "glm"),
     seed = NULL,
+    test = NULL,
     p = 0.8,
     folds = "all",
     predrows,
@@ -221,10 +223,14 @@ calc.model <- function(
 
 # Create Training and Test Data --------------------------------------------- #
 
-        partition_indexes <- caret::createDataPartition(data$plot,
-                                                        times = 1,
-                                                        p = p,
-                                                        list = FALSE)
+        if(is.null(test)){
+          partition_indexes <- caret::createDataPartition(data$datetime,
+                                                          times = 1,
+                                                          p = p,
+                                                          list = FALSE)
+        } else {
+          partition_indexes <- test
+        }
 
         trainingDat <- data[partition_indexes, ]
         testingDat <- data[-partition_indexes, ]
@@ -297,35 +303,42 @@ calc.model <- function(
               sensor_names[which(s == climresp)])
             )
 
+          # create date
+          date <- ifelse(
+            m < 10,
+            paste0(y, "0", m),
+            paste0(y, m)
+          )
+
           # save the training and testing data for further evaluation
-          save(
+          utils::write.csv(
             trainingDat,
             file = file.path(
               envrmt$path_tfinal,
               paste0(
-                y,
-                m,
+                date,
                 "_",
                 mnote,
                 "_",
                 sensor_names[which(s == climresp)],
-                "_trainingDat.RData"
+                "_trainingDat.csv"
                 )
-              )
+              ),
+            row.names = FALSE
             )
-          save(
+          utils::write.csv(
             testingDat,
             file = file.path(
               envrmt$path_tfinal,
               paste0(
-                y,
-                m,
+                date,
                 "_",
                 mnote,
                 "_",
                 sensor_names[which(s == climresp)],
-                "_testingDat.RData")
-              )
+                "_testingDat.csv")
+              ),
+            row.names = FALSE
             )
 
 # Loop for Classifiers --------------------------------------- Classifier --- #
@@ -395,12 +408,6 @@ calc.model <- function(
               linout = TRUE,
               verbose = FALSE,
               trace = FALSE
-            )
-
-            date <- ifelse(
-              m < 10,
-              paste0(y, "0", m),
-              paste0(y, m)
             )
 
             # save all models

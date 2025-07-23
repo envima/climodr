@@ -11,6 +11,7 @@ calc.model(
   climresp,
   classifier = c("rf", "pls", "lm", "glm"),
   seed = NULL,
+  test = NULL,
   p = 0.8,
   folds = "all",
   predrows,
@@ -41,6 +42,8 @@ Neural Networks = "nnet", Linear Regression = "lm" or
 generalized boosted regression = "gbm".}
 
 \item{seed}{integer. Seed to reproduce the same model over and over.}
+
+\item{test}{Vector. Either vector with row numbers of stations to be split for testing or object created by `caret::createDataPartition()`.}
 
 \item{p}{numeric. Between 0 and 1. Percentage of data used for cross
 validation. Default = 0.8}

@@ -102,15 +102,14 @@ calc.model(envrmt = envrmt,
            doParallel = FALSE)
 
 # Make predictions
-climpred(envrmt = envrmt,
-         method = "monthly",
-         metric = "accuracy",
-         mnote = "normal",
-         AOA = TRUE)
+results <- climpred(envrmt = envrmt,
+                    method = "monthly",
+                    metric = "Nrmse",
+                    mnote = "normal",
+                    AOA = TRUE)
 
-predlist <- list.files(envrmt$path_predictions,
-                       pattern = ".tif")
-head(predlist)
+results$Prediction
+results$Validation
 }
 
 }

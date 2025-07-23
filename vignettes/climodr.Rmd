@@ -279,9 +279,10 @@ Maybe make it prettier in future.
 autocorr(
   envrmt = envrmt, 
   method = "monthly",
+  max_pvalue = 0.05,
   resp = 5, 
   pred = c(8:23),
-  plot.corrplot = TRUE,
+  plot.corrplot = FALSE,
   corrplot = "coef"
   )
 ```
@@ -330,9 +331,9 @@ eval_df <- calc.model(
   timespan = c(2017),
   climresp = c(5),
   classifier = c(
-    "rf", 
-    "pls", 
-    "lm"),
+    "raf",
+    "lim",
+    "pls"),
   seed = 707,
   p = 0.8,
   folds = "LLO",
@@ -363,12 +364,14 @@ as in your model run, so climodr predicts with the models you created in this
 modelrun.\
 
 ```{r predict}
-climpred(
+results <- climpred(
   envrmt = envrmt, 
   method = "monthly",
   metric = "accuracy",
   mnote = "vignette", 
   AOA = TRUE) 
+
+results
 ```
 
 

@@ -168,47 +168,55 @@ autocorr <- function(
 # Now with a variable for sensor
   corlist <- list()
   sensor_names <- names(data)[c(1:length(resp))]
+  message(paste0("Finding autocorrelating predictors for these sensors [", sensor_names,"]."))
 
   if(length(resp) == 1){
     corlist[[1]] <- lares::corr_var(
       df = data,
-      var = sensor_names[1],
+      var = call(sensor_names[1]),
       max_pvalue = max_pvalue,
-      top = 50)
+      top = 50,
+      plot = FALSE)
   } else {
     for (i in 1:length(resp)){
       corlist[[i]] <- lares::corr_var(
         df = data,
-        var = sensor_names[i],
+        var = call(sensor_names[i]),
         max_pvalue = max_pvalue,
         ignore = names(data)[c(1:length(resp)[-i])],
-        top = 50
+        top = 50,
+        plot = FALSE
       )
     }
   } # end if-conditions
 
   for (i in 1:length(corlist)){
-    df <- corlist[[i]]$data
+    df <- corlist[[i]]
     var <- df[df$corr <= 0, ]
-    utils::write.csv(
-            var,
-            file.path(
-              envrmt$path_statistics,
-              paste0(
-                sensor_names[i],
-                "_delect.csv"
-                )
-              )
-            )
+    if(nrow(var) == 0){
+      warning(paste0("No significant autocorrelations found for ", sensor_names[i],". Maybe check max_pvalue."))
+    } else {
+      utils::write.csv(
+        var,
+        file.path(
+          envrmt$path_statistics,
+          paste0(
+            sensor_names[i],
+            "_delect.csv"
+          )
+        )
+      )
+    }
   } # end corlist-loop
 
 message(
   paste0(
-    "Calculated autocorrelations for these sensors [",
+    "Done with finding autocorrelations for these sensors [",
     sensor_names,
     "]."
     )
   )
+
 saveRDS(
   sensor_names,
   file.path(

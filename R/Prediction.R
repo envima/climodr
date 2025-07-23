@@ -87,15 +87,14 @@
 #'            doParallel = FALSE)
 #'
 #' # Make predictions
-#' climpred(envrmt = envrmt,
-#'          method = "monthly",
-#'          metric = "accuracy",
-#'          mnote = "normal",
-#'          AOA = TRUE)
+#' results <- climpred(envrmt = envrmt,
+#'                     method = "monthly",
+#'                     metric = "Nrmse",
+#'                     mnote = "normal",
+#'                     AOA = TRUE)
 #'
-#' predlist <- list.files(envrmt$path_predictions,
-#'                        pattern = ".tif")
-#' head(predlist)
+#' results$Prediction
+#' results$Validation
 #' }
 #'
 
@@ -105,6 +104,12 @@ climpred <- function(
     metric = "accuracy",
     mnote,
     AOA = TRUE){
+
+  # create list for results and later function output
+  results <- list()
+  val <- data.frame(model_name = character(),
+                    RMSE = integer(),
+                    SD = integer())
 
   # create a list with all raster images
   tiff_list <- list.files(
@@ -147,6 +152,7 @@ climpred <- function(
             )]
 
   dates <- unique(eval_df[, 1])
+
   for (i in 1:length(dates)){
     mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
     ifelse(
@@ -188,6 +194,24 @@ climpred <- function(
       )
     )
 
+    # Read testing data
+    test <- utils::read.csv(
+      file.path(
+        envrmt$path_tfinal,
+        paste0(
+          dates[i],
+          "_",
+          mnote,
+          "_",
+          mod_df[i, ]$sensor,
+          "_testingDat.csv"
+          )
+        )
+      )
+    test <- terra::vect(test,
+                        geom = c("x", "y"),
+                        crs = terra::crs(raster))
+
     message(
       paste0(
         "Making ",
@@ -205,6 +229,7 @@ climpred <- function(
       mod,
       na.rm = TRUE
       )
+
     names(pred) <- modname
     terra::writeRaster(
       pred,
@@ -218,7 +243,21 @@ climpred <- function(
       overwrite = TRUE
     )
 
+    # calculate validation
+    ext <- terra::extract(pred,
+                          test)
+
+    # now, fill up the validation metrics
+    ext$sensor <- terra::values(test)[mod_df[i, ]$sensor][,1]
+    names(ext) <- c("ID", "Pred", "Obsv")
+
+    val[i,] <- c(modname,
+                 round(sqrt(mean((ext$Obsv - ext$Pred)^2)), 5),
+                 round(sqrt(sum((ext$Obsv - ext$Pred)^2)/(nrow(ext) - 1)), 5)
+                 )
+
     if (isTRUE(AOA)) try({
+      message("Calculating the Area of Applicability.")
       suppressWarnings(
         suppressMessages(
           aoa <- CAST::aoa(
@@ -226,6 +265,12 @@ climpred <- function(
             model = mod)
         )
       )
+
+      # Print percentage of non applicable areas
+      pct <- round(100 * terra::freq(aoa$AOA)$count[1] / sum(terra::freq(aoa$AOA)$count), 1)
+      message(paste0("Relative cover of non applicable area in study area for\n", modname, ": ", pct, "%"))
+
+      # Save AOA
       names(aoa$AOA) <- paste0(modname, "_aoa")
       terra::writeRaster(
         aoa$AOA,
@@ -241,14 +286,22 @@ climpred <- function(
     })
   } # end i loop
 
+  # write Validation
+  ## create data frame with best models and metrics
   for (i in 1:nrow(mod_df)){
     mod_df$variables[[i]] <- paste(
       mod_df$variables[[i]],
       collapse = ", "
       )
   }
+
+  mod_df[, 3:5] <- round(mod_df[, 3:5], 5)
+  mod_df <- apply(mod_df, c(1, 2), as.character)
   mod_df <- data.frame(mod_df)
-  mod_df <- apply(mod_df, 2, as.character)
+
+
+  results$Prediction <- mod_df
+  results$Validtation <- val
 
   utils::write.csv(
     mod_df,
@@ -261,4 +314,18 @@ climpred <- function(
     ),
     row.names = FALSE
   )
+
+  utils::write.csv(
+    val,
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_validation.csv"
+      )
+    ),
+    row.names = FALSE
+  )
+
+  return(results)
 } # end function loop

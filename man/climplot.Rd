@@ -110,6 +110,7 @@ calc.model(envrmt = envrmt,
 # Make predictions
 climpred(envrmt = envrmt,
          method = "monthly",
+         metric = "Nrmse",
          mnote = "normal",
          AOA = TRUE)
 
