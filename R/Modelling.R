@@ -229,7 +229,7 @@ calc.model <- function(
                                                           p = p,
                                                           list = FALSE)
         } else {
-          partition_indexes <- test
+          partition_indexes <- c(1:nrow(data))[-test]
         }
 
         trainingDat <- data[partition_indexes, ]

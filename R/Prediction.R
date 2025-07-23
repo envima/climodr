@@ -301,7 +301,7 @@ climpred <- function(
 
 
   results$Prediction <- mod_df
-  results$Validtation <- val
+  results$Validation <- val
 
   utils::write.csv(
     mod_df,
