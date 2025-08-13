@@ -42,7 +42,7 @@ This example will create climate maps for our climate sensor TA_200, which is th
 
 # Getting Started with climodr
 
-The Idea of climodr is, to speed up climate modelling processes and make them 
+The Idea of [climodr](https://cran.r-project.org/web/packages/climodr/index.html) is, to speed up climate modelling processes and make them 
 easier to use. The package foresees that one needs to store relevant input data 
 into one folder structure and the package does the rest using the example 
 workflow provided in this vignette.\ 
@@ -77,9 +77,6 @@ devtools::install_github(
   dependencies = TRUE,
   build_vignettes = TRUE)
 ```
-
-Nice to add:
-Link to the help-pages on CRAN, once package is published
 
 ## How to setup climodr
 
