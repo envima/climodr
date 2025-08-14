@@ -6,6 +6,7 @@
 \usage{
 fin.csv(
   envrmt = .GlobalEnv$envrmt,
+  x = NULL,
   method = "monthly",
   crs = NULL,
   save_output = TRUE,
@@ -14,6 +15,8 @@ fin.csv(
 }
 \arguments{
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+
+\item{x}{Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.}
 
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 

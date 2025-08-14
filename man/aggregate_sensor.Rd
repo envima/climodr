@@ -4,7 +4,14 @@
 \alias{aggregate_sensor}
 \title{Aggregate Sensor}
 \usage{
-aggregate_sensor(data, sensors, station_ids, min_entries, coords = NULL)
+aggregate_sensor(
+  data,
+  sensors,
+  station_ids,
+  time_column,
+  min_entries,
+  coords = NULL
+)
 }
 \arguments{
 \item{data}{climate station data used to be aggregated}
@@ -12,6 +19,8 @@ aggregate_sensor(data, sensors, station_ids, min_entries, coords = NULL)
 \item{sensors}{character. Column names of your sensor columns.}
 
 \item{station_ids}{character. Column name of your Climate Station IDs.}
+
+\item{time_column}{character. The name of the time column in your climate station data.}
 
 \item{min_entries}{minimum entries a time interval must have to be validly aggregated (e.g. 18 days for a monthly aggregation)}
 

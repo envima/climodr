@@ -645,6 +645,7 @@ spat.csv <- function(envrmt = .GlobalEnv$envrmt,
 #' and extracted raster data (predictor values). The data is ready to be used for modelling.
 #'
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
+#' @param x Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.
 #' @param method character. Either "daily", monthly" or "annual". Also depends on the available data.
 #' @param save_output logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 #' Otherwise the output will be saved in the temporary directory. Default: FALSE.
@@ -706,20 +707,33 @@ spat.csv <- function(envrmt = .GlobalEnv$envrmt,
 #'
 
 fin.csv <- function(envrmt = .GlobalEnv$envrmt,
+                    x = NULL,
                     method = "monthly",
                     crs = NULL,
                     save_output = TRUE,
                     ...){
 
-  if (method == "monthly"){
-    data_o <- utils::read.csv(
-      file.path(
-        envrmt$path_tworkflow,
-        "spat_monthly_means.csv"
+  if(!is.null(x)){
+    data_o <- x
+  } else {
+    if (method == "monthly"){
+      data_o <- utils::read.csv(
+        file.path(
+          envrmt$path_tworkflow,
+          "spat_monthly_means.csv"
         )
       )
-    data_o$ID <- seq(1:nrow(data_o))
+    }
+    try(
+      data_o <- utils::read.csv(file.path(
+        envrmt$path_tworkflow,
+        "Aggregated_Climate_Station_Data.csv"
+      ))
+    )
   }
+
+
+  data_o$ID <- seq(1:nrow(data_o))
 
   all_files_in_distribution <- list.files(
     path = file.path(envrmt$path_rfinal),

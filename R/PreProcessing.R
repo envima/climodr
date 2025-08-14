@@ -146,6 +146,21 @@ prepClimateStations <- function(envrmt = .GlobalEnv$envrmt,
   return(data_fin)
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+# ------------------------- Utility functions ------------------------------- #
+# --------------------------------------------------------------------------- #
+
 #' Read climate station data
 #'
 #' Readable climate station data for now: .csv, .txt, .gpkg, .shp
@@ -353,3 +368,4 @@ splitTime <- function(data, time_column, smallest_interval){
   data_split <- cbind(data[, 1:tc], times, data[(tc+1):ncol(data)])
   return(data_split)
 }
+
