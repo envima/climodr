@@ -190,12 +190,12 @@ calc.model <- function(
         if (!is.null(seed)){set.seed(seed)}
 
 ## Autocorellation Condition ------------------------------------------------ #
-        sensor_names <- readRDS(
-          file.path(
-            envrmt$path_tmp,
-            "sensor_names.rds"
-          )
-        )
+        sensor_path <- file.path(envrmt$path_tmp, "sensor_names.rds")
+        if(file.exists(sensor_path)){
+          sensor_names <- readRDS()
+        } else {
+          sensor_names <- names(data_o)[climresp]
+        }
 
         if(autocorrelation == "TRUE"){
           # talk to the user
