@@ -768,11 +768,7 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
     for (i in 1:length(sat_paths)){
       month <- as.character(
         stringr::str_sub(
-          gsub(
-            ".*?([0-9]+).*",
-            "\\1",
-            sat_paths[i]
-            ),
+          gsub(".*?([0-9]+).*", "\\1", sat_paths[i]),
           5, 6)
         )
       tiff <- terra::rast(
@@ -782,7 +778,7 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
           )
         )
       data_sub <- data_o[
-        which(data_o$month == as.numeric(month)),]
+        which(as.numeric(data_o$month) == as.numeric(month)),]
 
       extr <- terra::extract(
         tiff,
