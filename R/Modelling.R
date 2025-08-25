@@ -4,6 +4,8 @@
 #'
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param method character. Time period of your desired model. Default: "monthly"
+#' @param station_ids character. Name of your Station_ID Column. Default = "plot"
+#' @param time_column character. Name of your datetime-column. Default = "datetime"
 #' @param timespan numeric. Vector or single input. Should contain all years to
 #'                 be modeled. The years have to be the same format as in the
 #'                 tabular data.
@@ -119,6 +121,8 @@
 calc.model <- function(
     envrmt = .GlobalEnv$envrmt,
     method = "monthly",
+    station_ids = "plot",
+    time_column = "datetime",
     timespan,
     climresp,
     classifier = c("rf", "pls", "lm", "glm"),
@@ -242,7 +246,7 @@ calc.model <- function(
           if (f == "LLO"){
             fold <- CAST::CreateSpacetimeFolds(
               trainingDat,
-              spacevar = "plot"
+              spacevar = station_ids
               )
             # talk to the user
             message(
@@ -255,7 +259,7 @@ calc.model <- function(
           if (f == "LTO"){
             fold <- CAST::CreateSpacetimeFolds(
               trainingDat,
-              timevar = "datetime"
+              timevar = time_column
               )
             # talk to the user
             message(
@@ -268,8 +272,8 @@ calc.model <- function(
           if (f == "LLTO"){
             fold <- CAST::CreateSpacetimeFolds(
               trainingDat,
-              timevar = "datetime",
-              spacevar = "plot"
+              timevar = time_column,
+              spacevar = station_ids
             )
             # talk to the user
             message(
