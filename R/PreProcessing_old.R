@@ -723,13 +723,15 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
           "spat_monthly_means.csv"
         )
       )
+    } else {
+      try(
+        data_o <- utils::read.csv(file.path(
+          envrmt$path_tworkflow,
+          "Aggregated_Climate_Station_Data.csv"
+        )),
+        silent = TRUE
+      )
     }
-    try(
-      data_o <- utils::read.csv(file.path(
-        envrmt$path_tworkflow,
-        "Aggregated_Climate_Station_Data.csv"
-      ))
-    )
   }
 
 
@@ -761,7 +763,7 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
     extr_total <- data.frame()
 
     for (i in 1:length(sat_paths)){
-      month <- as.numeric(
+      month <- as.character(
         stringr::str_sub(
           gsub(
             ".*?([0-9]+).*",
@@ -777,7 +779,7 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
           )
         )
       data_sub <- data_o[
-        which(data_o$month == month),]
+        which(data_o$month == as.numeric(month)),]
 
       extr <- terra::extract(
         tiff,
@@ -830,17 +832,17 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
       }
     }
 
-    data$ID <- seq(1:length(data[,1]));
+    data$ID <- seq(1:length(data[,1]))
     extr <- terra::extract(tiff_stack,
                            data.frame(x = data$lon,
                                       y = data$lat)
-    );
-    data <- merge(data, extr, by = "ID");
-    data$ID <- NULL;
-    data$datetime <- NULL;
+    )
+    data <- merge(data, extr, by = "ID")
+    data$ID <- NULL
+    data$datetime <- NULL
     data_n <- tidyr::drop_na(data)
 
-    utils::write.csv(data_n, file.path(envrmt$path_tfinal, "final_anualy.csv"), row.names = FALSE);
+    utils::write.csv(data_n, file.path(envrmt$path_tfinal, "final_anualy.csv"), row.names = FALSE)
     return(data)
-  }; # end anual loop
+  } # end anual loop
 } # end function

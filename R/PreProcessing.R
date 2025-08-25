@@ -3,16 +3,16 @@
 #' Crops input data to the extent size and removes NA-Values
 #'
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
-#' @param x dataframe or path. A data frame containing climate station data or one of the Input paths of the envrmt (either envrmt$path_tabular or envrmt$path_vector)
+#' @param x dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are `"envrmt$path_tabular"` or `"envrmt$path_vector"`. The 'envrmt'-variable itself has to be the same as it is called in your global environment.
 #' @param pattern character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.
 #' @param metadata vector. 5 Entries. Name of your metadata-file in your Input/dep folder, the column name for the climate stations, the name of your X and Y columns and the coordinate reference system. (e.g. c("metadata.csv", "plotID", "lon", "lat", "+proj=longlat +datum=WGS84"))
 #' @param time_column character. The name of the time column in your climate station data.
 #' @param time_format character. How is your time column formated? (e.g. YYYY-MM-DD)
 #' @param station_ids character. The name of the station id column of your climate station data.
 #' @param sensors vector. Containing all column names of each sensor in your climate station data.
-#' @param aggregation_interval character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()].
-#' @param start character. When do you want your climate station data to start?
-#' @param end character. When do you want your climate station data to end?
+#' @param aggregation_interval character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()]. Valid intervals are `second`, `minute`, `hour`, `day`, `week`, `month`, `bimonth`, `quarter`, `season`, `halfyear` and `year`.
+#' @param start character. When do you want your climate station data to start? Has to be exactly the same format as your input climate station data.
+#' @param end character. When do you want your climate station data to end? Has to be exactly the same format as your input cliamte station data.
 #' @param crs character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif" in Input/dep.
 #' @param sep character. Which seperator is used for the columns in the climate station data? (Default = ",")
 #' @param dec character. Which symbol is used to mark decimal digits? (Default = ".")
@@ -64,15 +64,18 @@ prepClimateStations <- function(envrmt = .GlobalEnv$envrmt,
                                 dec = ".",
                                 save_output = TRUE){
   # start reading climate stations
-  if(!is.data.frame(x) & x != envrmt$path_tabular & x != envrmt$path_vector){
+  if(!is.data.frame(x) & !is.character(x)){
     stop("Something is wrong with x. Make sure it is either a data frame with climate station data or a input destination of the climodr environment made with envi.create().")
   }
   # either take data frame
-  if(x != envrmt$path_tabular & x != envrmt$path_vector){
+  if(!is.character(x)){
     data_o <- x
 
   # or read all possible climate stations from folders
   } else {
+    if(x != envrmt$path_tabular & x != envrmt$path_vector){
+      stop("If x is envrionment path object, it must either be `your_environment`$tabular or `your_environment`$vector. Stopping.")
+    }
     all_stations <- list.files(x, pattern = pattern)
     data_o <- readClimateData(station_list = all_stations,
                               folder = x,
@@ -86,19 +89,27 @@ prepClimateStations <- function(envrmt = .GlobalEnv$envrmt,
   }
 
   # time step aggregation of climate data
-  data_o[time_column] <- as.POSIXct(as.vector(unlist(data_o[time_column])), format = time_format)
+  data_o[time_column] <- as.POSIXct(data_o[, time_column],
+                                    tz = Sys.timezone(location = TRUE),
+                                    format = time_format)
 
   # subset for start and end
   if(!is.null(start) & !is.null(end)){
-    time_lim <- as.POSIXct(c(start, end), format = time_format)
+    time_lim <- as.POSIXct(c(start, end),
+                           tz = Sys.timezone(location = TRUE),
+                           format = time_format)
     data_o <- subset(data_o, time_lim[1] <= data_o[, time_column] & data_o[, time_column] <= time_lim[2])
   } else {
     if(!is.null(start) & is.null(end)){
-      time_lim <- as.POSIXct(start, format = time_format)
+      time_lim <- as.POSIXct(start,
+                             tz = Sys.timezone(location = TRUE),
+                             format = time_format)
       data_o <- subset(data_o, time_lim <= data_o[, time_column])
     }
     if(is.null(start) & !is.null(end)){
-      time_lim <- as.POSIXct(end, format = time_format)
+      time_lim <- as.POSIXct(end,
+                             tz = Sys.timezone(location = TRUE),
+                             format = time_format)
       data_o <- subset(data_o, data_o[, time_column] <= time_lim)
     }
   } # end subset for start and end
@@ -207,6 +218,7 @@ readClimateData <- function(station_list,
 
   # Scan input folder for climate stations
   formats <- sub(".*[.]", "", station_list)
+  station_list <- station_list[which(formats %in% c("csv", "txt", "gpkg", "shp"))]
   formats <- formats[which(formats %in% c("csv", "txt", "gpkg", "shp"))]
 
   # warn the user if scanning finds more then one file type.
