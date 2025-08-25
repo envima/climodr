@@ -119,15 +119,16 @@ climpred <- function(
   )
 
   # read dgm
-  dgm <- terra::rast(
-    file.path(
-      envrmt$path_rfinal,
-      grep(
-        pattern = "_dgm_",
-        tiff_list,
-        value = TRUE)
-      )
-    )
+  try(dgm <- terra::rast(
+        file.path(
+          envrmt$path_rfinal,
+            grep(
+              pattern = "_dgm_",
+              tiff_list,
+              value = TRUE)
+          )
+        ),
+      silent = TRUE)
 
 # read eval_df
   eval_df <- readRDS(
@@ -173,7 +174,9 @@ climpred <- function(
         )
       )
     )
-    terra::add(raster) <- dgm
+    if(exists("dgm")){
+      terra::add(raster) <- dgm
+    }
 
     modname <- paste0(
       mnote,
