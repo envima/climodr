@@ -321,6 +321,9 @@ aggregate_sensor <- function(data, sensors, station_ids, time_column, min_entrie
       counter <- counter + nrow(data_agg)
     }
   }
+
+  product <- Filter(function(x)!all(is.na(x)), product)
+
   return(product)
 }
 

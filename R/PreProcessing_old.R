@@ -754,12 +754,15 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
     ) # Select dgm
 
   if (method == "monthly"){
-    dgm <- terra::rast(
-      file.path(
-        envrmt$path_rfinal,
-        dgm_path
+    if(file.exists(file.path(envrmt$path_rfinal, dgm_path))){
+      dgm <- terra::rast(
+        file.path(
+          envrmt$path_rfinal,
+          dgm_path
         )
       )
+    }
+
     extr_total <- data.frame()
 
     for (i in 1:length(sat_paths)){
@@ -790,18 +793,20 @@ fin.csv <- function(envrmt = .GlobalEnv$envrmt,
       extr$ID <- data_sub$ID
       extr_total <- rbind(extr_total, extr)
     } # end i loop
+    if(exists(dgm)){
+      extr_dgm <- terra::extract(
+        dgm,
+        data.frame(x = data_o$x,
+                   y = data_o$y
+        )
+      )
+      extr <- merge(
+        extr_dgm,
+        extr_total,
+        by = "ID"
+      )
+    }
 
-    extr_dgm <- terra::extract(
-      dgm,
-      data.frame(x = data_o$x,
-                 y = data_o$y
-                 )
-      )
-    extr <- merge(
-      extr_dgm,
-      extr_total,
-      by = "ID"
-      )
     data <- merge(
       data_o,
       extr,
