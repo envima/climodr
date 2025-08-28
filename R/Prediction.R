@@ -146,9 +146,9 @@ climpred <- function(
     stop("Your 'metric' argument has to consist of either 'accuracy', 'Nrmse' or 'Rsqrd'.\n Stopped execution, no model could be choosen with missing metric.")
   }
 
-  expr <- c(expression(mod_date$accuracy == max(mod_date$accuracy)),
-            expression(mod_date$Nrmse == min(mod_date$Nrmse)),
-            expression(mod_date$Rsqrd == min(mod_date$Rsqrd)))[which(
+  expr <- c(expression(mod_ds$accuracy == max(mod_ds$accuracy)),
+            expression(mod_ds$Nrmse == min(mod_ds$Nrmse)),
+            expression(mod_ds$Rsqrd == min(mod_ds$Rsqrd)))[which(
               metric == c("accuracy", "Nrmse", "Rsqrd")
             )]
 
@@ -180,10 +180,8 @@ climpred <- function(
 
       ifelse(
         i == 1 & j == 1,
-        mod_df <- mod_ds[
-          which(eval(expr)), ],
-        mod_df[i, ] <- mod_ds[
-          which(eval(expr)), ]
+        mod_df <- mod_ds[which(eval(expr)), ],
+        mod_df[i, ] <- mod_ds[which(eval(expr)), ]
       )
 
 
