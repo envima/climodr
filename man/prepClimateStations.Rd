@@ -25,7 +25,7 @@ prepClimateStations(
 \arguments{
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 
-\item{x}{dataframe or path. A data frame containing climate station data or one of the Input paths of the envrmt (either envrmt$path_tabular or envrmt$path_vector)}
+\item{x}{dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are `"envrmt$path_tabular"` or `"envrmt$path_vector"`. The 'envrmt'-variable itself has to be the same as it is called in your global environment.}
 
 \item{pattern}{character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.}
 
@@ -39,11 +39,11 @@ prepClimateStations(
 
 \item{sensors}{vector. Containing all column names of each sensor in your climate station data.}
 
-\item{aggregation_interval}{character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()].}
+\item{aggregation_interval}{character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()]. Valid intervals are `second`, `minute`, `hour`, `day`, `week`, `month`, `bimonth`, `quarter`, `season`, `halfyear` and `year`.}
 
-\item{start}{character. When do you want your climate station data to start?}
+\item{start}{character. When do you want your climate station data to start? Has to be exactly the same format as your input climate station data.}
 
-\item{end}{character. When do you want your climate station data to end?}
+\item{end}{character. When do you want your climate station data to end? Has to be exactly the same format as your input cliamte station data.}
 
 \item{crs}{character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif" in Input/dep.}
 

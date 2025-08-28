@@ -7,6 +7,8 @@
 calc.model(
   envrmt = .GlobalEnv$envrmt,
   method = "monthly",
+  station_ids = "plot",
+  time_column = "datetime",
   timespan,
   climresp,
   classifier = c("rf", "pls", "lm", "glm"),
@@ -28,6 +30,10 @@ calc.model(
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 
 \item{method}{character. Time period of your desired model. Default: "monthly"}
+
+\item{station_ids}{character. Name of your Station_ID Column. Default = "plot"}
+
+\item{time_column}{character. Name of your datetime-column. Default = "datetime"}
 
 \item{timespan}{numeric. Vector or single input. Should contain all years to
 be modeled. The years have to be the same format as in the

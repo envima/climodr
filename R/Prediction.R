@@ -153,17 +153,12 @@ climpred <- function(
             )]
 
   dates <- unique(eval_df[, 1])
+  sensors <- unique(eval_df[, 6])
 
   for (i in 1:length(dates)){
     mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
-    ifelse(
-      i == 1,
-      mod_df <- mod_date[
-        which(eval(expr)), ],
-      mod_df[i, ] <- mod_date[
-        which(eval(expr)), ]
-      )
-# read fitting raster
+
+    # read fitting raster
     raster <- terra::rast(
       file.path(
         envrmt$path_rfinal,
@@ -174,119 +169,134 @@ climpred <- function(
         )
       )
     )
+
     if(exists("dgm")){
       terra::add(raster) <- dgm
     }
 
-    modname <- paste0(
-      mnote,
-      "_",
-      mod_df[i, ]$sensor,
-      "_",
-      dates[i],
-      "_",
-      mod_df[i, ]$modeltype,
-      "_",
-      mod_df[i, ]$classifier
-    )
-    mod <- readRDS(
-      file.path(
-        envrmt$path_models,
-        paste0(modname,
-               "_ffs_model.rds")
-      )
-    )
+    # sensor loop
+    for (j in 1:length(sensors)){
+      mod_ds <- mod_date[which(mod_date[, 6] == sensors[j]), ]
 
-    # Read testing data
-    test <- utils::read.csv(
-      file.path(
-        envrmt$path_tfinal,
-        paste0(
-          dates[i],
-          "_",
-          mnote,
-          "_",
-          mod_df[i, ]$sensor,
-          "_testingDat.csv"
-          )
-        )
+      ifelse(
+        i == 1 & j == 1,
+        mod_df <- mod_ds[
+          which(eval(expr)), ],
+        mod_df[i, ] <- mod_ds[
+          which(eval(expr)), ]
       )
-    test <- terra::vect(test,
-                        geom = c("x", "y"),
-                        crs = terra::crs(raster))
 
-    message(
-      paste0(
-        "Making ",
+
+      modname <- paste0(
+        mnote,
+        "_",
         mod_df[i, ]$sensor,
-        " ",
-        mod_df[i, ]$classifier,
-        "-prediction for ",
+        "_",
         dates[i],
-        "."
-        )
+        "_",
+        mod_df[i, ]$modeltype,
+        "_",
+        mod_df[i, ]$classifier
       )
-
-    pred <- terra::predict(
-      raster,
-      mod,
-      na.rm = TRUE
-      )
-
-    names(pred) <- modname
-    terra::writeRaster(
-      pred,
-      file.path(
-        envrmt$path_predictions,
-        paste0(
-          modname,
-          "_prediction.tif"
-          )
-        ),
-      overwrite = TRUE
-    )
-
-    # calculate validation
-    ext <- terra::extract(pred,
-                          test)
-
-    # now, fill up the validation metrics
-    ext$sensor <- terra::values(test)[mod_df[i, ]$sensor][,1]
-    names(ext) <- c("ID", "Pred", "Obsv")
-
-    val[i,] <- c(modname,
-                 round(sqrt(mean((ext$Obsv - ext$Pred)^2)), 5),
-                 round(sqrt(sum((ext$Obsv - ext$Pred)^2)/(nrow(ext) - 1)), 5)
-                 )
-
-    if (isTRUE(AOA)) try({
-      message("Calculating the Area of Applicability.")
-      suppressWarnings(
-        suppressMessages(
-          aoa <- CAST::aoa(
-            newdata = raster,
-            model = mod)
-        )
-      )
-
-      # Print percentage of non applicable areas
-      pct <- round(100 * terra::freq(aoa$AOA)$count[1] / sum(terra::freq(aoa$AOA)$count), 1)
-      message(paste0("Relative cover of non applicable area in study area for\n", modname, ": ", pct, "%"))
-
-      # Save AOA
-      names(aoa$AOA) <- paste0(modname, "_aoa")
-      terra::writeRaster(
-        aoa$AOA,
+      mod <- readRDS(
         file.path(
-          envrmt$path_aoa,
+          envrmt$path_models,
+          paste0(modname,
+                 "_ffs_model.rds")
+        )
+      )
+
+      # Read testing data
+      test <- utils::read.csv(
+        file.path(
+          envrmt$path_tfinal,
+          paste0(
+            dates[i],
+            "_",
+            mnote,
+            "_",
+            mod_df[i, ]$sensor,
+            "_testingDat.csv"
+          )
+        )
+      )
+      test <- terra::vect(test,
+                          geom = c("x", "y"),
+                          crs = terra::crs(raster))
+
+      message(
+        paste0(
+          "Making ",
+          mod_df[i, ]$sensor,
+          " ",
+          mod_df[i, ]$classifier,
+          "-prediction for ",
+          dates[i],
+          "."
+        )
+      )
+
+      pred <- terra::predict(
+        raster,
+        mod,
+        na.rm = TRUE
+      )
+
+      names(pred) <- modname
+      terra::writeRaster(
+        pred,
+        file.path(
+          envrmt$path_predictions,
           paste0(
             modname,
-            "_aoa.tif"
+            "_prediction.tif"
           )
         ),
         overwrite = TRUE
       )
-    })
+
+      # calculate validation
+      ext <- terra::extract(pred,
+                            test)
+
+      # now, fill up the validation metrics
+      ext$sensor <- terra::values(test)[mod_df[i, ]$sensor][,1]
+      names(ext) <- c("ID", "Pred", "Obsv")
+
+      val[i,] <- c(modname,
+                   round(sqrt(mean((ext$Obsv - ext$Pred)^2)), 5),
+                   round(sqrt(sum((ext$Obsv - ext$Pred)^2)/(nrow(ext) - 1)), 5)
+      )
+
+      if (isTRUE(AOA)) try({
+        message("Calculating the Area of Applicability.")
+        suppressWarnings(
+          suppressMessages(
+            aoa <- CAST::aoa(
+              newdata = raster,
+              model = mod)
+          )
+        )
+
+        # Print percentage of non applicable areas
+        pct <- round(100 * terra::freq(aoa$AOA)$count[1] / sum(terra::freq(aoa$AOA)$count), 1)
+        message(paste0("Relative cover of non applicable area in study area for\n", modname, ": ", pct, "%"))
+
+        # Save AOA
+        names(aoa$AOA) <- paste0(modname, "_aoa")
+        terra::writeRaster(
+          aoa$AOA,
+          file.path(
+            envrmt$path_aoa,
+            paste0(
+              modname,
+              "_aoa.tif"
+            )
+          ),
+          overwrite = TRUE
+        )
+      })
+    } # end sensor loop
   } # end i loop
 
   # write Validation

@@ -196,7 +196,7 @@ calc.model <- function(
 ## Autocorellation Condition ------------------------------------------------ #
         sensor_path <- file.path(envrmt$path_tmp, "sensor_names.rds")
         if(file.exists(sensor_path)){
-          sensor_names <- readRDS()
+          sensor_names <- readRDS(sensor_path)
         } else {
           sensor_names <- names(data_o)[climresp]
         }
