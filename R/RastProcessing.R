@@ -8,6 +8,9 @@
 #' @param crs Coordinate reference system Used to crop all images in folder_path.
 #' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
 #' @param mask SpatVector or filename. Assign a polygon to mask your raster files. Either add file from global environment or the filename of your mask in Input/vector. Potentially reduces calculation times, as fewer pixels are contained in rasters after masking.
+#' @param add_spectral_indices logical. Should spectral indices be calculated from input raster bands?
+#' @param bands vector. If spectral indices should be calculated, this vector should contain the names of your required spectral bands. The order in the vector is fixed like this: c("blue", "green", "red", "nir", "swir"). Just switch out names in the vector with your equivalent band names.
+#' @param output charakter. Either "single" or "bundle". "single" saves your dated raster data separately per date in Output/rfinal. "bundle" marks the corresponding layers with a time stamp and safes the dated rasters in a single file. Works more efficiently than "single", as long as there are more than one dates.
 #' @param ...    arguments passed down from other functions.
 #'
 #' @return SpatRaster-Stack. Also saved to /workflow/rworkflow
@@ -29,8 +32,7 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
                            mask = NULL,
                            add_spectral_indices = FALSE,
                            bands = NULL,
-                           save_output = "Bundle",
-                           filename = NULL){
+                           output = "Bundle"){
   # first, list contents of raster folder and filter for viable raster formarts
   raster_files <- list.files(envrmt$path_raster)
 
@@ -75,57 +77,61 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
 
   # First, read rasters without date
   general_rasters <- raster_files[which(is.na(dates))]
-  for(i in general_rasters){
-    gr <- terra::rast(file.path(envrmt$path_raster, i))
-    gr <- terra::project(gr, crs)
-    ifelse(is.null(mask),
-           gr <- terra::crop(gr, ext),
-           gr <- terra::mask(gr, mask))
-    ifelse(i == general_rasters[1],
-           grs <- gr,
-           grs <- c(grs, gr))
-    remove(gr)
+  if(length(general_rasters) > 0){
+    for(i in general_rasters){
+      gr <- terra::rast(file.path(envrmt$path_raster, i))
+      gr <- terra::project(gr, crs)
+      ifelse(is.null(mask),
+             gr <- terra::crop(gr, ext),
+             gr <- terra::mask(gr, mask))
+      ifelse(i == general_rasters[1],
+             grs <- gr,
+             grs <- c(grs, gr))
+      remove(gr)
+    }
+    terra::writeRaster(grs, file.path(envrmt$path_rfinal, "undated_rasters.tif"))
   }
-  terra::writeRaster(grs, file.path(envrmt$path_rfinal, "undated_rasters.tif"))
 
   # Then, read rasters with date
   dated_rasters <- raster_files[which(!is.na(dates))]
-  for (i in 1:length(unique(dates_o))){
-    read_rasters <- paste(envrmt$path_raster, dated_rasters[which(unique(dates_o)[i] %in% stringr::str_sub(dated_rasters, datepos[1], datepos[2]))], sep = "/")
-    for (j in read_rasters){
-      dr <- terra::project(terra::rast(j), crs)
-      ifelse(is.null(mask),
-             dr <- terra::crop(dr, ext),
-             dr <- terra::mask(dr, mask))
-      ifelse(j == read_rasters[i],
-             drs <- dr,
-             drs <- c(drs, dr))
-      remove(dr)
-    } # end reading dated rasters
-    if(add_spectral_indices & !is.null(bands)){
-      drs <- addSpectralIndices(x = drs,
-                                bands = bands,
-                                indices = "all",
-                                add_to_x = TRUE,
-                                stop_process = FALSE,
-                                outliers = "cap")
-    }
-    terra::time(drs) <- rep(dates[which(!is.na(dates))][i], terra::nlyr(drs))
+  if(length(dated_rasters) > 0){
+    for (i in 1:length(unique(dates_o))){
+      read_rasters <- paste(envrmt$path_raster, dated_rasters[which(unique(dates_o)[i] %in% stringr::str_sub(dated_rasters, datepos[1], datepos[2]))], sep = "/")
+      for (j in read_rasters){
+        dr <- terra::project(terra::rast(j), crs)
+        ifelse(is.null(mask),
+               dr <- terra::crop(dr, ext),
+               dr <- terra::mask(dr, mask))
+        ifelse(j == read_rasters[i],
+               drs <- dr,
+               drs <- c(drs, dr))
+        remove(dr)
+      } # end reading dated rasters
+      if(add_spectral_indices & !is.null(bands)){
+        drs <- addSpectralIndices(x = drs,
+                                  bands = bands,
+                                  indices = "all",
+                                  add_to_x = TRUE,
+                                  stop_process = FALSE,
+                                  outliers = "cap")
+      }
+      terra::time(drs) <- rep(dates[which(!is.na(dates))][i], terra::nlyr(drs))
 
-    # save files according to input argument
-    if(output == "single"){
-      outname <- paste(unique(dates_o)[i], dateformat, ("single_raster.tif"), sep = "__")
-      terra::writeRaster(drs, file.path(envrmt$path_rworkflow, outname), overwrite = TRUE)
-      ifelse(i == 1,
-             outfile <- outname,
-             outfile[i] <- outname)
-    }
-    if(output == "bundle"){
-      ifelse(i == 1,
-             outfile <- drs,
-             terra::add(outfile) <- drs)
-    }
-  } # end i loop
+      # save files according to input argument
+      if(output == "Single"){
+        outname <- paste(unique(dates_o)[i], dateformat, ("single_raster.tif"), sep = "__")
+        terra::writeRaster(drs, file.path(envrmt$path_rfinal, outname), overwrite = TRUE)
+        ifelse(i == 1,
+               outfile <- outname,
+               outfile[i] <- outname)
+      }
+      if(output == "Bundle"){
+        ifelse(i == 1,
+               outfile <- drs,
+               terra::add(outfile) <- drs)
+      }
+    } # end i loop
+  }
 
   if(output == "bundle"){
     terra::writeRaster(outfile,
@@ -154,12 +160,12 @@ addSpectralIndices <- function(x,
       if(! all(min < terra::values(Index) & terra::values(Index) < max, na.rm = TRUE)){
         message(paste0("Some cell values for the ", name, " lie outside of the expected range."))
         if (outliers == "cap"){
-          NDVI[NDVI < min] <- min
-          NDVI[NDVI > max] <- max
+          Index[Index < min] <- min
+          Index[Index > max] <- max
         }
         if (outliers == "remove"){
-          NDVI[NDVI < min] <- NA
-          NDVI[NDVI > max] <- NA
+          Index[Index < min] <- NA
+          Index[Index > max] <- NA
         }
       }
       names(Index) <- name

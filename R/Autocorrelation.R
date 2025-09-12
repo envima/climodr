@@ -168,12 +168,12 @@ autocorr <- function(
 # Now with a variable for sensor
   corlist <- list()
   sensor_names <- names(data)[c(1:length(resp))]
-  message(paste0("Finding autocorrelating predictors for these sensors [", sensor_names,"]."))
+  message("Finding autocorrelating predictors for these sensors [", paste(sensor_names, collapse = ", "),"].")
 
   if(length(resp) == 1){
     corlist[[1]] <- lares::corr_var(
       df = data,
-      var = call(sensor_names[1]),
+      var = sensor_names[1],
       max_pvalue = max_pvalue,
       top = 50,
       plot = FALSE)
@@ -181,9 +181,9 @@ autocorr <- function(
     for (i in 1:length(resp)){
       corlist[[i]] <- lares::corr_var(
         df = data,
-        var = call(sensor_names[i]),
+        var = sensor_names[i],
         max_pvalue = max_pvalue,
-        ignore = names(data)[c(1:length(resp)[-i])],
+        ignore = sensor_names[-i],
         top = 50,
         plot = FALSE
       )
@@ -209,13 +209,7 @@ autocorr <- function(
     }
   } # end corlist-loop
 
-message(
-  paste0(
-    "Done with finding autocorrelations for these sensors [",
-    sensor_names,
-    "]."
-    )
-  )
+message("Done with finding autocorrelations for these sensors [",paste(sensor_names, collapse = ", "),"].")
 
 saveRDS(
   sensor_names,

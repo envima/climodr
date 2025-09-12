@@ -384,3 +384,45 @@ splitTime <- function(data, time_column, smallest_interval){
   return(data_split)
 }
 
+# ___________________________________________________________________________ #
+# ___________________________________________________________________________ #
+#' Extraction of Raster data at climate stations
+#'
+#' Extract the raster values of all raster layers from a scene at the station
+#' coordinates at each time stamp. The extracted data will be attached to the
+#' station data so there is a .csv-file with coordinates, sensor data (response values)
+#' and extracted raster data (predictor values). The data is ready to be used for modelling.
+#'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
+#' @param x Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.
+#' @param y SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via [prepRasterData()] in Output/rfinal.
+#' @param input character. Either "single" and "bundle". Depends on what output one has choose. "single" means a SpatRaster that only fits to one date, "bundle" is a SpatRaster contianing layers with time stamps fitting to the climate station data. Default = "bundle".
+#' @param fit_data character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
+#'        - floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
+#'        - ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
+#'        - round: Climate data is matched to the closest data available. (e.g. split between two months.)
+#' @param ...      arguments passed down from other functions.
+#'
+#' @return data.frame
+#' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
+#'
+#' @name extractPredictors
+#' @export extractPredictors
+#'
+#' @examples
+
+extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
+                              x = NULL,
+                              y = NULL,
+                              input = "bundle",
+                              fit_data = "floor"){
+  # Erstens -> Leseloop
+
+  # Zweitens -> Fitting von Dates
+
+  # Drittens -> Extraction-Loop
+
+  # Viertens -> Speicher-Loop
+
+  return()
+}
