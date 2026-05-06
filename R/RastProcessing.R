@@ -32,7 +32,8 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
                            mask = NULL,
                            add_spectral_indices = FALSE,
                            bands = NULL,
-                           output = "Bundle"){
+                           output = "Single",
+                           overwrite = FALSE){
   # first, list contents of raster folder and filter for viable raster formarts
   raster_files <- list.files(envrmt$path_raster)
 
@@ -89,7 +90,7 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
              grs <- c(grs, gr))
       remove(gr)
     }
-    terra::writeRaster(grs, file.path(envrmt$path_rfinal, "undated_rasters.tif"))
+    terra::writeRaster(grs, file.path(envrmt$path_rfinal, "undated_rasters.tif"), overwrite = overwrite)
   }
 
   # Then, read rasters with date
@@ -120,7 +121,7 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
       # save files according to input argument
       if(output == "Single"){
         outname <- paste(unique(dates_o)[i], dateformat, ("single_raster.tif"), sep = "__")
-        terra::writeRaster(drs, file.path(envrmt$path_rfinal, outname), overwrite = TRUE)
+        terra::writeRaster(drs, file.path(envrmt$path_rfinal, outname), overwrite = overwrite)
         ifelse(i == 1,
                outfile <- outname,
                outfile[i] <- outname)
@@ -136,8 +137,9 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
   if(output == "bundle"){
     terra::writeRaster(outfile,
                        file.path(envrmt$path_rfinal, "bundled_rasters.tif"),
-                       overwrite = TRUE)
+                       overwrite = overwrite)
   }
+  write.csv(outfile, file.path(envrmt$path_tmp, "raster_outfile.csv"), row.names = FALSE)
   return(outfile)
 } # end function
 

@@ -158,14 +158,88 @@ prepClimateStations <- function(envrmt = .GlobalEnv$envrmt,
 }
 
 
+# ___________________________________________________________________________ #
+# ___________________________________________________________________________ #
+#' Extraction of Raster data at climate stations
+#'
+#' Extract the raster values of all raster layers from a scene at the station
+#' coordinates at each time stamp. The extracted data will be attached to the
+#' station data so there is a .csv-file with coordinates, sensor data (response values)
+#' and extracted raster data (predictor values). The data is ready to be used for modelling.
+#'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
+#' @param climdata Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.
+#' @param rasters SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via [prepRasterData()] in Output/rfinal.
+#' @param unit character.
+#' @param input character. Either "single" and "bundle". Depends on what output one has choose. "single" means a SpatRaster that only fits to one date, "bundle" is a SpatRaster contianing layers with time stamps fitting to the climate station data. Default = "bundle".
+#' @param fit_data character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
+#'        - floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
+#'        - ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
+#'        - round: Climate data is matched to the closest data available. (e.g. split between two months.)
+#' @param ...      arguments passed down from other functions.
+#'
+#' @return data.frame
+#' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
+#'
+#' @name extractPredictors
+#' @export extractPredictors
+#'
+#' @examples sdfsdf
 
+extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
+                              climdata,
+                              rasters,
+                              unit,
+                              input = "Single",
+                              fit_data = "floor",
+                              save_output = FALSE){
+  # Erstens -> Leseloop
+  if(input == "Single"){
+    rdf <- data.frame(do.call(rbind, strsplit(rasters, "__", fixed = TRUE)))[, c(1,2)]
+    dates <- lubridate::fast_strptime(rdf[,1],
+                                      format = rdf[,2],
+                                      tz = Sys.timezone(location = TRUE));
+  }
+  # Zweitens -> Fitting von Dates
+  if(fit_data == "floor"){climdata$fit1 <- lubridate::floor_date(climdata$datetime, unit = unit)}
+  if(fit_data == "ceiling"){climdata$fit1 <- lubridate::ceiling_date(climdata$datetime, unit = unit)}
+  if(fit_data == "round"){climdata$fit1 <- lubridate::round_date(climdata$datetime, unit = unit)}
 
+  climdata$fit <- unlist(
+    lapply(
+      climdata$fit1, function(x) as.character(dates[which.min(abs(x - dates))])
+      )); climdata$fit1 <- NULL
 
-
-
-
-
-
+  # Drittens -> Extraction-Loop
+  if(file.exists(file.path(envrmt$path_rfinal, "undated_rasters.tif"))){
+    ur <- terra::rast(file.path(envrmt$path_rfinal, "undated_rasters.tif"))
+  }
+  for(i in 1:length(rasterdata)){
+    r <- terra::rast(file.path(envrmt$path_rfinal, rasterdata[i]))
+    if(exists("ur")){
+      terra::add(r) <- ur
+    }
+    sub <- climdata[which(climdata$fit == dates[i]),]
+    extr <- terra::extract(r,
+                           terra::vect(sub,
+                                       geom = c("x", "y"),
+                                       crs = terra::crs(r)),
+                           bind = TRUE); extr$fit <- NULL
+    ifelse(i == 1,
+           out = extr,
+           out = rbind(out, extr))
+  }
+  # Viertens -> Speicher-Loop
+  if(isTRUE(save_output)){
+    terra::writeVector(out,
+                       file.path(envrmt$path_vworkflow, "Climate_Station_predictors.gpkg"),
+                       overwrite = TRUE)
+    write.csv(terra::as.data.frame(out, geom = "WKT"),
+              file.path(envrmt$path_tfinal, "Climate_Station_predictors.csv"),
+              row.names = FALSE)
+  }
+  return(out)
+}
 
 
 
@@ -382,47 +456,4 @@ splitTime <- function(data, time_column, smallest_interval){
   # merge everything together
   data_split <- cbind(data[, 1:tc], times, data[(tc+1):ncol(data)])
   return(data_split)
-}
-
-# ___________________________________________________________________________ #
-# ___________________________________________________________________________ #
-#' Extraction of Raster data at climate stations
-#'
-#' Extract the raster values of all raster layers from a scene at the station
-#' coordinates at each time stamp. The extracted data will be attached to the
-#' station data so there is a .csv-file with coordinates, sensor data (response values)
-#' and extracted raster data (predictor values). The data is ready to be used for modelling.
-#'
-#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
-#' @param x Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.
-#' @param y SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via [prepRasterData()] in Output/rfinal.
-#' @param input character. Either "single" and "bundle". Depends on what output one has choose. "single" means a SpatRaster that only fits to one date, "bundle" is a SpatRaster contianing layers with time stamps fitting to the climate station data. Default = "bundle".
-#' @param fit_data character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
-#'        - floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
-#'        - ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
-#'        - round: Climate data is matched to the closest data available. (e.g. split between two months.)
-#' @param ...      arguments passed down from other functions.
-#'
-#' @return data.frame
-#' @seealso `prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
-#'
-#' @name extractPredictors
-#' @export extractPredictors
-#'
-#' @examples
-
-extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
-                              x = NULL,
-                              y = NULL,
-                              input = "bundle",
-                              fit_data = "floor"){
-  # Erstens -> Leseloop
-
-  # Zweitens -> Fitting von Dates
-
-  # Drittens -> Extraction-Loop
-
-  # Viertens -> Speicher-Loop
-
-  return()
 }
