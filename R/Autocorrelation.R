@@ -73,27 +73,26 @@
 #' }
 #'
 
-autocorr <- function(
-    envrmt = .GlobalEnv$envrmt,
-    method = "monthly",
-    max_pvalue = 0.05,
-    resp,
-    pred,
-    plot.corrplot = TRUE,
-    corrplot = "coef")
-  {
+autocorr <- function(envrmt = .GlobalEnv$envrmt,
+                     max_pvalue = 0.05,
+                     resp,
+                     pred,
+                     plot.corrplot = TRUE,
+                     corrplot = "coef",
+                     method = "monthly"){
 
   #get data from PreProcessing
+  if (file.exists(file.path(envrmt$path_tfinal, "Climate_Station_predictors.csv"))){
   data_o <- utils::read.csv(
-    file.path(
-      envrmt$path_tfinal,
-      paste0(
-        "final_",
-        method,
-        ".csv"
-        )
-      )
-    )
+    file.path(envrmt$path_tfinal, "Climate_Station_predictors.csv"))
+  } else {
+    if (file.exists(file.path(envrmt$path_tfinal, paste0("final_", method, ".csv")))){
+      data_o <- utils::read.csv(
+        file.path(envrmt$path_tfinal, paste0("final_", method, ".csv")))
+    } else {
+      stop("No climate station data was found, make sure it is provided. Check Details for more information.")
+    }
+  }
 
   #subset data
   data <- data_o[ ,c(resp, pred)]

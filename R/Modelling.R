@@ -118,37 +118,46 @@
 #'            autocorrelation = TRUE,
 #'            doParallel = FALSE)
 #' }
-calc.model <- function(
-    envrmt = .GlobalEnv$envrmt,
-    method = "monthly",
-    station_ids = "plot",
-    time_column = "datetime",
-    timespan,
-    climresp,
-    classifier = c("rf", "pls", "lm", "glm"),
-    seed = NULL,
-    test = NULL,
-    p = 0.8,
-    folds = "all",
-    predrows,
-    mnote = NULL,
-    k = NULL,
-    tc_method = "cv",
-    metric = "RMSE",
-    doParallel = FALSE,
-    autocorrelation = FALSE,
-    ...)
-{
-  data_o <- utils::read.csv(
-    file.path(
-      envrmt$path_tfinal,
-      paste0(
-        "final_",
-        method,
-        ".csv"
-        )
-      )
-    )
+calc.model <- function(envrmt = .GlobalEnv$envrmt,
+                       climdata = NULL,
+                       method = "monthly",
+                       station_ids = "plot",
+                       time_column = "datetime",
+                       timespan,
+                       climresp,
+                       classifier = c("rf", "pls", "lm", "glm"),
+                       seed = NULL,
+                       test = NULL,
+                       p = 0.8,
+                       folds = "all",
+                       predrows,
+                       mnote = NULL,
+                       k = NULL,
+                       tc_method = "cv",
+                       metric = "RMSE",
+                       doParallel = FALSE,
+                       autocorrelation = FALSE,
+                       ...){
+
+# ---------------------- read data ------------------------------------------ #
+  # read data
+  if(is.null(climdata)){
+    #get data from PreProcessing
+    if (file.exists(file.path(envrmt$path_tfinal, "Climate_Station_predictors.csv"))){
+      data_o <- utils::read.csv(
+        file.path(envrmt$path_tfinal, "Climate_Station_predictors.csv"))
+    } else {
+      if (file.exists(file.path(envrmt$path_tfinal, paste0("final_", method, ".csv")))){
+        data_o <- utils::read.csv(
+          file.path(envrmt$path_tfinal, paste0("final_", method, ".csv")))
+      } else {
+        stop("No climate station data was found, make sure it is provided. Check Details for more information.")
+      }
+    }
+  } else {
+    data_o <- climdata
+  }
+
   df_total <- data.frame()
 
 # ------------------------- Parallelisation --------------------------------- #
@@ -159,8 +168,7 @@ calc.model <- function(
 
     cr <- parallel::detectCores()
     cl <- parallel::makeCluster(cr * 0.75)
-    doParallel::registerDoParallel(cl)
-  }
+    doParallel::registerDoParallel(cl)}
 
 # --------------------------------------------------------------------------- #
 
@@ -186,7 +194,7 @@ calc.model <- function(
       data_m <- data_y[c(which(data_y$month == m)), ]
 
       # talk to the user
-      message(paste0("Training monthly models for ", y,".  Month-Nr.: ", m))
+      message(paste0("Training monthly model for ", month.name[m], y))
 
 # Loop for the climate sensors --------------------------------- Climresp --- #
       for (s in climresp) try({

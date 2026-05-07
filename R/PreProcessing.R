@@ -225,9 +225,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
                                        geom = c("x", "y"),
                                        crs = terra::crs(r)),
                            bind = TRUE); extr$fit <- NULL
-    ifelse(i == 1,
-           out = extr,
-           out = rbind(out, extr))
+    if(i == 1) {out <- extr} else {out <- rbind(out, extr)}
   }
   # Viertens -> Speicher-Loop
   if(isTRUE(save_output)){

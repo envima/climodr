@@ -6,18 +6,16 @@
 \usage{
 autocorr(
   envrmt = .GlobalEnv$envrmt,
-  method = "monthly",
   max_pvalue = 0.05,
   resp,
   pred,
   plot.corrplot = TRUE,
-  corrplot = "coef"
+  corrplot = "coef",
+  method = "monthly"
 )
 }
 \arguments{
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
-
-\item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
 
 \item{max_pvalue}{The maximum p value for a predictor variable in the autocorellation check.}
 
@@ -28,6 +26,8 @@ autocorr(
 \item{plot.corrplot}{logical. Should correlation matrices be plotted?}
 
 \item{corrplot}{character. Vector or single input. If plot.corrplot is true, you can choose the design of the correlation plot. You can choose from "coef", "crossout", "blank". Default is "coef".}
+
+\item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
 }
 \value{
 One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
