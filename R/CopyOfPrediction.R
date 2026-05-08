@@ -1,0 +1,340 @@
+#' Predict sensor data area wide
+#'
+#' Use the models created using `calc.model` to predict the modeled data onto a
+#' full spatial raster scene.
+#'
+#' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
+#' @param method Character. Either "daily", monthly" or "annual". Also depends on the available data.
+#' @param metric Character. Which perfomance metric should be used to determine the best model? One of "accuracy", "Nrmse" or "Rsqrd". Default = "accuracy".
+#' @param mnote Character. Model note to filter models for the fitting model run.
+#' @param AOA Logical. Should the Area of Applicability be calculated additional to the models?
+#'
+#' @return Multiple models.rds stored in the /workflow/models folder.
+#' @seealso `autocorr`, `predict`
+#'
+#' @name climpred
+#' @export climpred
+#'
+#' @examples
+#' \donttest{
+#' #create climodr environment and allow terra-functions to use 70% of RAM
+#' envrmt <- envi.create(proj_path = tempdir(),
+#'                       memfrac = 0.7)
+#'
+#' # Load the climodr example data into the current climodr environment
+#' clim.sample(envrmt = envrmt)
+#'
+#' #prepare csv-files
+#' prep.csv(envrmt = envrmt,
+#'          method = "proc",
+#'          save_output = TRUE)
+#'
+#' #process csv-files
+#' csv_data <- proc.csv(envrmt = envrmt,
+#'                      method = "monthly",
+#'                      rbind = TRUE,
+#'                      save_output = TRUE)
+#'
+#' # Crop all raster bands
+#' crop.all(envrmt = envrmt,
+#'          method = "MB_Timeseries",
+#'          overwrite = TRUE)
+#'
+#' # Calculate Indices from cropped raster bands
+#' calc.indices(envrmt = envrmt,
+#'              vi = "all",
+#'              bands = c("blue", "green", "red",
+#'                        "nir", "nirb",
+#'                        "re1", "re2", "re3",
+#'                        "swir1", "swir2"),
+#'              overwrite = TRUE)
+#'
+#' #extract station coordinates
+#' csv_spat <- spat.csv(envrmt = envrmt,
+#'                      method = "monthly",
+#'                      des_file = "plot_description.csv",
+#'                      save_output = TRUE)
+#'
+#'
+#' #extract predictor values from raster files
+#' csv_fin <- fin.csv(envrmt = envrmt,
+#'                    method = "monthly",
+#'                    save_output = TRUE)
+#'
+#' # Test data for autocorrelation after running fin.csv
+#' autocorr(envrmt = envrmt,
+#'          method = "monthly",
+#'          resp = 5,
+#'          pred = c(8:23),
+#'          plot.corrplot = FALSE)
+#'
+#' # Create 36 different models (12 months x 3 classifiers) for every month in 2017
+#' calc.model(envrmt = envrmt,
+#'            method = "monthly",
+#'            timespan = c(2017),
+#'            climresp = 5,
+#'            classifier = c("rf",
+#'                           "pls",
+#'                           "lm"),
+#'            seed = 707,
+#'            p = 0.8,
+#'            folds = "LLO",
+#'            mnote = "normal",
+#'            predrows = c(8:23),
+#'            tc_method = "cv",
+#'            metric = "RMSE",
+#'            autocorrelation = TRUE,
+#'            doParallel = FALSE)
+#'
+#' # Make predictions
+#' results <- climpred(envrmt = envrmt,
+#'                     method = "monthly",
+#'                     metric = "Nrmse",
+#'                     mnote = "normal",
+#'                     AOA = TRUE)
+#'
+#' results$Prediction
+#' results$Validation
+#' }
+#'
+
+climpred <- function(
+    envrmt = .GlobalEnv$envrmt,
+    metric = "accuracy",
+    mnote,
+    AOA = TRUE,
+    method = NULL){
+
+  # create list for results and later function output
+  results <- list()
+  val <- data.frame(model_name = character(),
+                    RMSE = integer(),
+                    SD = integer())
+
+  # create a list with all raster images
+  tiff_list <- list.files(
+    path = envrmt$path_rfinal,
+    pattern = ".tif",
+    recursive = TRUE
+  )
+
+  # read dgm
+  try(dgm <- terra::rast(
+        file.path(
+          envrmt$path_rfinal,
+            grep(
+              pattern = "_dgm_",
+              tiff_list,
+              value = TRUE)
+          )
+        ),
+      silent = TRUE)
+
+# read eval_df
+  eval_df <- readRDS(
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_mod_eval_df.rds"
+        )
+      )
+    )
+
+# filter for best models
+  if(!metric %in%  c("accuracy", "Nrmse", "Rsqrd")){
+    stop("Your 'metric' argument has to consist of either 'accuracy', 'Nrmse' or 'Rsqrd'.\n Stopped execution, no model could be choosen with missing metric.")
+  }
+
+  expr <- c(expression(mod_ds$accuracy == max(mod_ds$accuracy)),
+            expression(mod_ds$Nrmse == min(mod_ds$Nrmse)),
+            expression(mod_ds$Rsqrd == min(mod_ds$Rsqrd)))[which(metric == c("accuracy", "Nrmse", "Rsqrd"))]
+
+  dates <- unique(eval_df[, 1])
+  sensors <- unique(eval_df[, 6])
+
+  for (i in 1:length(dates)){
+    mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
+
+    # read fitting raster
+    raster <- terra::rast(
+      file.path(
+        envrmt$path_rfinal,
+        grep(
+          pattern = dates[i],
+          tiff_list,
+          value = TRUE
+        )
+      )
+    )
+
+    if(exists("dgm")){
+      terra::add(raster) <- dgm
+    }
+
+    # sensor loop
+    for (j in 1:length(sensors)){
+      mod_ds <- mod_date[which(mod_date[, 6] == sensors[j]), ]
+
+      ifelse(
+        i == 1 & j == 1,
+        mod_df <- mod_ds[which(eval(expr)), ],
+        mod_df[i, ] <- mod_ds[which(eval(expr)), ]
+      )
+
+
+      modname <- paste0(
+        mnote,
+        "_",
+        mod_df[i, ]$sensor,
+        "_",
+        dates[i],
+        "_",
+        mod_df[i, ]$modeltype,
+        "_",
+        mod_df[i, ]$classifier
+      )
+      mod <- readRDS(
+        file.path(
+          envrmt$path_models,
+          paste0(modname,
+                 "_ffs_model.rds")
+        )
+      )
+
+      # Read testing data
+      test <- utils::read.csv(
+        file.path(
+          envrmt$path_tfinal,
+          paste0(
+            dates[i],
+            "_",
+            mnote,
+            "_",
+            mod_df[i, ]$sensor,
+            "_testingDat.csv"
+          )
+        )
+      )
+      test <- terra::vect(test,
+                          geom = c("x", "y"),
+                          crs = terra::crs(raster))
+
+      message(
+        paste0(
+          "Making ",
+          mod_df[i, ]$sensor,
+          " ",
+          mod_df[i, ]$classifier,
+          "-prediction for ",
+          dates[i],
+          "."
+        )
+      )
+
+      pred <- terra::predict(
+        raster,
+        mod,
+        na.rm = TRUE
+      )
+
+      names(pred) <- modname
+      terra::writeRaster(
+        pred,
+        file.path(
+          envrmt$path_predictions,
+          paste0(
+            modname,
+            "_prediction.tif"
+          )
+        ),
+        overwrite = TRUE
+      )
+
+      # calculate validation
+      ext <- terra::extract(pred,
+                            test)
+
+      # now, fill up the validation metrics
+      ext$sensor <- terra::values(test)[mod_df[i, ]$sensor][,1]
+      names(ext) <- c("ID", "Pred", "Obsv")
+
+      val[i,] <- c(modname,
+                   round(sqrt(mean((ext$Obsv - ext$Pred)^2)), 5),
+                   round(sqrt(sum((ext$Obsv - ext$Pred)^2)/(nrow(ext) - 1)), 5)
+      )
+
+      if (isTRUE(AOA)) try({
+        message("Calculating the Area of Applicability.")
+        suppressWarnings(
+          suppressMessages(
+            aoa <- CAST::aoa(
+              newdata = raster,
+              model = mod)
+          )
+        )
+
+        # Print percentage of non applicable areas
+        pct <- round(100 * terra::freq(aoa$AOA)$count[1] / sum(terra::freq(aoa$AOA)$count), 1)
+        message(paste0("Relative cover of non applicable area in study area for\n", modname, ": ", pct, "%"))
+
+        # Save AOA
+        names(aoa$AOA) <- paste0(modname, "_aoa")
+        terra::writeRaster(
+          aoa$AOA,
+          file.path(
+            envrmt$path_aoa,
+            paste0(
+              modname,
+              "_aoa.tif"
+            )
+          ),
+          overwrite = TRUE
+        )
+      })
+    } # end sensor loop
+  } # end i loop
+
+  # write Validation
+  ## create data frame with best models and metrics
+  for (i in 1:nrow(mod_df)){
+    mod_df$variables[[i]] <- paste(
+      mod_df$variables[[i]],
+      collapse = ", "
+      )
+  }
+
+  mod_df[, 3:5] <- round(mod_df[, 3:5], 5)
+  mod_df <- apply(mod_df, c(1, 2), as.character)
+  mod_df <- data.frame(mod_df)
+
+
+  results$Prediction <- mod_df
+  results$Validation <- val
+
+  utils::write.csv(
+    mod_df,
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_best_models.csv"
+      )
+    ),
+    row.names = FALSE
+  )
+
+  utils::write.csv(
+    val,
+    file.path(
+      envrmt$path_statistics,
+      paste0(
+        mnote,
+        "_validation.csv"
+      )
+    ),
+    row.names = FALSE
+  )
+
+  return(results)
+} # end function loop

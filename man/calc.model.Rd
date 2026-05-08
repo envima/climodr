@@ -6,41 +6,42 @@
 \usage{
 calc.model(
   envrmt = .GlobalEnv$envrmt,
-  method = "monthly",
+  climdata = NULL,
+  climresp,
+  predrows,
   station_ids = "plot",
   time_column = "datetime",
-  timespan,
-  climresp,
+  timespan = NULL,
   classifier = c("rf", "pls", "lm", "glm"),
   seed = NULL,
   test = NULL,
   p = 0.8,
   folds = "all",
-  predrows,
   mnote = NULL,
   k = NULL,
   tc_method = "cv",
   metric = "RMSE",
   doParallel = FALSE,
   autocorrelation = FALSE,
+  method = NULL,
   ...
 )
 }
 \arguments{
 \item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
 
-\item{method}{character. Time period of your desired model. Default: "monthly"}
+\item{climresp}{numeric. Vector or single input. Should contain all column's
+in the tabular data that contain response variables.}
+
+\item{predrows}{numeric. Vector or single input. Should contain the rows where
+all the predictor values are stored in.}
 
 \item{station_ids}{character. Name of your Station_ID Column. Default = "plot"}
 
 \item{time_column}{character. Name of your datetime-column. Default = "datetime"}
 
-\item{timespan}{numeric. Vector or single input. Should contain all years to
-be modeled. The years have to be the same format as in the
-tabular data.}
-
-\item{climresp}{numeric. Vector or single input. Should contain all column's
-in the tabular data that contain response variables.}
+\item{timespan}{numeric. Vector or single input. Should contain all dates to
+be modeled. The dates should be in format %Y-%m-%d (default when created with climodr functions).}
 
 \item{classifier}{vector or character. Model variants to be used. Supported
 models: Random Forest = "rf", Partial-Least-Squares = "pls",
@@ -57,9 +58,6 @@ validation. Default = 0.8}
 \item{folds}{character. Vector or single input. Either folding over location
 only "LLO", over time only "LTO", or over both "LLTO". Use
 "all" to use all possibilitys.}
-
-\item{predrows}{numeric. Vector or single input. Should contain the rows where
-all the predictor values are stored in.}
 
 \item{mnote}{character. Model note for special modifications used.
 Default: "normal"}
@@ -80,6 +78,8 @@ sure to not run any other heavy processes during this.}
 \item{autocorrelation}{logical. Should autocorrelating data in the predictor
 variables be excluded from the model run? Only works if
 `autocorr` has been executed beforehand.}
+
+\item{method}{character. Time period of your desired model. Default: "monthly"}
 
 \item{...}{arguments passed down from other functions.}
 }

@@ -97,13 +97,13 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
   dated_rasters <- raster_files[which(!is.na(dates))]
   if(length(dated_rasters) > 0){
     for (i in 1:length(unique(dates_o))){
-      read_rasters <- paste(envrmt$path_raster, dated_rasters[which(unique(dates_o)[i] %in% stringr::str_sub(dated_rasters, datepos[1], datepos[2]))], sep = "/")
+      read_rasters <- paste(envrmt$path_raster, dated_rasters[which(unique(dates_o)[i] == stringr::str_sub(dated_rasters, datepos[1], datepos[2]))], sep = "/")
       for (j in read_rasters){
         dr <- terra::project(terra::rast(j), crs)
         ifelse(is.null(mask),
                dr <- terra::crop(dr, ext),
                dr <- terra::mask(dr, mask))
-        ifelse(j == read_rasters[i],
+        ifelse(j == read_rasters[length(read_rasters)],
                drs <- dr,
                drs <- c(drs, dr))
         remove(dr)
@@ -136,7 +136,7 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
 
   if(output == "bundle"){
     terra::writeRaster(outfile,
-                       file.path(envrmt$path_rfinal, "bundled_rasters.tif"),
+                       file.path(envrmt$path_rfinal, "dated_rasters_bundled.tif"),
                        overwrite = overwrite)
   }
   write.csv(outfile, file.path(envrmt$path_tmp, "raster_outfile.csv"), row.names = FALSE)
@@ -160,7 +160,7 @@ addSpectralIndices <- function(x,
     if (indices == "all" | name %in% indices){
       Index <- formula
       if(! all(min < terra::values(Index) & terra::values(Index) < max, na.rm = TRUE)){
-        message(paste0("Some cell values for the ", name, " lie outside of the expected range."))
+        warning(paste0("Some cell values for the ", name, " lie outside of the expected range."))
         if (outliers == "cap"){
           Index[Index < min] <- min
           Index[Index > max] <- max

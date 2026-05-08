@@ -10,3 +10,5 @@
 ^README\.Rmd$
 ^CRAN-SUBMISSION$
 ^R\drafts
+^\.positai$
+^\.claude$

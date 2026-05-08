@@ -30,7 +30,7 @@
 #'                       memfrac = 0.7)
 #'
 #' # load example data
-#' climsample(envrmt = envrmt)
+#' clim.sample(envrmt = envrmt)
 #'
 #' # prepare climate station data
 #' climdata <- prepClimateStations(envrmt = envrmt,
@@ -198,7 +198,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
     rdf <- data.frame(do.call(rbind, strsplit(rasters, "__", fixed = TRUE)))[, c(1,2)]
     dates <- lubridate::fast_strptime(rdf[,1],
                                       format = rdf[,2],
-                                      tz = Sys.timezone(location = TRUE));
+                                      tz = Sys.timezone(location = TRUE))
   }
   # Zweitens -> Fitting von Dates
   if(fit_data == "floor"){climdata$fit1 <- lubridate::floor_date(climdata$datetime, unit = unit)}
@@ -224,7 +224,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
                            terra::vect(sub,
                                        geom = c("x", "y"),
                                        crs = terra::crs(r)),
-                           bind = TRUE); extr$fit <- NULL
+                           bind = TRUE)
     if(i == 1) {out <- extr} else {out <- rbind(out, extr)}
   }
   # Viertens -> Speicher-Loop

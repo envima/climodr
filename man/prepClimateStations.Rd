@@ -65,7 +65,7 @@ envrmt <- envi.create(proj_path = tempdir(),
                       memfrac = 0.7)
 
 # load example data
-climsample(envrmt = envrmt)
+clim.sample(envrmt = envrmt)
 
 # prepare climate station data
 climdata <- prepClimateStations(envrmt = envrmt,
