@@ -4,7 +4,7 @@
 #'
 #' @param envrmt variable name of your envrmt list created using climodr's [envi.create] function. Default = envrmt.
 #' @param datepos numeric vector. At which position in the filename does the date of your raster data start and where does it end?
-#' @param dateformat cahracter. The format of your date. See [base::strptime()]
+#' @param dateformat character. The format of your date. See [base::strptime()]
 #' @param crs Coordinate reference system Used to crop all images in folder_path.
 #' @param ext SpatRaster, SpatVector or SpatExtent. Extent all data is cropped into. Default: Smallest Extent in folder_path.
 #' @param mask SpatVector or filename. Assign a polygon to mask your raster files. Either add file from global environment or the filename of your mask in Input/vector. Potentially reduces calculation times, as fewer pixels are contained in rasters after masking.
@@ -59,13 +59,17 @@ prepRasterData <- function(envrmt = .GlobalEnv$envrmt,
   if(is.null(crs) & file.exists(res_area)){
     crs <- terra::crs(terra::rast(res_area))
   } else {
-    stop("No valid coordinate reference system assigned in function arguments.\n Also could not find res_area.tif in Input/dep to extract one from.\n Please add valid coordinate reference system to arguments (see `?terra::crs` to find compatible ones) or make sure to have valid file with name `res_area.tif` in your Input/dep-Folder.\nStopping")
+    if(is.null(crs) & !file.exists(res_area)){
+      stop("No valid coordinate reference system assigned in function arguments.\n Also could not find res_area.tif in Input/dep to extract one from.\n Please add valid coordinate reference system to arguments (see `?terra::crs` to find compatible ones) or make sure to have valid file with name `res_area.tif` in your Input/dep-Folder.\nStopping")
+    }
   }
 
   if(is.null(ext) & file.exists(res_area)){
     ext <- terra::ext(terra::rast(res_area))
   } else {
-    stop("No valid extent assigned in function arguments.\n Also could not find res_area.tif in Input/dep to extract one from.\n Please add valid extent to arguments (see `?terra::ext` to find compatible ones) or make sure to have valid file with name `res_area.tif` in your Input/dep-Folder.\nStopping.")
+    if(is.null(ext) & !file.exists(res_area)){
+      stop("No valid extent assigned in function arguments.\n Also could not find res_area.tif in Input/dep to extract one from.\n Please add valid extent to arguments (see `?terra::ext` to find compatible ones) or make sure to have valid file with name `res_area.tif` in your Input/dep-Folder.\nStopping.")
+    }
   }
 
   if(!is.null(mask) & is.character(mask)){

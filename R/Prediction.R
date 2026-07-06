@@ -347,6 +347,7 @@ climpred <- function(
       mod_date <- eval_df[which(eval_df[, 1] == dates[i]), ]
       raster <- terra::rast(file.path(envrmt$path_rfinal, rasterdata[i]))
       if(exists("ur")){
+        if (i == 1){ur <- terra::crop(terra::project(ur, raster), raster)}
         terra::add(raster) <- ur
       }
       for (j in 1:length(sensors)){

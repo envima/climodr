@@ -5,7 +5,7 @@
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param x dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are `"envrmt$path_tabular"` or `"envrmt$path_vector"`. The 'envrmt'-variable itself has to be the same as it is called in your global environment.
 #' @param pattern character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.
-#' @param metadata vector. 5 Entries. Name of your metadata-file in your Input/dep folder, the column name for the climate stations, the name of your X and Y columns and the coordinate reference system. (e.g. c("metadata.csv", "plotID", "lon", "lat", "+proj=longlat +datum=WGS84"))
+#' @param metadata vector. 5 Entries. Name of your metadata-file in your Input/dep folder, the column name for the climate stations, the name of your X and Y columns and the coordinate reference system. (e.g. c("metadata.csv", "plotID", "lon", "lat", "+proj=longlat +datum=WGS84")). Only needed if data comes in .csv format. Must be one single Metadata-file.
 #' @param time_column character. The name of the time column in your climate station data.
 #' @param time_format character. How is your time column formated? (e.g. YYYY-MM-DD)
 #' @param station_ids character. The name of the station id column of your climate station data.
@@ -13,7 +13,7 @@
 #' @param aggregation_interval character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()]. Valid intervals are `second`, `minute`, `hour`, `day`, `week`, `month`, `bimonth`, `quarter`, `season`, `halfyear` and `year`.
 #' @param start character. When do you want your climate station data to start? Has to be exactly the same format as your input climate station data.
 #' @param end character. When do you want your climate station data to end? Has to be exactly the same format as your input cliamte station data.
-#' @param crs character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif" in Input/dep.
+#' @param crs character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif"-file in Input/dep, which is climodrs prefered way to operate. In here, the file is supposed to have your desired raster resolution and coordinate reference systeme, that climodr simply copies from that file.
 #' @param sep character. Which seperator is used for the columns in the climate station data? (Default = ",")
 #' @param dec character. Which symbol is used to mark decimal digits? (Default = ".")
 #' @param ... arguments passed down from other functions.
@@ -217,7 +217,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
   for(i in 1:length(rasterdata)){
     r <- terra::rast(file.path(envrmt$path_rfinal, rasterdata[i]))
     if(exists("ur")){
-      terra::add(r) <- ur
+      terra::add(r) <- terra::crop(terra::project(ur, r), r)
     }
     sub <- climdata[which(climdata$fit == dates[i]),]
     extr <- terra::extract(r,
@@ -322,7 +322,7 @@ readClimateData <- function(station_list,
 
   # add coordinates, if not existing already
   if(!is.null(metadata)){
-    m_data <- utils::read.table(file.path(envrmt$path_dep, metadata[1]), sep = sep, dec = dec, header = TRUE, row.names = 1)
+    m_data <- utils::read.table(file.path(envrmt$path_dep, metadata[1]), sep = sep, dec = dec, header = TRUE, row.names = NULL)
     stations$x <- ""
     stations$y <- ""
     unique_stations <- as.vector(unlist(unique(stations[station_ids])))
