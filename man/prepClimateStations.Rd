@@ -30,8 +30,9 @@ prepClimateStations(
 \item{pattern}{character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.}
 
 \item{metadata}{vector. Only needed if climate station data comes in .csv format. Must be one single Metadata-file in .csv format, stored in "Input/dep".The purpose of this argument is to extract the coordinates from the metadata-file and assign them to the corresponding climate station data.
+The Metadata should describe the additional information of the climate stations. Usually, and in this case, this means there is one climate station per row, and the columns necessary for climodr to use this file are the station names (MUST be the same names as in the climate station data) and seperated in two columns the x coordinate and the y coordinate. THe file should contain column names, but no row name and no additional rows to skip.
 
-A vector always consisting out of 5 entries:
+A vector for this argument always consisting out of 5 entries:
 \itemize{
 \item Name of your metadata-file in your Input/dep folder
 \item the column name for the climate station names
