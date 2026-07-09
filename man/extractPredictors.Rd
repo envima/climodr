@@ -10,25 +10,27 @@ extractPredictors(
   rasters,
   unit,
   input = "Single",
-  fit_data = "floor",
+  assign_raster_dates = "floor",
   save_output = FALSE
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{climdata}{Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.}
 
-\item{rasters}{SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via [prepRasterData()] in Output/rfinal.}
+\item{rasters}{SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via \code{\link[=prepRasterData]{prepRasterData()}} in Output/rfinal.}
 
 \item{unit}{character.}
 
 \item{input}{character. Either "single" and "bundle". Depends on what output one has choose. "single" means a SpatRaster that only fits to one date, "bundle" is a SpatRaster contianing layers with time stamps fitting to the climate station data. Default = "bundle".}
 
-\item{fit_data}{character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
-- floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
-- ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
-- round: Climate data is matched to the closest data available. (e.g. split between two months.)}
+\item{assign_raster_dates}{character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
+\itemize{
+\item floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
+\item ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
+\item round: Climate data is matched to the closest data available. (e.g. split between two months.)
+}}
 
 \item{...}{arguments passed down from other functions.}
 }
@@ -45,5 +47,5 @@ and extracted raster data (predictor values). The data is ready to be used for m
 sdfsdf
 }
 \seealso{
-`prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
+\code{prep.csv}, \code{proc.csv}, \code{spat.csv}, \code{calc.indices}
 }

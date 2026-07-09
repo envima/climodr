@@ -14,7 +14,7 @@ fin.csv(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{x}{Data frame. Climate station produced by spat.csv. Or produced via prepClimateStation. If null, climate statioon data is searched in Workflow/tworkflow.}
 
@@ -85,5 +85,5 @@ head(csv_fin)
 
 }
 \seealso{
-`prep.csv`, `proc.csv`, `spat.csv`, `calc.indices`
+\code{prep.csv}, \code{proc.csv}, \code{spat.csv}, \code{calc.indices}
 }

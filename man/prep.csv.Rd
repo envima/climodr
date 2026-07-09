@@ -7,7 +7,7 @@
 prep.csv(envrmt = .GlobalEnv$envrmt, method = "proc", save_output = TRUE, ...)
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{method}{character. "proc" for ready-to-use data in separate .csv-files. "tube" for raw-data from the Tube Data Base. Default "proc"-Method.}
 
@@ -43,5 +43,5 @@ csv_files
 
 }
 \seealso{
-`proc.csv`, `spat.csv`, `fin.csv`
+\code{proc.csv}, \code{spat.csv}, \code{fin.csv}
 }

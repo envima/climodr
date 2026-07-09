@@ -5,12 +5,14 @@
 \alias{Station_G17}
 \title{Station File (G17)}
 \format{
-## `Station_G17`
+\subsection{\code{Station_G17}}{
+
 A data frame with 10 rows and 5 columns
 \describe{
- \item{plotID}{Plot ID of imaginary climate station}
- \item{datetime}{Timestamp of record for station}
- \item{Ta_200}{Imaginary air temperature at 200 cm above ground}
+\item{plotID}{Plot ID of imaginary climate station}
+\item{datetime}{Timestamp of record for station}
+\item{Ta_200}{Imaginary air temperature at 200 cm above ground}
+}
 }
 }
 \source{

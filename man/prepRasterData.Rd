@@ -18,11 +18,11 @@ prepRasterData(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's [envi.create] function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \link{envi.create} function. Default = envrmt.}
 
 \item{datepos}{numeric vector. At which position in the filename does the date of your raster data start and where does it end?}
 
-\item{dateformat}{cahracter. The format of your date. See [base::strptime()]}
+\item{dateformat}{character. The format of your date. See \code{\link[base:strptime]{base::strptime()}}}
 
 \item{crs}{Coordinate reference system Used to crop all images in folder_path.}
 
@@ -50,5 +50,5 @@ Crops input data to the extent size and reprojects them into project Coordinate 
 
 }
 \seealso{
-`fin.csv`, `calc.indices`
+\code{fin.csv}, \code{calc.indices}
 }

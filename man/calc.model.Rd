@@ -28,7 +28,7 @@ calc.model(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{climresp}{numeric. Vector or single input. Should contain all column's
 in the tabular data that contain response variables.}
@@ -41,7 +41,7 @@ all the predictor values are stored in.}
 \item{time_column}{character. Name of your datetime-column. Default = "datetime"}
 
 \item{timespan}{numeric. Vector or single input. Should contain all dates to
-be modeled. The dates should be in format %Y-%m-%d (default when created with climodr functions).}
+be modeled. The dates should be in format \%Y-\%m-\%d (default when created with climodr functions).}
 
 \item{classifier}{vector or character. Model variants to be used. Supported
 models: Random Forest = "rf", Partial-Least-Squares = "pls",
@@ -50,7 +50,7 @@ generalized boosted regression = "gbm".}
 
 \item{seed}{integer. Seed to reproduce the same model over and over.}
 
-\item{test}{Vector. Either vector with row numbers of stations to be split for testing or object created by `caret::createDataPartition()`.}
+\item{test}{Vector. Either vector with row numbers of stations to be split for testing or object created by \code{caret::createDataPartition()}.}
 
 \item{p}{numeric. Between 0 and 1. Percentage of data used for cross
 validation. Default = 0.8}
@@ -69,7 +69,7 @@ values.}
 \item{tc_method}{character. Method for train control function from caret
 package. Default = "cv".}
 
-\item{metric}{character. See `train`.}
+\item{metric}{character. See \code{train}.}
 
 \item{doParallel}{logical. Parallelization accelerates the modelling
 process. Warning: Your PC will slow down drastically. Make
@@ -77,7 +77,7 @@ sure to not run any other heavy processes during this.}
 
 \item{autocorrelation}{logical. Should autocorrelating data in the predictor
 variables be excluded from the model run? Only works if
-`autocorr` has been executed beforehand.}
+\code{autocorr} has been executed beforehand.}
 
 \item{method}{character. Time period of your desired model. Default: "monthly"}
 
@@ -162,5 +162,5 @@ calc.model(envrmt = envrmt,
 }
 }
 \seealso{
-`autocorr`
+\code{autocorr}
 }

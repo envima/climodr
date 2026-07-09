@@ -2,7 +2,7 @@
 % Please edit documentation in R/Plotting.R
 \name{climplot}
 \alias{climplot}
-\title{Create Maps using the `terra` package graphic parameters}
+\title{Create Maps using the \code{terra} package graphic parameters}
 \usage{
 climplot(
   envrmt = .GlobalEnv$envrmt,
@@ -15,7 +15,7 @@ climplot(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{mnote}{character. The modelnote you want to create maps of.}
 
@@ -23,11 +23,11 @@ climplot(
 
 \item{aoa}{logical. Do you want the area of applicability to be added to your map?}
 
-\item{mapcolors}{The color pallete you want to use for the map. Default is `rev(grDevices::terrain.colors(50))`}
+\item{mapcolors}{The color pallete you want to use for the map. Default is \code{rev(grDevices::terrain.colors(50))}}
 
-\item{scale_position}{character. Graphical parameter. The relative positiion of the Scale for the map. See `terra::plot` for more details.}
+\item{scale_position}{character. Graphical parameter. The relative positiion of the Scale for the map. See \code{terra::plot} for more details.}
 
-\item{north_position}{character. Graphical parameter. The relative positiion of the Scale for the map. See `terra::plot` for more details.}
+\item{north_position}{character. Graphical parameter. The relative positiion of the Scale for the map. See \code{terra::plot} for more details.}
 }
 \value{
 Maps in PNG-Format to your harddrive.
@@ -125,5 +125,5 @@ climplot(envrmt = envrmt,
 }
 }
 \seealso{
-`terra::plot`
+\code{terra::plot}
 }

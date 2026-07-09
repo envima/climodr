@@ -12,14 +12,14 @@ calc.indices(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{vi}{Character. Either "all" or vector containing the preferred spectral indices. See 'Details' for more information.}
 
 \item{bands}{Character. Vector with lenght(bands) = 10. Contains the names of the bands in the Raster Stack.
-If bands from the *Usage* example vector dont exist, use "NA" in their position. See 'Details' for more information.}
+If bands from the \emph{Usage} example vector dont exist, use "NA" in their position. See 'Details' for more information.}
 
-\item{overwrite}{logical. Argument passed down from `terra`-package. Overwrite existing files?}
+\item{overwrite}{logical. Argument passed down from \code{terra}-package. Overwrite existing files?}
 }
 \value{
 SpatRaster-Stack
@@ -51,5 +51,5 @@ calc.indices(envrmt = envrmt,
 
 }
 \seealso{
-`crop.all`, `fin.csv`
+\code{crop.all}, \code{fin.csv}
 }

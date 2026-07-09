@@ -53,5 +53,5 @@ csd <- readClimateData(station_list = climate_stations,
 head(csd)
 }
 \seealso{
-[prepClimateStations]
+\link{prepClimateStations}
 }

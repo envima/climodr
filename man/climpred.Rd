@@ -25,7 +25,7 @@ climpred(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{metric}{Character. Which perfomance metric should be used to determine the best model? One of "accuracy", "Nrmse" or "Rsqrd". Default = "accuracy".}
 
@@ -41,10 +41,10 @@ Multiple models.rds stored in the /workflow/models folder.
 Multiple models.rds stored in the /workflow/models folder.
 }
 \description{
-Use the models created using `calc.model` to predict the modeled data onto a
+Use the models created using \code{calc.model} to predict the modeled data onto a
 full spatial raster scene.
 
-Use the models created using `calc.model` to predict the modeled data onto a
+Use the models created using \code{calc.model} to predict the modeled data onto a
 full spatial raster scene.
 }
 \examples{
@@ -212,7 +212,7 @@ results$Validation
 
 }
 \seealso{
-`autocorr`, `predict`
+\code{autocorr}, \code{predict}
 
-`autocorr`, `predict`
+\code{autocorr}, \code{predict}
 }

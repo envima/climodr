@@ -37,5 +37,5 @@ Description
 
 }
 \seealso{
-[prepClimateStations]
+\link{prepClimateStations}
 }

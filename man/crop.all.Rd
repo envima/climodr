@@ -14,7 +14,7 @@ crop.all(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{method}{character. Use "MB_Timeseries" for now. More methods are planned and will be added in future.}
 
@@ -49,5 +49,5 @@ crop.all(envrmt = envrmt,
 
 }
 \seealso{
-`fin.csv`, `calc.indices`
+\code{fin.csv}, \code{calc.indices}
 }

@@ -170,17 +170,19 @@ autocorr <- function(envrmt = .GlobalEnv$envrmt,
   message("Finding autocorrelating predictors for these sensors [", paste(sensor_names, collapse = ", "),"].")
 
   if(length(resp) == 1){
+    s_n <- rlang::sym(sensor_names[1])
     corlist[[1]] <- lares::corr_var(
       df = data,
-      var = sensor_names[1],
+      var = !!s_n,
       max_pvalue = max_pvalue,
       top = 50,
       plot = FALSE)
   } else {
     for (i in 1:length(resp)){
+      s_n <- rlang::sym(sensor_names[i])
       corlist[[i]] <- lares::corr_var(
         df = data,
-        var = sensor_names[i],
+        var = !!s_n,
         max_pvalue = max_pvalue,
         ignore = sensor_names[-i],
         top = 50,

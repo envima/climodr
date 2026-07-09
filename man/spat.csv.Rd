@@ -14,13 +14,13 @@ spat.csv(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
 \item{des_file}{character. The filename and data type of the meta-data. (Only reads .csv)}
 
-\item{crs}{character. EPSG of the Coordinate Reference System, if no **res_area.tif** file is provided.}
+\item{crs}{character. EPSG of the Coordinate Reference System, if no \strong{res_area.tif} file is provided.}
 
 \item{save_output}{logical. If cleaned data should be saved permanently in the Environment put save_output = TRUE.
 Otherwise the output will be saved in the temporary directory. Default: TRUE}
@@ -62,5 +62,5 @@ head(csv_spat)
 
 }
 \seealso{
-`prep.csv`, `proc.csv`, `fin.csv`
+\code{prep.csv}, \code{proc.csv}, \code{fin.csv}
 }

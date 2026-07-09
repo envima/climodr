@@ -11,7 +11,7 @@ splitTime(data, time_column, smallest_interval)
 
 \item{time_column}{Character. Column name of the column containing timestamps in POSIXct-format}
 
-\item{smallest_interval}{The smallest time intervall the data should be split into. Same as units in [lubridate::floor_date()]}
+\item{smallest_interval}{The smallest time intervall the data should be split into. Same as units in \code{\link[lubridate:round_date]{lubridate::floor_date()}}}
 }
 \value{
 data frame with aggregated climate station data
@@ -24,5 +24,5 @@ Description
 
 }
 \seealso{
-[prepClimateStations]
+\link{prepClimateStations}
 }

@@ -13,7 +13,7 @@ proc.csv(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{method}{character. Either "daily", monthly" or "annual". Also depends on the available data.}
 
@@ -52,5 +52,5 @@ head(csv_data)
 
 }
 \seealso{
-`prep.csv`, `spat.csv`, `fin.csv`
+\code{prep.csv}, \code{spat.csv}, \code{fin.csv}
 }

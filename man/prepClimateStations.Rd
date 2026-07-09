@@ -23,13 +23,22 @@ prepClimateStations(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
-\item{x}{dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are `"envrmt$path_tabular"` or `"envrmt$path_vector"`. The 'envrmt'-variable itself has to be the same as it is called in your global environment.}
+\item{x}{dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are \code{"envrmt$path_tabular"} or \code{"envrmt$path_vector"}. The 'envrmt'-variable itself has to be the same as it is called in your global environment.}
 
 \item{pattern}{character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.}
 
-\item{metadata}{vector. 5 Entries. Name of your metadata-file in your Input/dep folder, the column name for the climate stations, the name of your X and Y columns and the coordinate reference system. (e.g. c("metadata.csv", "plotID", "lon", "lat", "+proj=longlat +datum=WGS84"))}
+\item{metadata}{vector. Only needed if climate station data comes in .csv format. Must be one single Metadata-file in .csv format, stored in "Input/dep".The purpose of this argument is to extract the coordinates from the metadata-file and assign them to the corresponding climate station data.
+
+A vector always consisting out of 5 entries:
+\itemize{
+\item Name of your metadata-file in your Input/dep folder
+\item the column name for the climate station names
+\item the column name consisting of your X coordinates from the climate stations
+\item the column name of your y coordinates from the climate Stations
+\item the coordinate reference system for these coordinates
+}}
 
 \item{time_column}{character. The name of the time column in your climate station data.}
 
@@ -39,13 +48,13 @@ prepClimateStations(
 
 \item{sensors}{vector. Containing all column names of each sensor in your climate station data.}
 
-\item{aggregation_interval}{character. To what format should your data be aggregated? Same as units in [lubridate::floor_date()]. Valid intervals are `second`, `minute`, `hour`, `day`, `week`, `month`, `bimonth`, `quarter`, `season`, `halfyear` and `year`.}
+\item{aggregation_interval}{character. To what format should your data be aggregated? Same as units in \code{\link[lubridate:round_date]{lubridate::floor_date()}}. Valid intervals are \code{second}, \code{minute}, \code{hour}, \code{day}, \code{week}, \code{month}, \code{bimonth}, \code{quarter}, \code{season}, \code{halfyear} and \code{year}.}
 
 \item{start}{character. When do you want your climate station data to start? Has to be exactly the same format as your input climate station data.}
 
 \item{end}{character. When do you want your climate station data to end? Has to be exactly the same format as your input cliamte station data.}
 
-\item{crs}{character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif" in Input/dep.}
+\item{crs}{character. Destined coordinate reference system. If crs = NULL, climod searches for "res_area.tif"-file in Input/dep, which is climodrs prefered way to operate. In here, the file is supposed to have your desired raster resolution and coordinate reference systeme, that climodr simply copies from that file.}
 
 \item{sep}{character. Which seperator is used for the columns in the climate station data? (Default = ",")}
 
@@ -84,5 +93,5 @@ climdata <- prepClimateStations(envrmt = envrmt,
 head(climdata)
 }
 \seealso{
-replacement function for the old [prep.csv], [proc.csv], [spat.csv] functions.
+replacement function for the old \link{prep.csv}, \link{proc.csv}, \link{spat.csv} functions.
 }

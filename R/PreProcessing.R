@@ -5,7 +5,15 @@
 #' @param envrmt variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.
 #' @param x dataframe or climodr environment path. A data frame containing climate station data or one of the Input paths of the envrmt, where your climate station data is stored. Valid inputs for a climodr environment path are `"envrmt$path_tabular"` or `"envrmt$path_vector"`. The 'envrmt'-variable itself has to be the same as it is called in your global environment.
 #' @param pattern character. Some string indicating that file is a climate station. E.g. "Climate_Station_*.csv" All climate station files in input folder must contain this pattern in filename.
-#' @param metadata vector. 5 Entries. Name of your metadata-file in your Input/dep folder, the column name for the climate stations, the name of your X and Y columns and the coordinate reference system. (e.g. c("metadata.csv", "plotID", "lon", "lat", "+proj=longlat +datum=WGS84")). Only needed if data comes in .csv format. Must be one single Metadata-file.
+#' @param metadata vector. Only needed if climate station data comes in .csv format. Must be one single Metadata-file in .csv format, stored in "Input/dep".The purpose of this argument is to extract the coordinates from the metadata-file and assign them to the corresponding climate station data.
+#'
+#' A vector always consisting out of 5 entries:
+#' * Name of your metadata-file in your Input/dep folder
+#' * the column name for the climate station names
+#' * the column name consisting of your X coordinates from the climate stations
+#' * the column name of your y coordinates from the climate Stations
+#' * the coordinate reference system for these coordinates
+#'
 #' @param time_column character. The name of the time column in your climate station data.
 #' @param time_format character. How is your time column formated? (e.g. YYYY-MM-DD)
 #' @param station_ids character. The name of the station id column of your climate station data.
@@ -172,10 +180,10 @@ prepClimateStations <- function(envrmt = .GlobalEnv$envrmt,
 #' @param rasters SpatRaster. Either a single raster with layers fitting for the desired time stamp. Or a bundled raster with fitting time stamps on the according layers. If empty, climodr searches for files created via [prepRasterData()] in Output/rfinal.
 #' @param unit character.
 #' @param input character. Either "single" and "bundle". Depends on what output one has choose. "single" means a SpatRaster that only fits to one date, "bundle" is a SpatRaster contianing layers with time stamps fitting to the climate station data. Default = "bundle".
-#' @param fit_data character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
-#'        - floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
-#'        - ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
-#'        - round: Climate data is matched to the closest data available. (e.g. split between two months.)
+#' @param assign_raster_dates character. One of "floor", "ceiling" or "round". How should climate data be matched to a layer?
+#' * floor: Climate data is matched to the earliest date of the time interval (e.g. first day of a month)
+#' * ceiling: Climate data is matched to the latest date of the time interval (e.g. last day of a month)
+#' * round: Climate data is matched to the closest data available. (e.g. split between two months.)
 #' @param ...      arguments passed down from other functions.
 #'
 #' @return data.frame
@@ -191,7 +199,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
                               rasters,
                               unit,
                               input = "Single",
-                              fit_data = "floor",
+                              assign_raster_dates = "floor",
                               save_output = FALSE){
   # Erstens -> Leseloop
   if(input == "Single"){
@@ -200,15 +208,15 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
                                       format = rdf[,2],
                                       tz = Sys.timezone(location = TRUE))
   }
-  # Zweitens -> Fitting von Dates
-  if(fit_data == "floor"){climdata$fit1 <- lubridate::floor_date(climdata$datetime, unit = unit)}
-  if(fit_data == "ceiling"){climdata$fit1 <- lubridate::ceiling_date(climdata$datetime, unit = unit)}
-  if(fit_data == "round"){climdata$fit1 <- lubridate::round_date(climdata$datetime, unit = unit)}
+  # Second -> Assigning Dates
+  if(assign_raster_dates == "floor"){climdata$assigned_raster_date1 <- lubridate::floor_date(climdata$datetime, unit = unit)}
+  if(assign_raster_dates == "ceiling"){climdata$assigned_raster_date1 <- lubridate::ceiling_date(climdata$datetime, unit = unit)}
+  if(assign_raster_dates == "round"){climdata$assigned_raster_date1 <- lubridate::round_date(climdata$datetime, unit = unit)}
 
-  climdata$fit <- unlist(
+  climdata$assigned_raster_date <- unlist(
     lapply(
-      climdata$fit1, function(x) as.character(dates[which.min(abs(x - dates))])
-      )); climdata$fit1 <- NULL
+      climdata$assigned_raster_date1, function(x) as.character(dates[which.min(abs(x - dates))])
+      )); climdata$assigned_raster_date1 <- NULL
 
   # Drittens -> Extraction-Loop
   if(file.exists(file.path(envrmt$path_rfinal, "undated_rasters.tif"))){
@@ -219,7 +227,7 @@ extractPredictors <- function(envrmt = .GlobalEnv$envrmt,
     if(exists("ur")){
       terra::add(r) <- terra::crop(terra::project(ur, r), r)
     }
-    sub <- climdata[which(climdata$fit == dates[i]),]
+    sub <- climdata[which(climdata$assigned_raster_date == dates[i]),]
     extr <- terra::extract(r,
                            terra::vect(sub,
                                        geom = c("x", "y"),

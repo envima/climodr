@@ -15,7 +15,7 @@ autocorr(
 )
 }
 \arguments{
-\item{envrmt}{variable name of your envrmt list created using climodr's `envi.create` function. Default = envrmt.}
+\item{envrmt}{variable name of your envrmt list created using climodr's \code{envi.create} function. Default = envrmt.}
 
 \item{max_pvalue}{The maximum p value for a predictor variable in the autocorellation check.}
 
@@ -30,10 +30,10 @@ autocorr(
 \item{method}{character. Choose the time scale your data is preserved in. Either "annual", "monthly" or "daily".}
 }
 \value{
-One .csv file per response variable. These will later be used when `autocorrelation` is set `TRUE` during `calc.model`.
+One .csv file per response variable. These will later be used when \code{autocorrelation} is set \code{TRUE} during \code{calc.model}.
 }
 \description{
-Tests the final.csv created with `fin.csv` on autocorrelation to produce
+Tests the final.csv created with \code{fin.csv} on autocorrelation to produce
 reliable models.
 }
 \examples{
@@ -93,5 +93,5 @@ autocorr(envrmt = envrmt,
 
 }
 \seealso{
-`calc.model`
+\code{calc.model}
 }
